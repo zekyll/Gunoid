@@ -1,0 +1,15 @@
+canvas {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translateY(-50%) translateX(-50%);
+}
+
+#overlaycanvas {
+	z-index: 10;
+}
+
+body {
+	margin: 0;
+	background-color: #D8D8D8;
+}

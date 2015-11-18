@@ -92,12 +92,11 @@ var player =
 	vy: 0,
 	targetx: 0,
 	targety: 1,
-	//maxSpeed: 50,
 	acceleration: 2000,
 	drag: 0.1,
-	shootInterval: 0.1,
+	shootInterval: 0.15,
 	lastShootTime: -1,
-	bulletSpeed: 400,
+	bulletSpeed: 300,
 	bullets: [],
 
 	fireBullets: function(timestamp)
@@ -128,6 +127,7 @@ var player =
 var game =
 {
 	canvas: undefined,
+	overlayCanvas: undefined,
 	modelMatrix: undefined,
 	projectionViewMatrix: undefined,
 	areaMinX: -150,
@@ -140,10 +140,40 @@ var game =
 	enemies: [],
 	lastEnemySpawnTime: -1,
 	enemySpawnInterval: 1,
+	fps: 0,
 
 	start: function()
 	{
 		this.canvas = document.getElementById("webglcanvas");
+		this.overlayCanvas = document.getElementById("overlaycanvas");
+
+		var self = this;
+		var resizeCanvas = function () {
+			var w = window.innerWidth;
+			var h = window.innerHeight;
+			if (w < self.aspectRatio * h)
+				h = w / self.aspectRatio;
+			else
+				w = h * self.aspectRatio;
+
+			var scaling = 1.0;
+			self.canvas.width = scaling * w;
+			self.canvas.height = scaling * h;
+			self.canvas.style.width = w;
+			self.canvas.style.height = h;
+
+			// Match overlay canvas dimensions with webgl canvas
+			self.overlayCanvas.width = self.canvas.width;
+			self.overlayCanvas.height = self.canvas.height;
+			self.overlayCanvas.style.width = self.canvas.style.width;
+			self.overlayCanvas.style.height = self.canvas.style.height;
+
+			if (gl)
+				gl.viewport(0, 0, self.canvas.width, self.canvas.height);
+		};
+
+		window.onresize = resizeCanvas;
+		resizeCanvas();
 
 		this.areaWidth = this.areaMaxX - this.areaMinX;
 		this.areaHeight = this.areaWidth / this.aspectRatio;
@@ -160,18 +190,19 @@ var game =
 		}
 
 		var self = this;
-		this.canvas.onmousemove = function(e){
-			player.targetx = self.areaMinX + self.areaWidth * e.clientX / self.canvas.width;
-			player.targety = self.areaMaxY - self.areaHeight * e.clientY / self.canvas.height;
+		this.overlayCanvas.onmousemove = function(e){
+			var canvasRect = self.canvas.getBoundingClientRect();
+			var x = e.clientX - canvasRect.x;
+			var y = e.clientY - canvasRect.y;
+			player.targetx = self.areaMinX + self.areaWidth * x / self.canvas.width;
+			player.targety = self.areaMaxY - self.areaHeight * y / self.canvas.height;
 		};
 	},
 
 	step: function(timestamp)
 	{
-		timestamp *= 0.001;
-		if (lastTimestamp < 0) {
+		if (lastTimestamp < 0)
 			lastTimestamp = timestamp - 0.01;
-		}
 		var dt = timestamp - lastTimestamp;
 		lastTimestamp = timestamp;
 
@@ -232,7 +263,7 @@ var game =
 			// Generate random position and "round" to nearest border.
 			var px = this.areaMinX + Math.random() * this.areaWidth;
 			var py = this.areaMinY + Math.random() * this.areaHeight;
-			if (Math.abs(px) + this.areaMaxX - this.areaMaxY < Math.abs(py))
+			if (Math.abs(px) < Math.abs(py) + this.areaMaxX - this.areaMaxY)
 				py = (py < 0) ? this.areaMinY : this.areaMaxY;
 			else
 				px = (px < 0) ? this.areaMinX : this.areaMaxX;
@@ -290,6 +321,18 @@ var game =
 
 	render: function(timestamp)
 	{
+		timestamp *= 0.001;
+
+		this.fps = 0.99 * this.fps + 0.01 / (timestamp - lastTimestamp);
+
+		if (frameCounter % 10 === 0) {
+			var ctx = this.overlayCanvas.getContext("2d");
+			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+			ctx.font = '20pt Calibri';
+			ctx.fillStyle = 'orange';
+			ctx.fillText(Math.round(this.fps), 10, 40);
+		}
+
 		this.step(timestamp);
 
 		if (++frameCounter % frameSkip === 0) {
