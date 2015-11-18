@@ -1,4 +1,6 @@
 
+"use strict";
+
 var gl;
 var vertexPositionAttribute;
 
@@ -201,7 +203,7 @@ var game =
 
 	moveProjectiles: function(timestamp, dt)
 	{
-		for (i = 0; i < player.bullets.length; ++i) {
+		for (var i = 0; i < player.bullets.length; ++i) {
 			if (timestamp > player.bullets[i].expire){
 				player.bullets.splice(i, 1);
 				--i;

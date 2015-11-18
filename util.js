@@ -1,4 +1,6 @@
 
+"use strict";
+
 Matrix.Translation = function (v)
 {
 	if (v.elements.length == 2) {
