@@ -21,9 +21,54 @@ Model.prototype =
 	}
 };
 
-var Models =
+var models =
 {
+	init: function()
+	{
+		this.ship = new Model([
+			0, 7, 0,
+			-2, 4, 0,
+			-1, 1, 0,
+			-4, 2, 0,
+			-5, 4, 0,
+			-6, 3, 0,
+			-7, -2, 0,
+			-5, -5, 0,
+			-4, -3, 0,
+			-1, -2, 0,
+			-1, -3, 0,
+			1, -3, 0,
+			1, -2, 0,
+			4, -3, 0,
+			5, -5, 0,
+			7, -2, 0,
+			6, 3, 0,
+			5, 4, 0,
+			4, 2, 0,
+			1, 1, 0,
+			2, 4, 0,
+			0, 7, 0,
+			]);
 
+		this.blasterShot = new Model([
+			0, 2, 0,
+			-1, -2, 0,
+			1, -2, 0,
+			0, 2, 0
+			]);
+
+		this.enemyStar = new Model([
+			0, 4, 0,
+			-1, 1, 0,
+			-4, 0, 0,
+			-1, -1, 0,
+			0, -4, 0,
+			1, -1, 0,
+			4, 0, 0,
+			1, 1, 0,
+			0, 4, 0
+			]);
+	}
 };
 
 var shaderProgram;
@@ -67,10 +112,10 @@ var player =
 			vx *= this.bulletSpeed / vlen;
 			vy *= this.bulletSpeed / vlen;
 			this.bullets.push({
-				x: this.x, 
-				y: this.y, 
-				vx: vx, 
-				vy: vy, 
+				x: this.x,
+				y: this.y,
+				vx: vx,
+				vy: vy,
 				expire: timestamp + 3
 			});
 			this.lastShootTime = timestamp;
@@ -83,23 +128,39 @@ var game =
 	canvas: undefined,
 	modelMatrix: undefined,
 	projectionViewMatrix: undefined,
+	areaMinX: -150,
+	areaMaxX: 150,
+	aspectRatio: 4.0 / 3.0,
+	areaMinY: undefined,
+	areaMaxY: undefined,
+	areaWidth: undefined,
+	areaHeight: undefined,
+	enemies: [],
+	lastEnemySpawnTime: -1,
+	enemySpawnInterval: 1,
 
 	start: function()
 	{
 		this.canvas = document.getElementById("webglcanvas");
+
+		this.areaWidth = this.areaMaxX - this.areaMinX;
+		this.areaHeight = this.areaWidth / this.aspectRatio;
+		this.areaMinY = -0.5 * this.areaHeight;
+		this.areaMaxY = 0.5 * this.areaHeight;
 
 		this.initWebGL();
 
 		if (gl) {
 			gl.clearColor(0.2, 0.0, 0.3, 1.0);
 			this.initShaders();
-			this.initModels();
+			models.init();
 			this.requestFrame();
 		}
 
+		var self = this;
 		this.canvas.onmousemove = function(e){
-			player.targetx = -150 + 300 * e.clientX / 800;
-			player.targety = 150.0 * 3 / 4 - 300.0 * 3 / 4 * e.clientY / 600;
+			player.targetx = self.areaMinX + self.areaWidth * e.clientX / self.canvas.width;
+			player.targety = self.areaMaxY - self.areaHeight * e.clientY / self.canvas.height;
 		};
 	},
 
@@ -131,7 +192,15 @@ var game =
 		player.x += player.vx * dt;
 		player.y += player.vy * dt;
 
+		this.moveProjectiles(timestamp, dt);
+		this.moveEnemies(timestamp, dt);
+		this.checkProjectileHits();
+		player.fireBullets(timestamp);
+		this.spawnEnemies(timestamp);
+	},
 
+	moveProjectiles: function(timestamp, dt)
+	{
 		for (i = 0; i < player.bullets.length; ++i) {
 			if (timestamp > player.bullets[i].expire){
 				player.bullets.splice(i, 1);
@@ -141,8 +210,65 @@ var game =
 			player.bullets[i].x += player.bullets[i].vx * dt;
 			player.bullets[i].y += player.bullets[i].vy * dt;
 		}
+	},
 
-		player.fireBullets(timestamp);
+	moveEnemies: function(timestamp, dt)
+	{
+		for (var i = 0; i < this.enemies.length; ++i) {
+			this.enemies[i].x += this.enemies[i].vx * dt;
+			this.enemies[i].y += this.enemies[i].vy * dt;
+			if (this.enemies[i].x < this.areaMinX || this.enemies[i].x > this.areaMaxX)
+				this.enemies[i].vx *= -1.0;
+			if (this.enemies[i].y < this.areaMinY || this.enemies[i].y > this.areaMaxY)
+				this.enemies[i].vy *= -1.0;
+		}
+	},
+
+	spawnEnemies: function(timestamp)
+	{
+		if (timestamp > this.lastEnemySpawnTime + this.enemySpawnInterval) {
+			// Generate random position and "round" to nearest border.
+			var px = this.areaMinX + Math.random() * this.areaWidth;
+			var py = this.areaMinY + Math.random() * this.areaHeight;
+			if (Math.abs(px) + this.areaMaxX - this.areaMaxY < Math.abs(py))
+				py = (py < 0) ? this.areaMinY : this.areaMaxY;
+			else
+				px = (px < 0) ? this.areaMinX : this.areaMaxX;
+
+			// Random direction towards center of the area
+			var dstx = 0.9 * (this.areaMinX + Math.random() * this.areaWidth);
+			var dsty = 0.9 * (this.areaMinY + Math.random() * this.areaHeight);
+			var dir = $V([dstx - px, dsty - py]);
+			dir = dir.normalized().x((0.5 +  Math.random()) * 25);
+
+			this.enemies.push({
+				x: px,
+				y: py,
+				vx: dir.e(1),
+				vy: dir.e(2),
+				hp: 100
+			});
+			this.lastEnemySpawnTime = timestamp;
+		}
+	},
+
+	checkProjectileHits: function(timestamp)
+	{
+		for (var i = 0; i < player.bullets.length; ++i) {
+			for (var j = 0; j < this.enemies.length; ++j) {
+				var dx = this.enemies[j].x - player.bullets[i].x;
+				var dy = this.enemies[j].y - player.bullets[i].y;
+				var distSqr = dx * dx + dy * dy;
+				if (distSqr < 5.0 * 5.0) {
+					this.enemies[j].hp -= 30;
+					player.bullets[i].expire = -1;
+					if (this.enemies[j].hp <= 0) {
+						this.enemies.splice(j, 1);
+						--j;
+					}
+				}
+			}
+		}
 	},
 
 	initWebGL: function()
@@ -160,41 +286,6 @@ var game =
 		}
 	},
 
-	initModels: function()
-	{
-		Models.ship = new Model([
-			0, 7, 0,
-			-2, 4, 0,
-			-1, 1, 0,
-			-4, 2, 0,
-			-5, 4, 0,
-			-6, 3, 0,
-			-7, -2, 0,
-			-5, -5, 0,
-			-4, -3, 0,
-			-1, -2, 0,
-			-1, -3, 0,
-			1, -3, 0,
-			1, -2, 0,
-			4, -3, 0,
-			5, -5, 0,
-			7, -2, 0,
-			6, 3, 0,
-			5, 4, 0,
-			4, 2, 0,
-			1, 1, 0,
-			2, 4, 0,
-			0, 7, 0,
-			]);
-
-		Models.blasterShot = new Model([
-			0, 2, 0,
-			-1, -2, 0,
-			1, -2, 0,
-			0, 2, 0
-			]);
-	},
-
 	render: function(timestamp)
 	{
 		this.step(timestamp);
@@ -202,25 +293,39 @@ var game =
 		if (++frameCounter % frameSkip === 0) {
 			gl.clear(gl.COLOR_BUFFER_BIT);
 
-			this.projectionViewMatrix = makeOrtho(-150, 150, -150 * 3.0 / 4, 150 * 3.0 / 4, -1, 1);
+			this.projectionViewMatrix = makeOrtho(this.areaMinX, this.areaMaxX,
+					this.areaMinY, this.areaMaxY, -1, 1);
 
 			var playerPos = $V([player.x, player.y, 0])
 			var targetPos = $V([player.targetx, player.targety, 0]);
 			var playerDir = targetPos.subtract(playerPos);
 			this.modelMatrix = makeModelMatrix(playerPos, playerDir);
 			this.setMatrices();
-			Models.ship.render(gl);
+			models.ship.render(gl);
 
 			for (var i = 0; i < player.bullets.length; ++i) {
 				var pos = $V([player.bullets[i].x, player.bullets[i].y, 0]);
 				var v = $V([player.bullets[i].vx, player.bullets[i].vy, 0]);
 				this.modelMatrix = makeModelMatrix(pos, v);
 				this.setMatrices();
-				Models.blasterShot.render();
+				models.blasterShot.render();
 			}
+
+			this.renderEnemies();
 		}
 
 		this.requestFrame();
+	},
+
+	renderEnemies: function()
+	{
+		for (var i = 0; i < this.enemies.length; ++i) {
+			var pos = $V([this.enemies[i].x, this.enemies[i].y, 0]);
+			var v = $V([this.enemies[i].vx, this.enemies[i].vy, 0]);
+			this.modelMatrix = makeModelMatrix(pos, v);
+			this.setMatrices();
+			models.enemyStar.render();
+		}
 	},
 
 	requestFrame: function()
