@@ -129,7 +129,10 @@ var game =
 			var dst = this.randomPosition().mul(0.9);
 			var v = dst.sub(p).setlen((0.5 +  Math.random()) * 25);
 
-			this.entities.push(new EnemyStar(p, v, 100));
+			if (timestamp > 5 && Math.random() > 0.5)
+				this.entities.push(new EnemyKamikaze(p, v));
+			else
+				this.entities.push(new EnemyStar(p, v, 100));
 			this.lastEnemySpawnTime = timestamp;
 		}
 	},
@@ -218,6 +221,7 @@ var game =
 			ctx.fillText("fps: " + Math.round(this.fps), 10, 25);
 			//ctx.fillText("entities: " + this.entities.length, 10, 50);
 			ctx.fillText("hp: " + this.player.hp, 10, 50);
+			ctx.fillText("time: " + timestamp.toFixed(1), 10, 75);
 		}
 	},
 

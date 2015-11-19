@@ -72,6 +72,17 @@ var models =
 			0, 4, 0
 		]);
 
+		this.enemyKamikaze = new Model([
+			0, 4, 0,
+			-1, 3, 0,
+			-1, 0, 0,
+			-4, -4, 0,
+			4, -4, 0,
+			1, 0, 0,
+			1, 3, 0,
+			0, 4, 0
+		]);
+
 		this.debris = new Model([
 			1, -1, 0,
 			0, 1, 0,

@@ -27,3 +27,14 @@ function make2dTransformMatrix(translate, rotateDir)
 		translate.x, translate.y, 0, 1
 		]);
 }
+
+function inherit(derived, base, newProperties)
+{
+	derived.prototype = Object.create(base.prototype);
+	derived.prototype.constructor = derived;
+	for (var k in newProperties) {
+		if (newProperties.hasOwnProperty(k))
+			derived.prototype[k] = newProperties[k];
+	}
+	return derived;
+}

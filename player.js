@@ -11,13 +11,13 @@ function Player(p)
 	this.radius = 7;
 	this.targetp = new V(0, 1);
 	this.acceleration = 2000;
-	this.drag = 0.1;
+	this.dragCoefficient = 0.1;
 	this.shootInterval = 0.15;
 	this.lastShootTime = -1;
 	this.bulletSpeed = 300;
 }
 
-Player.prototype =
+inherit(Player, Entity,
 {
 	debrisCount: 20,
 	debrisSpeed: 50,
@@ -34,11 +34,7 @@ Player.prototype =
 			a.setlen_(this.acceleration * dt)
 		this.v.add_(a);
 
-		var vlen = this.v.len();
-		var dragAccel = Math.min(this.drag * vlen * vlen * dt, vlen);
-		if (vlen > 1e-10)
-			this.v.sub_(this.v.setlen(dragAccel));
-		this.p.add_(this.v.mul(dt));
+		this.calculateDrag(dt);
 
 		this.fireBullets(timestamp);
 	},
@@ -50,14 +46,8 @@ Player.prototype =
 	takeDamage: function(timestamp, damage)
 	{
 		this.hp -= damage;
-		if (this.hp <= 0) {
-			for (var i = 0; i < this.debrisCount; ++i) {
-				var angle = Math.random() * 2 * Math.PI;
-				var v = new V(Math.cos(angle), Math.sin(angle));
-				v.mul_(this.debrisSpeed * (0.5 + Math.random()));
-				game.entities.push(new Debris(this.p.clone(), v, timestamp + this.debrisExpireTime));
-			}
-		}
+		if (this.hp <= 0)
+			this.spreadDebris(timestamp);
 	},
 
 	render: function()
@@ -80,4 +70,4 @@ Player.prototype =
 			this.lastShootTime = timestamp;
 		}
 	}
-};
+});
