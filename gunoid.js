@@ -87,7 +87,7 @@ var game =
 			this.entities[i].step(timestamp, dt);
 
 		this.spawnEnemies(timestamp);
-		this.checkCollisions();
+		this.checkCollisions(timestamp);
 		this.removeDeadEntities();
 	},
 
@@ -148,8 +148,8 @@ var game =
 				var collisionDistance = this.entities[i].radius + this.entities[j].radius;
 
 				if (distSqr < collisionDistance * collisionDistance) {
-					this.entities[i].collide(this.entities[j]);
-					this.entities[j].collide(this.entities[i]);
+					this.entities[i].collide(timestamp, this.entities[j]);
+					this.entities[j].collide(timestamp, this.entities[i]);
 				}
 			}
 		}

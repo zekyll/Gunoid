@@ -38,7 +38,7 @@ Player.prototype =
 		this.fireBullets(timestamp);
 	},
 
-	collide: function(other)
+	collide: function(timestamp, other)
 	{
 	},
 
