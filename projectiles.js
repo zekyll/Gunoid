@@ -14,6 +14,7 @@ BlasterShot.prototype =
 	faction: 1,
 	radius: 2,
 	damage: 30,
+	m: 10,
 
 	step: function(timestamp, dt)
 	{

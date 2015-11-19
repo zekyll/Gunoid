@@ -5,9 +5,10 @@ function Player(p)
 {
 	this.p = p;
 	this.v =  new V(0, 0),
+	this.m = 10e3;
 	this.hp = 100,
 	this.faction = 1;
-	this.radius = 5;
+	this.radius = 7;
 	this.targetp = new V(0, 1);
 	this.acceleration = 2000;
 	this.drag = 0.1;
@@ -18,6 +19,10 @@ function Player(p)
 
 Player.prototype =
 {
+	debrisCount: 20,
+	debrisSpeed: 50,
+	debrisExpireTime: 5,
+
 	step: function(timestamp, dt)
 	{
 		this.targetp.x = game.areaMinX + game.areaWidth * input.relativeCursorX;
@@ -40,6 +45,19 @@ Player.prototype =
 
 	collide: function(timestamp, other)
 	{
+	},
+
+	takeDamage: function(timestamp, damage)
+	{
+		this.hp -= damage;
+		if (this.hp <= 0) {
+			for (var i = 0; i < this.debrisCount; ++i) {
+				var angle = Math.random() * 2 * Math.PI;
+				var v = new V(Math.cos(angle), Math.sin(angle));
+				v.mul_(this.debrisSpeed * (0.5 + Math.random()));
+				game.entities.push(new Debris(this.p.clone(), v, timestamp + this.debrisExpireTime));
+			}
+		}
 	},
 
 	render: function()

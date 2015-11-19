@@ -151,9 +151,21 @@ var game =
 				if (distSqr < collisionDistance * collisionDistance) {
 					this.entities[i].collide(timestamp, this.entities[j]);
 					this.entities[j].collide(timestamp, this.entities[i]);
+					this.collide(this.entities[i], this.entities[j]);
 				}
 			}
 		}
+	},
+
+	collide: function(a, b)
+	{
+		// Simulating a perfectly elastic collision between 2 objects
+		var m = a.m + b.m;
+		var dp = a.p.sub(b.p);
+		var dv = a.v.sub(b.v);
+		var cv = dp.mul(dv.dot(dp)/dp.lenSqr());
+		a.v.sub_(cv.mul(2 * b.m / m));
+		b.v.sub_(cv.mul(- 2 * a.m / m));
 	},
 
 	initWebGL: function()
@@ -205,6 +217,7 @@ var game =
 			ctx.fillStyle = 'orange';
 			ctx.fillText("fps: " + Math.round(this.fps), 10, 25);
 			//ctx.fillText("entities: " + this.entities.length, 10, 50);
+			ctx.fillText("hp: " + this.player.hp, 10, 50);
 		}
 	},
 

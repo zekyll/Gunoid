@@ -31,6 +31,18 @@ V.prototype =
 		return this;
 	},
 
+	neg: function(rhs)
+	{
+		return new V(-this.x, -this.y);
+	},
+
+	neg_: function(rhs)
+	{
+		this.x = -this.x;
+		this.y = -this.y;
+		return this;
+	},
+
 	mul: function(c)
 	{
 		return new V(this.x * c, this.y * c);
@@ -51,6 +63,11 @@ V.prototype =
 	cross: function(rhs)
 	{
 		return this.x * rhs.y - this.y * rhs.x;
+	},
+
+	lenSqr: function()
+	{
+		return this.x * this.x + this.y * this.y;
 	},
 
 	len: function()

@@ -10,8 +10,10 @@ function EnemyStar(p, v, hp)
 
 EnemyStar.prototype =
 {
+	m: 5e3,
 	faction: 2,
 	radius: 3,
+	collisionDamage: 20,
 	debrisCount: 5,
 	debrisSpeed: 50,
 	debrisExpireTime: 5,
@@ -27,6 +29,8 @@ EnemyStar.prototype =
 
 	collide: function(timestamp, other)
 	{
+		if ('takeDamage' in other)
+			other.takeDamage(timestamp, this.collisionDamage);
 	},
 
 	takeDamage: function(timestamp, damage)
