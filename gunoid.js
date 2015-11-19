@@ -91,12 +91,9 @@ var frameCounter = 0;
 
 var player =
 {
-	x: 0,
-	y: 0,
-	vx: 0,
-	vy: 0,
-	targetx: 0,
-	targety: 1,
+	p: new V(0, 0),
+	v: new V(0, 0),
+	targetp: new V(0, 1),
 	acceleration: 2000,
 	drag: 0.1,
 	shootInterval: 0.15,
@@ -107,21 +104,13 @@ var player =
 	fireBullets: function(timestamp)
 	{
 		if (timestamp > this.lastShootTime + this.shootInterval && this.bullets.length < 30) {
-			var vx = this.targetx - this.x;
-			var vy = this.targety - this.y;
-			var vlen = Math.sqrt(vx * vx + vy * vy);
-			if (vlen < 0.001) {
-				vx = 0;
-				vy = 1;
-				vlen = 1;
-			}
-			vx *= this.bulletSpeed / vlen;
-			vy *= this.bulletSpeed / vlen;
+			var v = this.targetp.sub(this.p);
+			if (v.len() < 0.001)
+				v = V[0, 1];
+			v.setlen_(this.bulletSpeed);
 			this.bullets.push({
-				x: this.x,
-				y: this.y,
-				vx: vx,
-				vy: vy,
+				p: this.p.clone(),
+				v: v,
 				expire: timestamp + 3
 			});
 			this.lastShootTime = timestamp;
@@ -199,8 +188,8 @@ var game =
 			var canvasRect = self.canvas.getBoundingClientRect();
 			var x = e.clientX - canvasRect.left;
 			var y = e.clientY - canvasRect.top;
-			player.targetx = self.areaMinX + self.areaWidth * x / self.canvas.width;
-			player.targety = self.areaMaxY - self.areaHeight * y / self.canvas.height;
+			player.targetp.x = self.areaMinX + self.areaWidth * x / self.canvas.width;
+			player.targetp.y = self.areaMaxY - self.areaHeight * y / self.canvas.height;
 		};
 	},
 
@@ -211,24 +200,16 @@ var game =
 		var dt = timestamp - lastTimestamp;
 		lastTimestamp = timestamp;
 
-		var ax = (keyRight & 1) - (keyLeft & 1);
-		var ay = (keyUp & 1) - (keyDown & 1);
+		var a = new V((keyRight & 1) - (keyLeft & 1), (keyUp & 1) - (keyDown & 1));
+		if (a.len() > 0)
+			a.setlen_(player.acceleration * dt)
+		player.v.add_(a);
 
-		var alen = Math.sqrt(ax * ax + ay * ay);
-		if (alen > 0) {
-			ax *= player.acceleration / alen;
-			ay *= player.acceleration / alen;
-			player.vx += ax * dt;
-			player.vy += ay * dt;
-		}
-		var vlen = Math.sqrt(player.vx * player.vx + player.vy * player.vy);
+		var vlen = player.v.len();
 		var dragAccel = Math.min(player.drag * vlen * vlen * dt, vlen);
-		if (vlen > 1e-10) {
-			player.vx -= dragAccel * player.vx / vlen;
-			player.vy -= dragAccel * player.vy / vlen;
-		}
-		player.x += player.vx * dt;
-		player.y += player.vy * dt;
+		if (vlen > 1e-10)
+			player.v.sub_(player.v.setlen(dragAccel));
+		player.p.add_(player.v.mul(dt));
 
 		this.moveProjectiles(timestamp, dt);
 		this.moveEnemies(timestamp, dt);
@@ -245,45 +226,51 @@ var game =
 				--i;
 				continue;
 			}
-			player.bullets[i].x += player.bullets[i].vx * dt;
-			player.bullets[i].y += player.bullets[i].vy * dt;
+			player.bullets[i].p.add_(player.bullets[i].v.mul(dt));
 		}
 	},
 
 	moveEnemies: function(timestamp, dt)
 	{
 		for (var i = 0; i < this.enemies.length; ++i) {
-			this.enemies[i].x += this.enemies[i].vx * dt;
-			this.enemies[i].y += this.enemies[i].vy * dt;
-			if (this.enemies[i].x < this.areaMinX || this.enemies[i].x > this.areaMaxX)
-				this.enemies[i].vx *= -1.0;
-			if (this.enemies[i].y < this.areaMinY || this.enemies[i].y > this.areaMaxY)
-				this.enemies[i].vy *= -1.0;
+			this.enemies[i].p.add_(this.enemies[i].v.mul(dt));
+			if (this.enemies[i].p.x < this.areaMinX || this.enemies[i].p.x > this.areaMaxX)
+				this.enemies[i].v.x *= -1.0;
+			if (this.enemies[i].p.y < this.areaMinY || this.enemies[i].p.y > this.areaMaxY)
+				this.enemies[i].v.y *= -1.0;
 		}
+	},
+
+	randomEdgePosition: function()
+	{
+		// Generate random position choose nearest edge point.
+		var x = this.areaMinX + Math.random() * this.areaWidth;
+		var y = this.areaMinY + Math.random() * this.areaHeight;
+		if (Math.abs(x) < Math.abs(y) + this.areaMaxX - this.areaMaxY)
+			y = (y < 0) ? this.areaMinY : this.areaMaxY;
+		else
+			x = (x < 0) ? this.areaMinX : this.areaMaxX;
+		return new V(x, y);
+	},
+
+	randomPosition: function()
+	{
+		var x = this.areaMinX + Math.random() * this.areaWidth;
+		var y = this.areaMinY + Math.random() * this.areaHeight;
+		return new V(x, y);
 	},
 
 	spawnEnemies: function(timestamp)
 	{
 		if (timestamp > this.lastEnemySpawnTime + this.enemySpawnInterval) {
-			// Generate random position and "round" to nearest border.
-			var px = this.areaMinX + Math.random() * this.areaWidth;
-			var py = this.areaMinY + Math.random() * this.areaHeight;
-			if (Math.abs(px) < Math.abs(py) + this.areaMaxX - this.areaMaxY)
-				py = (py < 0) ? this.areaMinY : this.areaMaxY;
-			else
-				px = (px < 0) ? this.areaMinX : this.areaMaxX;
-
-			// Random direction towards center of the area
-			var dstx = 0.9 * (this.areaMinX + Math.random() * this.areaWidth);
-			var dsty = 0.9 * (this.areaMinY + Math.random() * this.areaHeight);
-			var dir = $V([dstx - px, dsty - py]);
-			dir = dir.normalized().x((0.5 +  Math.random()) * 25);
+			// Enemies will start at random edge point and travel towards center.
+			var p = this.randomEdgePosition();
+			var dst = this.randomPosition().mul(0.9);
+			var v = dst.sub(p).setlen((0.5 +  Math.random()) * 25);
 
 			this.enemies.push({
-				x: px,
-				y: py,
-				vx: dir.e(1),
-				vy: dir.e(2),
+				p: p,
+				v: v,
 				hp: 100
 			});
 			this.lastEnemySpawnTime = timestamp;
@@ -294,9 +281,7 @@ var game =
 	{
 		for (var i = 0; i < player.bullets.length; ++i) {
 			for (var j = 0; j < this.enemies.length; ++j) {
-				var dx = this.enemies[j].x - player.bullets[i].x;
-				var dy = this.enemies[j].y - player.bullets[i].y;
-				var distSqr = dx * dx + dy * dy;
+				var distSqr = this.enemies[j].p.distSqr(player.bullets[i].p);
 				if (distSqr < 5.0 * 5.0) {
 					this.enemies[j].hp -= 30;
 					player.bullets[i].expire = -1;
@@ -345,18 +330,15 @@ var game =
 
 			this.setProjViewMatrix();
 
-			var playerPos = $V([player.x, player.y, 0])
-			var targetPos = $V([player.targetx, player.targety, 0]);
-			var playerDir = targetPos.subtract(playerPos);
-			this.setModelMatrix(makeModelMatrix(playerPos, playerDir));
+			var targetDir = player.targetp.sub(player.p);
+			this.setModelMatrix(make2dTransformMatrix(player.p, targetDir));
 			models.ship.prepare();
 			models.ship.render();
 
 			models.blasterShot.prepare();
 			for (var i = 0; i < player.bullets.length; ++i) {
-				var pos = $V([player.bullets[i].x, player.bullets[i].y, 0]);
-				var v = $V([player.bullets[i].vx, player.bullets[i].vy, 0]);
-				this.setModelMatrix(makeModelMatrix(pos, v));
+				var mat = make2dTransformMatrix(player.bullets[i].p, player.bullets[i].v);
+				this.setModelMatrix(mat);
 				models.blasterShot.render();
 			}
 
@@ -370,9 +352,8 @@ var game =
 	{
 		models.enemyStar.prepare();
 		for (var i = 0; i < this.enemies.length; ++i) {
-			var pos = $V([this.enemies[i].x, this.enemies[i].y, 0]);
-			var v = $V([this.enemies[i].vx, this.enemies[i].vy, 0]);
-			this.setModelMatrix(makeModelMatrix(pos, v));
+			var mat = make2dTransformMatrix(this.enemies[i].p, this.enemies[i].v);
+			this.setModelMatrix(mat);
 			models.enemyStar.render();
 		}
 	},
@@ -451,15 +432,14 @@ var game =
 
 	setProjViewMatrix: function()
 	{
-		var projViewMatrix = makeOrtho(this.areaMinX, this.areaMaxX,
+		var projViewMatrix = makeOrthoMatrix(this.areaMinX, this.areaMaxX,
 			this.areaMinY, this.areaMaxY, -1, 1);
-		gl.uniformMatrix4fv(this.projViewMatrixLoc, false, new Float32Array(projViewMatrix.flatten()));
+		gl.uniformMatrix4fv(this.projViewMatrixLoc, false, projViewMatrix);
 	},
 
 	setModelMatrix: function(modelMatrix)
 	{
-
-		gl.uniformMatrix4fv(this.modelMatrixLoc, false, new Float32Array(modelMatrix.flatten()));
+		gl.uniformMatrix4fv(this.modelMatrixLoc, false, modelMatrix);
 	}
 };
 
