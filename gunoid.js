@@ -16,9 +16,14 @@ function Model(verticeData)
 
 Model.prototype =
 {
-	render:  function() {
+	prepare: function()
+	{
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
 		gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+	},
+
+	render: function()
+	{
 		gl.drawArrays(gl.LINE_STRIP, 0, this.length);
 	}
 };
@@ -128,8 +133,8 @@ var game =
 {
 	canvas: undefined,
 	overlayCanvas: undefined,
-	modelMatrix: undefined,
-	projectionViewMatrix: undefined,
+	projViewMatrixLoc: undefined,
+	modelMatrixLoc: undefined,
 	areaMinX: -150,
 	areaMaxX: 150,
 	aspectRatio: 4.0 / 3.0,
@@ -309,7 +314,7 @@ var game =
 		gl = null;
 
 		try {
-			gl = this.canvas.getContext("webgl");
+			gl = this.canvas.getContext("webgl", {antialias: true, depth: false});
 		}
 		catch(e) {
 		}
@@ -338,21 +343,20 @@ var game =
 		if (++frameCounter % frameSkip === 0) {
 			gl.clear(gl.COLOR_BUFFER_BIT);
 
-			this.projectionViewMatrix = makeOrtho(this.areaMinX, this.areaMaxX,
-					this.areaMinY, this.areaMaxY, -1, 1);
+			this.setProjViewMatrix();
 
 			var playerPos = $V([player.x, player.y, 0])
 			var targetPos = $V([player.targetx, player.targety, 0]);
 			var playerDir = targetPos.subtract(playerPos);
-			this.modelMatrix = makeModelMatrix(playerPos, playerDir);
-			this.setMatrices();
-			models.ship.render(gl);
+			this.setModelMatrix(makeModelMatrix(playerPos, playerDir));
+			models.ship.prepare();
+			models.ship.render();
 
+			models.blasterShot.prepare();
 			for (var i = 0; i < player.bullets.length; ++i) {
 				var pos = $V([player.bullets[i].x, player.bullets[i].y, 0]);
 				var v = $V([player.bullets[i].vx, player.bullets[i].vy, 0]);
-				this.modelMatrix = makeModelMatrix(pos, v);
-				this.setMatrices();
+				this.setModelMatrix(makeModelMatrix(pos, v));
 				models.blasterShot.render();
 			}
 
@@ -364,11 +368,11 @@ var game =
 
 	renderEnemies: function()
 	{
+		models.enemyStar.prepare();
 		for (var i = 0; i < this.enemies.length; ++i) {
 			var pos = $V([this.enemies[i].x, this.enemies[i].y, 0]);
 			var v = $V([this.enemies[i].vx, this.enemies[i].vy, 0]);
-			this.modelMatrix = makeModelMatrix(pos, v);
-			this.setMatrices();
+			this.setModelMatrix(makeModelMatrix(pos, v));
 			models.enemyStar.render();
 		}
 	},
@@ -399,6 +403,9 @@ var game =
 
 		vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "position");
 		gl.enableVertexAttribArray(vertexPositionAttribute);
+
+		this.projViewMatrixLoc = gl.getUniformLocation(shaderProgram, "projViewMatrix");
+		this.modelMatrixLoc = gl.getUniformLocation(shaderProgram, "modelMatrix");
 	},
 
 	getShader: function(gl, id)
@@ -442,13 +449,17 @@ var game =
 		return shader;
 	},
 
-	setMatrices: function()
+	setProjViewMatrix: function()
 	{
-		var projViewMatrixLoc = gl.getUniformLocation(shaderProgram, "projViewMatrix");
-		gl.uniformMatrix4fv(projViewMatrixLoc, false, new Float32Array(this.projectionViewMatrix.flatten()));
+		var projViewMatrix = makeOrtho(this.areaMinX, this.areaMaxX,
+			this.areaMinY, this.areaMaxY, -1, 1);
+		gl.uniformMatrix4fv(this.projViewMatrixLoc, false, new Float32Array(projViewMatrix.flatten()));
+	},
 
-		var modelMatrixLoc = gl.getUniformLocation(shaderProgram, "modelMatrix");
-		gl.uniformMatrix4fv(modelMatrixLoc, false, new Float32Array(this.modelMatrix.flatten()));
+	setModelMatrix: function(modelMatrix)
+	{
+
+		gl.uniformMatrix4fv(this.modelMatrixLoc, false, new Float32Array(modelMatrix.flatten()));
 	}
 };
 
