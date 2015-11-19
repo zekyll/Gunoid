@@ -192,8 +192,8 @@ var game =
 		var self = this;
 		this.overlayCanvas.onmousemove = function(e){
 			var canvasRect = self.canvas.getBoundingClientRect();
-			var x = e.clientX - canvasRect.x;
-			var y = e.clientY - canvasRect.y;
+			var x = e.clientX - canvasRect.left;
+			var y = e.clientY - canvasRect.top;
 			player.targetx = self.areaMinX + self.areaWidth * x / self.canvas.width;
 			player.targety = self.areaMaxY - self.areaHeight * y / self.canvas.height;
 		};
@@ -452,20 +452,19 @@ var game =
 	}
 };
 
-var onKeyEvent = function(key, pressed)
+var onKeyEvent = function(keyCode, pressed)
 {
-	//console.log(e.key.toLowerCase());
-	switch (key.toLowerCase()) {
-		case "w":
+	switch (keyCode) {
+		case 87:
 			keyUp = pressed;
 			break;
-		case "a":
+		case 65:
 			keyLeft = pressed;
 			break;
-		case "s":
+		case 83:
 			keyDown = pressed;
 			break;
-		case "d":
+		case 68:
 			keyRight = pressed;
 			break;
 		default:
@@ -475,17 +474,10 @@ var onKeyEvent = function(key, pressed)
 
 document.onkeydown = function(e)
 {
-	//console.log(e.key);
-	onKeyEvent(e.key, true);
+	onKeyEvent(e.keyCode, true);
 };
 
 document.onkeyup = function(e)
 {
-	//console.log(e.key);
-	onKeyEvent(e.key, false);
-};
-
-document.onkeypress = function(e)
-{
-	//console.log("keypress ");
+	onKeyEvent(e.keyCode, false);
 };
