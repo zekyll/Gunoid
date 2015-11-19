@@ -3,8 +3,10 @@
 		<meta charset="UTF-8">
 		<link rel="stylesheet" type="text/css" href="gunoid.css">
 		<script id="shader-fs" type="x-shader/x-fragment">
+			precision mediump float;
+			uniform vec4 renderColor;
 			void main(void) {
-				gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+				gl_FragColor = renderColor;
 			}
 		</script>
 		<script id="shader-vs" type="x-shader/x-vertex">

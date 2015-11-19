@@ -44,8 +44,9 @@ EnemyStar.prototype =
 
 	render: function()
 	{
-		models.enemyStar.prepare();
 		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
+		game.setRenderColor(new Float32Array([0.5, 1.0, 0.2, 1.0]));
+		models.enemyStar.prepare();
 		models.enemyStar.render();
 	},
 }

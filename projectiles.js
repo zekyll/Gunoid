@@ -31,8 +31,9 @@ BlasterShot.prototype =
 
 	render: function()
 	{
-		models.blasterShot.prepare();
+		game.setRenderColor(new Float32Array([1.0, 1.0, 0.6, 1.0]));
 		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
+		models.blasterShot.prepare();
 		models.blasterShot.render();
 	},
 }
@@ -63,8 +64,9 @@ Debris.prototype =
 
 	render: function()
 	{
-		models.debris.prepare();
 		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
+		game.setRenderColor(new Float32Array([0.5, 0.5, 0.5, 1.0]));
+		models.debris.prepare();
 		models.debris.render();
 	},
 }

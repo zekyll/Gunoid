@@ -10,6 +10,7 @@ var game =
 	overlayCanvas: undefined,
 	projViewMatrixLoc: undefined,
 	modelMatrixLoc: undefined,
+	renderColorLoc: undefined,
 	areaMinX: -150,
 	areaMaxX: 150,
 	aspectRatio: 4.0 / 3.0,
@@ -246,6 +247,7 @@ var game =
 
 		this.projViewMatrixLoc = gl.getUniformLocation(shaderProgram, "projViewMatrix");
 		this.modelMatrixLoc = gl.getUniformLocation(shaderProgram, "modelMatrix");
+		this.renderColorLoc = gl.getUniformLocation(shaderProgram, "renderColor");
 	},
 
 	getShader: function(gl, id)
@@ -299,5 +301,10 @@ var game =
 	setModelMatrix: function(modelMatrix)
 	{
 		gl.uniformMatrix4fv(this.modelMatrixLoc, false, modelMatrix);
+	},
+
+	setRenderColor: function(color)
+	{
+		gl.uniform4fv(this.renderColorLoc, color);
 	}
 };
