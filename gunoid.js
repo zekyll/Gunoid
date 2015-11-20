@@ -78,6 +78,7 @@ var game =
 		this.areaMinY = -0.5 * this.areaHeight;
 		this.areaMaxY = 0.5 * this.areaHeight;
 
+		this.entities = [];
 		this.player = new Player(new V(0, 0));
 		this.entities.push(this.player);
 	},
@@ -93,6 +94,10 @@ var game =
 			"Accelerate left": 65,
 			"Accelerate right": 68,
 			"New game": 113
+		});
+
+		input.registerKeyPressHandler("New game", function() {
+			self.initGameWorld();
 		});
 	},
 
@@ -236,6 +241,13 @@ var game =
 			//ctx.fillText("entities: " + this.entities.length, 10, 50);
 			ctx.fillText("hp: " + this.player.hp, 10, 50);
 			ctx.fillText("time: " + timestamp.toFixed(1), 10, 75);
+
+			if (this.player.hp <= 0) {
+				ctx.font = '25pt Calibri';
+				ctx.fillStyle = 'yellow';
+				ctx.fillText("YOUR SHIP WAS DESTROYED!", 210, 300);
+				ctx.fillText("Press F2 to start a new game", 210, 350);
+			}
 		}
 	},
 
