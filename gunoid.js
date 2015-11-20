@@ -311,13 +311,13 @@ var game =
 	setProjViewMatrix: function()
 	{
 		var projViewMatrix = makeOrthoMatrix(this.areaMinX, this.areaMaxX,
-			this.areaMinY, this.areaMaxY, -1, 1);
-		gl.uniformMatrix4fv(this.projViewMatrixLoc, false, projViewMatrix);
+			this.areaMinY, this.areaMaxY);
+		gl.uniformMatrix3fv(this.projViewMatrixLoc, false, projViewMatrix);
 	},
 
 	setModelMatrix: function(modelMatrix)
 	{
-		gl.uniformMatrix4fv(this.modelMatrixLoc, false, modelMatrix);
+		gl.uniformMatrix3fv(this.modelMatrixLoc, false, modelMatrix);
 	},
 
 	setRenderColor: function(color)

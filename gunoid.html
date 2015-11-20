@@ -10,11 +10,11 @@
 			}
 		</script>
 		<script id="shader-vs" type="x-shader/x-vertex">
-			attribute vec3 position;
-			uniform mat4 modelMatrix;
-			uniform mat4 projViewMatrix;
+			attribute vec2 position;
+			uniform mat3 modelMatrix;
+			uniform mat3 projViewMatrix;
 			void main(void) {
-				gl_Position = projViewMatrix * modelMatrix * vec4(position, 1.0);
+				gl_Position = vec4(projViewMatrix * modelMatrix * vec3(position, 1.0), 1.0);
 			}
 		</script>
 		<script src="vec2d.js" type="text/javascript"></script>
