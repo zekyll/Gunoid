@@ -47,8 +47,8 @@ var game =
 			self.canvas.style.height = h;
 
 			// Match overlay canvas dimensions with webgl canvas
-			self.overlayCanvas.width = self.canvas.width;
-			self.overlayCanvas.height = self.canvas.height;
+			self.overlayCanvas.width = 800;
+			self.overlayCanvas.height = 600;
 			self.overlayCanvas.style.width = self.canvas.style.width;
 			self.overlayCanvas.style.height = self.canvas.style.height;
 

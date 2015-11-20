@@ -24,8 +24,8 @@ var input =
 
 		mouseInputElement.onmousemove = function(e){
 			var elemRect = mouseInputElement.getBoundingClientRect();
-			self.relativeCursorX = (e.clientX - elemRect.left) / mouseInputElement.width;
-			self.relativeCursorY = (e.clientY - elemRect.top) / mouseInputElement.height;
+			self.relativeCursorX = (e.clientX - elemRect.left) / mouseInputElement.offsetWidth;
+			self.relativeCursorY = (e.clientY - elemRect.top) / mouseInputElement.offsetHeight;
 		};
 	},
 
