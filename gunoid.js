@@ -65,7 +65,7 @@ var game =
 			gl.clearColor(0.2, 0.0, 0.3, 1.0);
 			this.initShaders();
 			models.init();
-			input.init(this.overlayCanvas);
+			this.initInput();
 			this.initGameWorld();
 			this.requestFrame();
 		}
@@ -80,6 +80,20 @@ var game =
 
 		this.player = new Player(new V(0, 0));
 		this.entities.push(this.player);
+	},
+
+	initInput: function()
+	{
+		var self = this;
+
+		input.init(this.overlayCanvas);
+		input.setBindings({
+			"Accelerate up": 87,
+			"Accelerate down": 83,
+			"Accelerate left": 65,
+			"Accelerate right": 68,
+			"New game": 113
+		});
 	},
 
 	step: function(timestamp, dt)

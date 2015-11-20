@@ -3,23 +3,50 @@
 
 var input =
 {
-	keyDown: false,
-	keyUp: false,
-	keyLeft: false,
-	keyRight: false,
 	relativeCursorX: 0,
 	relativeCursorY: 0,
+	keyStates: {},
+	bindings: {},
+	reverseBindings: {},
+	keyPressHandlers: {},
+
+	keyDown: function(bindingName)
+	{
+		return this.keyStates.hasOwnProperty(this.bindings[bindingName]);
+	},
+
+	setBindings: function(bindings)
+	{
+		this.bindings = {};
+		this.reverseBindings = {};
+		for (var bindingName in bindings) {
+			if (bindings.hasOwnProperty(bindingName)) {
+				this.bindings[bindingName] = bindings[bindingName];
+				this.reverseBindings[bindings[bindingName]] = bindingName;
+			}
+		}
+	},
+
+	registerKeyPressHandler: function(bindingName, handler)
+	{
+		this.keyPressHandlers[bindingName] = handler;
+	},
 
 	init: function(mouseInputElement)
 	{
 		var self = this;
 
 		document.onkeydown = function(e) {
-			self.onKeyEvent(e.keyCode, true);
+			if (!self.keyStates[e.keyCode]){
+				var bindingName = self.reverseBindings[e.keyCode];
+				if (self.keyPressHandlers.hasOwnProperty(bindingName))
+					self.keyPressHandlers[bindingName]();
+			}
+			self.keyStates[e.keyCode] = true;
 		};
 
 		document.onkeyup = function(e) {
-			self.onKeyEvent(e.keyCode, false);
+			delete self.keyStates[e.keyCode];
 		};
 
 		mouseInputElement.onmousemove = function(e){
@@ -27,26 +54,6 @@ var input =
 			self.relativeCursorX = (e.clientX - elemRect.left) / mouseInputElement.offsetWidth;
 			self.relativeCursorY = (e.clientY - elemRect.top) / mouseInputElement.offsetHeight;
 		};
-	},
-
-	onKeyEvent: function(keyCode, pressed)
-	{
-		switch (keyCode) {
-			case 87:
-				this.keyUp = pressed;
-				break;
-			case 65:
-				this.keyLeft = pressed;
-				break;
-			case 83:
-				this.keyDown = pressed;
-				break;
-			case 68:
-				this.keyRight = pressed;
-				break;
-			default:
-				return;
-		}
 	}
 };
 

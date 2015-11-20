@@ -28,8 +28,8 @@ inherit(Player, Entity,
 		this.targetp.x = game.areaMinX + game.areaWidth * input.relativeCursorX;
 		this.targetp.y = game.areaMaxY - game.areaHeight * input.relativeCursorY;
 
-		var a = new V((input.keyRight & 1) - (input.keyLeft & 1),
-				(input.keyUp & 1) - (input.keyDown & 1));
+		var a = new V((input.keyDown("Accelerate right") & 1) - (input.keyDown("Accelerate left") & 1),
+				(input.keyDown("Accelerate up") & 1) - (input.keyDown("Accelerate down") & 1));
 		if (a.len() > 0)
 			a.setlen_(this.acceleration * dt)
 		this.v.add_(a);
