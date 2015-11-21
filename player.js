@@ -65,7 +65,7 @@ inherit(Player, Entity,
 			if (v.len() < 0.001)
 				v = V[0, 1];
 			v.setlen_(this.bulletSpeed);
-			game.entities.push(new BlasterShot(this.p.clone(), v, timestamp + 2));
+			game.entities.push(new BlasterShot(this.p.clone(), v, timestamp + 2, this.faction));
 			this.lastShootTime = timestamp;
 		}
 	}

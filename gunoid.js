@@ -148,7 +148,9 @@ var game =
 			var dst = this.randomPosition().mul(0.9);
 			var v = dst.sub(p).setlen((0.5 +  Math.random()) * 25);
 
-			if (timestamp > 5 && Math.random() > 0.5)
+			if (timestamp > 10 && Math.random() > 0.8)
+				this.entities.push(new EnemyDestroyer(p, v));
+			else if (timestamp > 5 && Math.random() > 0.5)
 				this.entities.push(new EnemyKamikaze(p, v));
 			else
 				this.entities.push(new EnemyStar(p, v, 100));

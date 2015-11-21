@@ -1,17 +1,17 @@
 
 "use strict";
 
-function BlasterShot(p, v, expire)
+function BlasterShot(p, v, expire, faction)
 {
 	this.p = p;
 	this.v = v;
 	this.hp = 1;
 	this.expire = expire;
+	this.faction = faction;
 }
 
 BlasterShot.prototype =
 {
-	faction: 1,
 	radius: 2,
 	damage: 30,
 	m: 10,
