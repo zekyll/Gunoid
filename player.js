@@ -17,12 +17,8 @@ function Player(p)
 	this.bulletSpeed = 300;
 }
 
-inherit(Player, Entity,
+inherit(Player, Ship,
 {
-	debrisCount: 20,
-	debrisSpeed: 50,
-	debrisExpireTime: 5,
-
 	step: function(timestamp, dt)
 	{
 		this.targetp.x = game.areaMinX + game.areaWidth * input.relativeCursorX;
@@ -34,20 +30,9 @@ inherit(Player, Entity,
 			a.setlen_(this.acceleration * dt)
 		this.v.add_(a);
 
-		this.calculateDrag(dt);
-
 		this.fireBullets(timestamp);
-	},
 
-	collide: function(timestamp, other)
-	{
-	},
-
-	takeDamage: function(timestamp, damage)
-	{
-		this.hp -= damage;
-		if (this.hp <= 0)
-			this.spreadDebris(timestamp);
+		Ship.prototype.step.apply(this, arguments);
 	},
 
 	render: function()
@@ -65,7 +50,7 @@ inherit(Player, Entity,
 			if (v.len() < 0.001)
 				v = V[0, 1];
 			v.setlen_(this.bulletSpeed);
-			game.entities.push(new BlasterShot(this.p.clone(), v, timestamp + 2, this.faction));
+			game.addEntity(new BlasterShot(this.p.clone(), v, timestamp + 2, this.faction));
 			this.lastShootTime = timestamp;
 		}
 	}

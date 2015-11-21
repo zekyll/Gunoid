@@ -1,6 +1,20 @@
 
 "use strict";
 
+function Projectile()
+{
+}
+
+inherit(Projectile, Entity,
+{
+	step: function(timestamp, dt)
+	{
+		this.p.add_(this.v.mul(dt));
+		if (timestamp > this.expire)
+			this.hp = 0;
+	}
+});
+
 function BlasterShot(p, v, expire, faction)
 {
 	this.p = p;
@@ -10,24 +24,20 @@ function BlasterShot(p, v, expire, faction)
 	this.faction = faction;
 }
 
-BlasterShot.prototype =
+inherit(BlasterShot, Projectile,
 {
 	radius: 2,
 	damage: 30,
 	m: 10,
 
-	step: function(timestamp, dt)
-	{
-		this.p.add_(this.v.mul(dt));
-		if (timestamp > this.expire)
-			this.hp = 0;
-	},
-
 	collide: function(timestamp, other)
 	{
-		if ('takeDamage' in other)
+		if (other instanceof Ship && other.faction != this.faction) {
 			other.takeDamage(timestamp, this.damage);
-		this.hp -= 1;
+			this.hp -= 1;
+			return true;
+		}
+		return false;
 	},
 
 	render: function()
@@ -36,7 +46,7 @@ BlasterShot.prototype =
 		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
 		models.blasterShot.render();
 	},
-}
+});
 
 function Debris(p, v, expire)
 {
@@ -46,21 +56,9 @@ function Debris(p, v, expire)
 	this.expire = expire;
 }
 
-Debris.prototype =
+inherit(Debris, Projectile,
 {
-	faction: 0,
-	radius: 1,
-
-	step: function(timestamp, dt)
-	{
-		this.p.add_(this.v.mul(dt));
-		if (timestamp > this.expire)
-			this.hp = 0;
-	},
-
-	collide: function(other)
-	{
-	},
+	canCollide: false,
 
 	render: function()
 	{
@@ -68,4 +66,4 @@ Debris.prototype =
 		game.setRenderColor(new Float32Array([0.5, 0.5, 0.5, 1.0]));
 		models.debris.render();
 	},
-}
+});

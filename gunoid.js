@@ -19,6 +19,7 @@ var game =
 	areaWidth: undefined,
 	areaHeight: undefined,
 	entities: [],
+	newEntities: [],
 	lastEnemySpawnTime: -1,
 	enemySpawnInterval: 1,
 	fps: 0,
@@ -79,8 +80,9 @@ var game =
 		this.areaMaxY = 0.5 * this.areaHeight;
 
 		this.entities = [];
+		this.newEntities = [];
 		this.player = new Player(new V(0, 0));
-		this.entities.push(this.player);
+		this.addEntity(this.player);
 	},
 
 	initInput: function()
@@ -108,6 +110,7 @@ var game =
 
 		this.spawnEnemies(timestamp);
 		this.checkCollisions(timestamp);
+		this._addNewEntities();
 		this.removeDeadEntities();
 	},
 
@@ -161,21 +164,20 @@ var game =
 	checkCollisions: function(timestamp)
 	{
 		for (var i = 0; i < this.entities.length; ++i) {
-			if (this.entities[i].faction === 0)
+			if (!this.entities[i].canCollide)
 				continue;
 			for (var j = i + 1; j < this.entities.length; ++j) {
-				if (this.entities[j].faction === 0)
-					continue;
-				if (this.entities[i].faction === this.entities[j].faction)
+				if (!this.entities[j].canCollide)
 					continue;
 
 				var distSqr = this.entities[j].p.distSqr(this.entities[i].p);
 				var collisionDistance = this.entities[i].radius + this.entities[j].radius;
 
 				if (distSqr < collisionDistance * collisionDistance) {
-					this.entities[i].collide(timestamp, this.entities[j]);
-					this.entities[j].collide(timestamp, this.entities[i]);
-					this.collide(this.entities[i], this.entities[j]);
+					var doPhysics = this.entities[i].collide(timestamp, this.entities[j]);
+					doPhysics |= this.entities[j].collide(timestamp, this.entities[i]);
+					if (doPhysics)
+						this.collide(this.entities[i], this.entities[j]);
 				}
 			}
 		}
@@ -190,6 +192,18 @@ var game =
 		var cv = dp.mul(dv.dot(dp)/dp.lenSqr());
 		a.v.sub_(cv.mul(2 * b.m / m));
 		b.v.sub_(cv.mul(- 2 * a.m / m));
+	},
+
+	addEntity: function(newEntity)
+	{
+		this.newEntities.push(newEntity);
+	},
+
+	_addNewEntities: function()
+	{
+		for (var i = 0; i < this.newEntities.length; ++i)
+			this.entities.push(this.newEntities[i]);
+		this.newEntities = [];
 	},
 
 	initWebGL: function()

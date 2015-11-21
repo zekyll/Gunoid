@@ -8,15 +8,13 @@ function EnemyStar(p, v, hp)
 	this.hp = hp;
 }
 
-inherit(EnemyStar, Entity,
+inherit(EnemyStar, Ship,
 {
 	m: 5e3,
 	faction: 2,
 	radius: 3,
 	collisionDamage: 20,
-	debrisCount: 5,
-	debrisSpeed: 50,
-	debrisExpireTime: 5,
+	dragCoefficient: 0,
 
 	step: function(timestamp, dt)
 	{
@@ -25,19 +23,7 @@ inherit(EnemyStar, Entity,
 			this.v.x *= -1.0;
 		if (this.p.y < game.areaMinY || this.p.y > game.areaMaxY)
 			this.v.y *= -1.0;
-	},
-
-	collide: function(timestamp, other)
-	{
-		if ('takeDamage' in other)
-			other.takeDamage(timestamp, this.collisionDamage);
-	},
-
-	takeDamage: function(timestamp, damage)
-	{
-		this.hp -= damage;
-		if (this.hp <= 0)
-			this.spreadDebris(timestamp);
+		Ship.prototype.step.apply(this, arguments);
 	},
 
 	render: function()
@@ -55,15 +41,12 @@ function EnemyKamikaze(p, v)
 	this.hp = 150;
 }
 
-inherit(EnemyKamikaze, Entity,
+inherit(EnemyKamikaze, Ship,
 {
 	m: 5e3,
 	faction: 2,
 	radius: 3,
 	collisionDamage: 30,
-	debrisCount: 5,
-	debrisSpeed: 50,
-	debrisExpireTime: 5,
 	acceleration: 40,
 	dragCoefficient: 0.1,
 
@@ -78,20 +61,7 @@ inherit(EnemyKamikaze, Entity,
 		if (this.p.y < game.areaMinY || this.p.y > game.areaMaxY)
 			this.v.y *= -1.0;
 
-		this.calculateDrag(dt);
-	},
-
-	collide: function(timestamp, other)
-	{
-		if ('takeDamage' in other)
-			other.takeDamage(timestamp, this.collisionDamage);
-	},
-
-	takeDamage: function(timestamp, damage)
-	{
-		this.hp -= damage;
-		if (this.hp <= 0)
-			this.spreadDebris(timestamp);
+		Ship.prototype.step.apply(this, arguments);
 	},
 
 	render: function()
@@ -110,15 +80,12 @@ function EnemyDestroyer(p, v)
 	this.lastShootTime = -1;
 }
 
-inherit(EnemyDestroyer, Entity,
+inherit(EnemyDestroyer, Ship,
 {
-	m: 200e3,
+	m: 100e3,
 	faction: 2,
 	radius: 15,
 	collisionDamage: 15,
-	debrisCount: 10,
-	debrisSpeed: 50,
-	debrisExpireTime: 5,
 	acceleration: 7,
 	dragCoefficient: 0.1,
 	shootInterval: 1.5,
@@ -135,21 +102,9 @@ inherit(EnemyDestroyer, Entity,
 		if (this.p.y < game.areaMinY || this.p.y > game.areaMaxY)
 			this.v.y *= -1.0;
 
-		this.calculateDrag(dt);
 		this.fireBullets(timestamp, game.player.p);
-	},
 
-	collide: function(timestamp, other)
-	{
-		if ('takeDamage' in other)
-			other.takeDamage(timestamp, this.collisionDamage);
-	},
-
-	takeDamage: function(timestamp, damage)
-	{
-		this.hp -= damage;
-		if (this.hp <= 0)
-			this.spreadDebris(timestamp);
+		Ship.prototype.step.apply(this, arguments);
 	},
 
 	render: function()
@@ -162,12 +117,11 @@ inherit(EnemyDestroyer, Entity,
 	fireBullets: function(timestamp, targetp)
 	{
 		if (timestamp > this.lastShootTime + this.shootInterval) {
-			console.log("shoot");
 			var v = targetp.sub(this.p);
 			if (v.len() < 0.001)
 				v = V[0, 1];
 			v.setlen_(this.bulletSpeed);
-			game.entities.push(new BlasterShot(this.p.clone(), v, timestamp + 10, this.faction));
+			game.addEntity(new BlasterShot(this.p.clone(), v, timestamp + 10, this.faction));
 			this.lastShootTime = timestamp;
 		}
 	}
