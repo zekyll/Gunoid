@@ -44,9 +44,8 @@ inherit(EnemyStar, Entity,
 	{
 		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
 		game.setRenderColor(new Float32Array([0.5, 1.0, 0.2, 1.0]));
-		models.enemyStar.prepare();
 		models.enemyStar.render();
-	},
+	}
 });
 
 function EnemyKamikaze(p, v)
@@ -99,7 +98,6 @@ inherit(EnemyKamikaze, Entity,
 	{
 		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
 		game.setRenderColor(new Float32Array([0.4, 0.9, 0.1, 1.0]));
-		models.enemyKamikaze.prepare();
 		models.enemyKamikaze.render();
 	},
 });

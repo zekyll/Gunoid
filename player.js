@@ -55,7 +55,6 @@ inherit(Player, Entity,
 		var targetDir = this.targetp.sub(this.p);
 		game.setModelMatrix(make2dTransformMatrix(this.p, targetDir));
 		game.setRenderColor(new Float32Array([0.9, 0.9, 1.0, 1.0]));
-		models.ship.prepare();
 		models.ship.render();
 	},
 

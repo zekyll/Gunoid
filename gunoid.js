@@ -237,7 +237,7 @@ var game =
 			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 			ctx.font = '10pt Calibri';
 			ctx.fillStyle = 'orange';
-			ctx.fillText("fps: " + Math.round(this.fps), 10, 25);
+			ctx.fillText("fps: " + this.fps.toFixed(1), 10, 25);
 			//ctx.fillText("entities: " + this.entities.length, 10, 50);
 			ctx.fillText("hp: " + this.player.hp, 10, 50);
 			ctx.fillText("time: " + timestamp.toFixed(1), 10, 75);
