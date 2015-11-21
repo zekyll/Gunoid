@@ -58,6 +58,10 @@ inherit(Ship, Entity,
 	{
 		this.hp -= damage;
 		if (this.hp <= 0) {
+			if (this.faction == 2) {
+				if (Math.random() < 0.1)
+					game.addEntity(new RepairKit(this.p.clone(), timestamp + 10));
+			}
 			this.spreadDebris(timestamp);
 		}
 	},
