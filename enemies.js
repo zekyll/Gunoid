@@ -47,19 +47,14 @@ inherit(EnemyKamikaze, Ship,
 	faction: 2,
 	radius: 3,
 	collisionDamage: 30,
-	acceleration: 40,
+	acceleration: 80,
 	dragCoefficient: 0.1,
 
 	step: function(timestamp, dt)
 	{
-		var targetDir = game.player.p.sub(this.p).setlen(1).add(this.v.setlen(2));
+		var targetDir = game.player.p.sub(this.p).setlen(1).add(this.v.setlen(4));
 		var a = targetDir.setlen(this.acceleration);
 		this.v.add_(a.mul(dt))
-		this.p.add_(this.v.mul(dt));
-		if (this.p.x < game.areaMinX || this.p.x > game.areaMaxX)
-			this.v.x *= -1.0;
-		if (this.p.y < game.areaMinY || this.p.y > game.areaMaxY)
-			this.v.y *= -1.0;
 
 		Ship.prototype.step.apply(this, arguments);
 	},
@@ -86,21 +81,16 @@ inherit(EnemyDestroyer, Ship,
 	faction: 2,
 	radius: 15,
 	collisionDamage: 15,
-	acceleration: 7,
+	acceleration: 14,
 	dragCoefficient: 0.1,
 	shootInterval: 1.5,
 	bulletSpeed: 80,
 
 	step: function(timestamp, dt)
 	{
-		var targetDir = game.player.p.sub(this.p).setlen(1).add(this.v.setlen(3));
+		var targetDir = game.player.p.sub(this.p).setlen(1).add(this.v.setlen(5));
 		var a = targetDir.setlen(this.acceleration);
 		this.v.add_(a.mul(dt))
-		this.p.add_(this.v.mul(dt));
-		if (this.p.x < game.areaMinX || this.p.x > game.areaMaxX)
-			this.v.x *= -1.0;
-		if (this.p.y < game.areaMinY || this.p.y > game.areaMaxY)
-			this.v.y *= -1.0;
 
 		this.fireBullets(timestamp, game.player.p);
 
