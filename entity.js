@@ -78,10 +78,12 @@ inherit(Ship, Entity,
 				var rnd = Math.random();
 				if ((rnd -= 0.06) < 0) {
 					game.addEntity(new RepairKit(this.p.clone(), timestamp + 10));
-				} else if ((rnd -= 0.03) < 0) {
+				} else if ((rnd -= 0.01) < 0) {
 					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10, RocketLauncher, models.lootRocket));
-				} else if ((rnd -= 0.03) < 0) {
+				} else if ((rnd -= 0.01) < 0) {
 					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10, MissileLauncher, models.lootMissile));
+				} else if ((rnd -= 0.02) < 0) {
+					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10, DualBlaster, models.lootDualBlaster));
 				}
 			}
 			this.spreadDebris(timestamp);
