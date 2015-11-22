@@ -83,6 +83,7 @@ var game =
 		this.newEntities = [];
 		this.player = new Player(new V(0, 0));
 		this.addEntity(this.player);
+		this._addNewEntities();
 	},
 
 	initInput: function()
@@ -152,11 +153,11 @@ var game =
 			var v = dst.sub(p).setlen((0.5 +  Math.random()) * 25);
 
 			if (timestamp > 10 && Math.random() > 0.8)
-				this.entities.push(new EnemyDestroyer(p, v));
+				this.addEntity(new EnemyDestroyer(p, v));
 			else if (timestamp > 5 && Math.random() > 0.5)
-				this.entities.push(new EnemyKamikaze(p, v));
+				this.addEntity(new EnemyKamikaze(p, v));
 			else
-				this.entities.push(new EnemyStar(p, v, 100));
+				this.addEntity(new EnemyStar(p, v, 100));
 			this.lastEnemySpawnTime = timestamp;
 		}
 	},
