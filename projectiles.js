@@ -49,22 +49,38 @@ inherit(BlasterShot, Projectile,
 	},
 });
 
-function Debris(p, v, expire)
+function Debris(p, v, expire, color)
 {
 	this.p = p;
 	this.v = v;
 	this.hp = 1;
 	this.expire = expire;
+	this.color = new Float32Array([0.3 + 0.5 * color[0], 0.3 + 0.5 * color[1], 0.3 + 0.5 * color[2], 1]);
+	this.brightness = 1;
 }
 
 inherit(Debris, Projectile,
 {
 	canCollide: false,
+	dragCoefficient: 0.05,
+	fadeSpeed: 0.7,
+
+	step: function(timestamp, dt)
+	{
+		Projectile.prototype.step.apply(this, arguments);
+		this.brightness -= this.fadeSpeed * this.brightness * dt;
+		this.calculateDrag(dt);
+	},
 
 	render: function()
 	{
 		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
-		game.setRenderColor(new Float32Array([0.5, 0.5, 0.5, 1.0]));
+		game.setRenderColor(new Float32Array([
+			this.brightness * this.color[0],
+			this.brightness * this.color[1],
+			this.brightness * this.color[2],
+			1.0
+		]));
 		models.debris.render();
 	},
 });

@@ -84,8 +84,8 @@ var models =
 		]);
 
 		this.debris = new Model([
-			1, -1, 0, 1,
-			0, 1, -1, -1
+			2, -2, 0, 2,
+			0, 2, -2, -2
 		]);
 
 		this.enemyDestroyer = new Model([

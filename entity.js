@@ -30,6 +30,14 @@ Entity.prototype =
 
 	render: function(timestamp)
 	{
+	},
+
+	calculateDrag: function(dt)
+	{
+		var vlen = this.v.len();
+		var dragAccel = Math.min(this.dragCoefficient * vlen * vlen * dt, vlen);
+		if (vlen > 1e-10)
+			this.v.sub_(this.v.setlen(dragAccel));
 	}
 };
 
@@ -44,7 +52,7 @@ inherit(Ship, Entity,
 {
 	dragCoefficient: 0,
 	debrisSpeed: 50,
-	debrisExpireTime: 5,
+	debrisExpireTime: 3,
 	collisionDamage: 0,
 
 	step: function(timestamp, dt)
@@ -74,22 +82,14 @@ inherit(Ship, Entity,
 		}
 	},
 
-	calculateDrag: function(dt)
-	{
-		var vlen = this.v.len();
-		var dragAccel = Math.min(this.dragCoefficient * vlen * vlen * dt, vlen);
-		if (vlen > 1e-10)
-			this.v.sub_(this.v.setlen(dragAccel));
-	},
-
 	spreadDebris: function(timestamp)
 	{
 		var debrisCount = 3 + this.m / 5e3;
 		for (var i = 0; i < debrisCount; ++i) {
 			var angle = Math.random() * 2 * Math.PI;
 			var v = new V(Math.cos(angle), Math.sin(angle));
-			v.mul_(this.debrisSpeed * (0.5 + Math.random()));
-			game.addEntity(new Debris(this.p.clone(), v, timestamp + this.debrisExpireTime));
+			v.mul_(this.debrisSpeed * (0.1 + 0.9 * Math.random()));
+			game.addEntity(new Debris(this.p.clone(), v, timestamp + (0.2 + Math.random()) * this.debrisExpireTime, this.color));
 		}
 	}
 });

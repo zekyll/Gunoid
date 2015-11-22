@@ -13,6 +13,7 @@ inherit(EnemyStar, Ship,
 	radius: 3,
 	collisionDamage: 20,
 	dragCoefficient: 0,
+	color: new Float32Array([0.5, 1.0, 0.2, 1.0]),
 
 	step: function(timestamp, dt)
 	{
@@ -46,6 +47,7 @@ inherit(EnemyKamikaze, Ship,
 	collisionDamage: 30,
 	acceleration: 80,
 	dragCoefficient: 0.1,
+	color: new Float32Array([0.4, 0.9, 0.1, 1.0]),
 
 	step: function(timestamp, dt)
 	{
@@ -80,6 +82,7 @@ inherit(EnemyDestroyer, Ship,
 	dragCoefficient: 0.1,
 	shootInterval: 1.5,
 	bulletSpeed: 80,
+	color: new Float32Array([0.8, 0.5, 0.1, 1.0]),
 
 	step: function(timestamp, dt)
 	{

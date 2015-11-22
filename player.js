@@ -13,6 +13,7 @@ function Player(p)
 	this.shootInterval = 0.15;
 	this.lastShootTime = -1;
 	this.bulletSpeed = 300;
+	this.color = new Float32Array([0.9, 0.9, 1.0, 1.0]);
 }
 
 inherit(Player, Ship,
