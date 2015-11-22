@@ -63,7 +63,7 @@ var game =
 		this.initWebGL();
 
 		if (gl) {
-			gl.clearColor(0.2, 0.0, 0.3, 1.0);
+			gl.clearColor(0.10, 0.0, 0.25, 1.0);
 			this.initShaders();
 			models.init();
 			this.initInput();
