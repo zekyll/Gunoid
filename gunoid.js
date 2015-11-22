@@ -322,7 +322,7 @@ var game =
 		var currentChild = shaderScript.firstChild;
 
 		while(currentChild) {
-			if (currentChild.nodeType == 3) {
+			if (currentChild.nodeType === 3) {
 				theSource += currentChild.textContent;
 			}
 
@@ -331,9 +331,9 @@ var game =
 
 		var shader;
 
-		if (shaderScript.type == "x-shader/x-fragment") {
+		if (shaderScript.type === "x-shader/x-fragment") {
 			shader = gl.createShader(gl.FRAGMENT_SHADER);
-		} else if (shaderScript.type == "x-shader/x-vertex") {
+		} else if (shaderScript.type === "x-shader/x-vertex") {
 			shader = gl.createShader(gl.VERTEX_SHADER);
 		} else {
 			return null;

@@ -14,7 +14,7 @@ function makeOrthoMatrix(left, right, bottom, top)
 
 function make2dTransformMatrix(translate, rotateDir, scaling)
 {
-	if (rotateDir.x == 0 && rotateDir.y == 0)
+	if (rotateDir.x === 0 && rotateDir.y === 0)
 		rotateDir = new V(0, 1);
 	rotateDir = rotateDir.setlen(1);
 	if (typeof scaling === 'undefined')

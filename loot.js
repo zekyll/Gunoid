@@ -35,7 +35,7 @@ inherit(Loot, Entity,
 
 	render: function()
 	{
-		if (this.blinkState == 0)
+		if (this.blinkState === 0)
 			return;
 		game.setRenderColor(new Float32Array([1.0, 1.0, 1.0, 1.0]));
 		game.setModelMatrix(make2dTransformMatrix(this.p, new V(0, 1)));
