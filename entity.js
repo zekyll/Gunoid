@@ -95,7 +95,7 @@ inherit(Ship, Entity,
 			var angle = Math.random() * 2 * Math.PI;
 			var v = new V(Math.cos(angle), Math.sin(angle));
 			v.mul_(this.debrisSpeed * (0.1 + 0.9 * Math.random()));
-			game.addEntity(new Debris(this.p.clone(), v, timestamp + (0.2 + Math.random()) * this.debrisExpireTime, this.color));
+			game.addEntity(new Debris(this.p.clone(), v.add(this.v), timestamp + (0.2 + Math.random()) * this.debrisExpireTime, this.color));
 		}
 	}
 });
