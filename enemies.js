@@ -44,7 +44,6 @@ inherit(EnemyKamikaze, Ship,
 	m: 5e3,
 	faction: 2,
 	radius: 3,
-	collisionDamage: 30,
 	acceleration: 80,
 	dragCoefficient: 0.1,
 	color: new Float32Array([0.4, 0.9, 0.1, 1.0]),
@@ -56,6 +55,25 @@ inherit(EnemyKamikaze, Ship,
 		this.v.add_(a.mul(dt))
 
 		Ship.prototype.step.apply(this, arguments);
+	},
+
+	takeDamage: function(timestamp, damage)
+	{
+		Ship.prototype.takeDamage.apply(this, arguments);
+		if (this.hp <= 0) {
+			game.addEntity(new Explosion(this.p.clone(), this.v.clone(), 25, 15, 30, this.faction));
+			for (var i = 0; i < 3; ++i) {
+				var p = this.p.clone().add(new V(-3 + Math.random() * 6, -3 + Math.random() * 6))
+				game.addEntity(new Explosion(p, this.v.clone(), 15, 15, 0, this.faction));
+			}
+		}
+	},
+
+	collide: function(timestamp, other)
+	{
+		if (other instanceof Ship && other.faction != this.faction)
+			this.takeDamage(timestamp, this.hp);
+		return Ship.prototype.collide.apply(this, arguments);;
 	},
 
 	render: function()

@@ -93,3 +93,63 @@ inherit(Ship, Entity,
 		}
 	}
 });
+
+function Explosion(p, v, maxRadius, speed, damage, faction)
+{
+	Entity.call(this, p);
+	this.v = v;
+	this.maxRadius = maxRadius;
+	this.radius = 0;
+	this.speed = speed;
+	this.damage = damage;
+	this.faction = faction;
+	this.hp = 1;
+	this.hitEntities = {}; // Keep track entities hit by explosion
+}
+
+inherit(Explosion, Entity,
+{
+	dragCoefficient: 0.05,
+
+	step: function(timestamp, dt)
+	{
+		this.calculateDrag(dt);
+		this.p.add_(this.v.mul(dt));
+		this.radius += this.speed * (1 / (0.1 + (this.radius / this.maxRadius))) * dt;
+		if (this.radius > this.maxRadius) {
+			this.hp = 0;
+		}
+	},
+
+	collide: function(timestamp, other)
+	{
+		if (other instanceof Ship && other.faction != this.faction) {
+			if (!this.hitEntities[other.id]) {
+				other.takeDamage(timestamp, this.damage);
+				this.hitEntities[other.id] = true;
+			}
+		}
+		return false;
+	},
+
+	render: function()
+	{
+		function s(t, t1, t2, v1, v2) {
+			if (t < t1)
+				return v1;
+			else if (t < t2)
+				return v1 + (t - t1) / (t2 - t1) * (v2 - v1);
+			else
+				return v2;
+		}
+		var n = 3;
+		for (var i = 0; i < n; ++i) {
+			var r = (n - i) / n;
+			var q = this.radius / this.maxRadius - 0.2 * i;
+			var color = [s(q, 0.8, 1, 1, 0.4), s(q, 1/3, 0.8, 1, 0.1), s(q, 0.1, 0.4, 1, 0), 1.0];
+			game.setModelMatrix(make2dTransformMatrix(this.p, new V(0, 1), r * this.radius));
+			game.setRenderColor(new Float32Array(color));
+			models.circle16.render();
+		}
+	}
+});
