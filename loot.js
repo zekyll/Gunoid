@@ -1,20 +1,20 @@
 
 "use strict";
 
-function RepairKit(p, expire)
+function Loot(p, expire, model)
 {
-	this.p = p;
+	Entity.call(this, p);
 	this.v = new V(0, 0);
 	this.hp = 1;
 	this.expire = expire;
 	this.blinkState = undefined;
+	this.model = model;
 }
 
-inherit(RepairKit, Entity,
+inherit(Loot, Entity,
 {
+	radius: 5,
 	faction: 1,
-	radius: 2,
-	repairAmount: 20,
 
 	step: function(timestamp, dt)
 	{
@@ -26,8 +26,8 @@ inherit(RepairKit, Entity,
 
 	collide: function(timestamp, other)
 	{
-		if (other.faction == this.faction && other instanceof Ship) {
-			other.hp += this.repairAmount;
+		if (other.faction === this.faction && other instanceof Ship) {
+			this.pickup(timestamp, other)
 			this.hp = 0;
 		}
 		return false;
@@ -38,7 +38,39 @@ inherit(RepairKit, Entity,
 		if (this.blinkState == 0)
 			return;
 		game.setRenderColor(new Float32Array([1.0, 1.0, 1.0, 1.0]));
-		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
-		models.repairKit.render();
+		game.setModelMatrix(make2dTransformMatrix(this.p, new V(0, 1)));
+		this.model.render();
 	}
+});
+
+function RepairKit(p, expire)
+{
+	Loot.call(this, p, expire, models.repairKit);
+}
+
+inherit(RepairKit, Loot,
+{
+	repairAmount: 20,
+
+	pickup: function(timestamp, ship)
+	{
+		ship.hp += this.repairAmount;
+	},
+});
+
+function LootWeapon(p, expire, weaponClass, model, weaponSlot)
+{
+	Loot.call(this, p, expire, model);
+	this.weaponClass = weaponClass;
+}
+
+inherit(LootWeapon, Loot,
+{
+	pickup: function(timestamp, ship)
+	{	var w = new this.weaponClass(ship);
+		if (w.slot === 1)
+			ship.primaryWeapon = w;
+		else if (w.slot === 2)
+			ship.secondaryWeapon = w;
+	},
 });

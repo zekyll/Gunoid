@@ -10,10 +10,10 @@ function Player(p)
 	this.targetp = new V(0, 1);
 	this.acceleration = 2000;
 	this.dragCoefficient = 0.1;
-	this.shootInterval = 0.15;
-	this.lastShootTime = -1;
-	this.bulletSpeed = 300;
+
 	this.color = new Float32Array([0.9, 0.9, 1.0, 1.0]);
+	this.primaryWeapon = new Blaster(this);
+	this.secondaryWeapon = null;
 }
 
 inherit(Player, Ship,
@@ -29,7 +29,9 @@ inherit(Player, Ship,
 			a.setlen_(this.acceleration * dt)
 		this.v.add_(a);
 
-		this.fireBullets(timestamp);
+		this.primaryWeapon.step(timestamp, dt);
+		if (this.secondaryWeapon)
+			this.secondaryWeapon.step(timestamp, dt);
 
 		Ship.prototype.step.apply(this, arguments);
 	},
@@ -54,15 +56,4 @@ inherit(Player, Ship,
 		models.ship.render();
 	},
 
-	fireBullets: function(timestamp)
-	{
-		if (timestamp > this.lastShootTime + this.shootInterval) {
-			var v = this.targetp.sub(this.p);
-			if (v.len() < 0.001)
-				v = V[0, 1];
-			v.setlen_(this.bulletSpeed);
-			game.addEntity(new BlasterShot(this.p.clone(), v, timestamp + 2, this.faction));
-			this.lastShootTime = timestamp;
-		}
-	}
 });

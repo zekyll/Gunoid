@@ -50,6 +50,58 @@ inherit(BlasterShot, Projectile,
 	},
 });
 
+function Rocket(p, v, expire, faction)
+{
+	Projectile.call(this, p, v, 1, expire, faction);
+}
+
+inherit(Rocket, Projectile,
+{
+	radius: 2,
+	damage: 150,
+	m: 30,
+	acceleration: 200,
+	dragCoefficient: 0.01,
+	explosionRadius: 15,
+	explosionSpeed: 15,
+
+	step: function(timestamp, dt)
+	{
+		var a = this.v.setlen(this.acceleration);
+		this.v.add_(a.mul(dt))
+		this.p.add_(this.v.mul(dt));
+
+		this.calculateDrag(dt);
+
+		if (timestamp > this.expire)
+			this.hp = 0;
+	},
+
+	collide: function(timestamp, other)
+	{
+		if (other instanceof Ship && other.faction != this.faction) {
+			this.hp -= 1;
+			game.addEntity(new Explosion(this.p, other.v.clone(), this.explosionRadius,
+					this.explosionSpeed, this.damage, this.faction));
+			for (var i = 0; i < 5; ++i) {
+				var delta = new V((Math.random() - 0.5) * 0.5 * this.explosionRadius,
+						(Math.random() - 0.5) * 0.5 * this.explosionRadius);
+				var p = this.p.clone().add(delta)
+				game.addEntity(new Explosion(p, other.v.clone(), 0.7 * this.explosionRadius, this.explosionSpeed, 0, this.faction));
+			}
+			return true;
+		}
+		return false;
+	},
+
+	render: function()
+	{
+		game.setRenderColor(new Float32Array([1.0, 1.0, 0.6, 1.0]));
+		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
+		models.rocket.render();
+	},
+});
+
 function Debris(p, v, expire, color)
 {
 	this.p = p;

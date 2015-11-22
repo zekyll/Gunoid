@@ -74,9 +74,13 @@ inherit(Ship, Entity,
 	{
 		this.hp -= damage;
 		if (this.hp <= 0) {
-			if (this.faction == 2) {
-				if (Math.random() < 0.1)
+			if (this.faction === 2) {
+				var rnd = Math.random();
+				if ((rnd -= 0.06) < 0) {
 					game.addEntity(new RepairKit(this.p.clone(), timestamp + 10));
+				} else if ((rnd -= 0.05) < 0) {
+					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10, RocketLauncher, models.lootRocket));
+				}
 			}
 			this.spreadDebris(timestamp);
 		}
