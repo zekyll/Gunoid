@@ -1,14 +1,19 @@
 
 "use strict";
 
-function Entity()
+function Entity(p)
 {
+	this.p = p;
+	this.id = this.staticVars.idCounter++;
 }
 
 Entity.prototype =
 {
 	canCollide: true,
 	faction: 0,
+	staticVars: {
+		idCounter: 0
+	},
 
 	step: function(timestamp, dt)
 	{
@@ -28,8 +33,11 @@ Entity.prototype =
 	}
 };
 
-function Ship()
+function Ship(p, v, hp)
 {
+	Entity.call(this, p);
+	this.v = v;
+	this.hp = hp;
 }
 
 inherit(Ship, Entity,

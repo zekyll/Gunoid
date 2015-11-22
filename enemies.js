@@ -3,9 +3,7 @@
 
 function EnemyStar(p, v, hp)
 {
-	this.p = p;
-	this.v = v;
-	this.hp = hp;
+	Ship.call(this, p, v, hp);
 }
 
 inherit(EnemyStar, Ship,
@@ -36,8 +34,7 @@ inherit(EnemyStar, Ship,
 
 function EnemyKamikaze(p, v)
 {
-	this.p = p;
-	this.v = v;
+	Ship.call(this, p, v, 150);
 	this.hp = 150;
 }
 
@@ -67,11 +64,9 @@ inherit(EnemyKamikaze, Ship,
 	},
 });
 
-function EnemyDestroyer(p, v)
+function EnemyDestroyer(p, v, hp)
 {
-	this.p = p;
-	this.v = v;
-	this.hp = 600;
+	Ship.call(this, p, v, 600);
 	this.lastShootTime = -1;
 }
 

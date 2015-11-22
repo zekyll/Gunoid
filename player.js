@@ -3,10 +3,8 @@
 
 function Player(p)
 {
-	this.p = p;
-	this.v =  new V(0, 0),
+	Ship.call(this, p, new V(0, 0), 100);
 	this.m = 10e3;
-	this.hp = 100,
 	this.faction = 1;
 	this.radius = 7;
 	this.targetp = new V(0, 1);

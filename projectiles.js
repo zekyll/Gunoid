@@ -1,8 +1,13 @@
 
 "use strict";
 
-function Projectile()
+function Projectile(p, v, hp, expire, faction)
 {
+	Entity.call(this, p);
+	this.v = v;
+	this.hp = hp;
+	this.expire = expire;
+	this.faction = faction;
 }
 
 inherit(Projectile, Entity,
@@ -17,11 +22,7 @@ inherit(Projectile, Entity,
 
 function BlasterShot(p, v, expire, faction)
 {
-	this.p = p;
-	this.v = v;
-	this.hp = 1;
-	this.expire = expire;
-	this.faction = faction;
+	Projectile.call(this, p, v, 1, expire, faction);
 }
 
 inherit(BlasterShot, Projectile,
