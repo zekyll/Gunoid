@@ -34,6 +34,18 @@ inherit(Player, Ship,
 		Ship.prototype.step.apply(this, arguments);
 	},
 
+	takeDamage: function(timestamp, damage)
+	{
+		Ship.prototype.takeDamage.apply(this, arguments);
+		if (this.hp <= 0) {
+			for (var i = 0; i < 10; ++i) {
+				var p = this.p.clone().add(new V(-15 + Math.random() * 30, -15 + Math.random() * 30))
+				game.addEntity(new Explosion(p, this.v.clone(), 100, 30, 100, this.faction));
+			}
+			this.spreadDebris(timestamp);
+		}
+	},
+
 	render: function()
 	{
 		var targetDir = this.targetp.sub(this.p);
