@@ -58,3 +58,28 @@ inherit(RocketLauncher, Weapon,
 		}
 	}
 });
+
+function MissileLauncher(ship)
+{
+	this.ship = ship
+	this.shootInterval = 0.5;
+	this.lastShootTime = -1;
+	this.projectileSpeed = 50;
+}
+
+inherit(MissileLauncher, Weapon,
+{
+	slot: 2,
+
+	step: function(timestamp, dt)
+	{
+		if (timestamp > this.lastShootTime + this.shootInterval) {
+			var targetDir = this.ship.targetp.sub(this.ship.p);
+			if (targetDir.len() < 0.001)
+				targetDir = new V(0, 1);
+			var v = targetDir.setlen(this.projectileSpeed);
+			game.addEntity(new Missile(this.ship.p.clone(), v, timestamp + 10, this.ship.faction));
+			this.lastShootTime = timestamp;
+		}
+	}
+});

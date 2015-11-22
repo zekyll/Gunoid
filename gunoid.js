@@ -195,6 +195,22 @@ var game =
 		b.v.sub_(cv.mul(- 2 * a.m / m));
 	},
 
+	findClosestEntity: function(p, type, faction)
+	{
+		var closestDistSqr = 1e99;
+		var closestEntity = undefined;
+		for (var i = 0; i < this.entities.length; ++i) {
+			if (this.entities[i] instanceof type && this.entities[i].faction === faction) {
+				var distSqr = p.distSqr(this.entities[i].p);
+				if (distSqr < closestDistSqr) {
+					closestDistSqr = distSqr;
+					closestEntity = this.entities[i];
+				}
+			}
+		}
+		return closestEntity;
+	},
+
 	addEntity: function(newEntity)
 	{
 		this.newEntities.push(newEntity);

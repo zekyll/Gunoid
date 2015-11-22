@@ -93,6 +93,11 @@ V.prototype =
 		return this;
 	},
 
+	rot90left: function()
+	{
+		return new V(-this.y, this.x);
+	},
+
 	clone: function()
 	{
 		return new V(this.x, this.y);

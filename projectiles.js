@@ -50,6 +50,62 @@ inherit(BlasterShot, Projectile,
 	},
 });
 
+function Missile(p, v, expire, faction)
+{
+	Projectile.call(this, p, v, 1, expire, faction);
+}
+
+inherit(Missile, Projectile,
+{
+	radius: 2,
+	damage: 60,
+	m: 30,
+	acceleration: 400,
+	dragCoefficient: 0.05,
+
+	step: function(timestamp, dt)
+	{
+		var targetFaction = this.faction === 1 ? 2 : 1;
+		var target = game.findClosestEntity(this.p, Ship, targetFaction);
+
+		var accelDir;
+		if (target) {
+			var targetDir = target.p.sub(this.p);
+			var e = this.v.rot90left().setlen(1);
+			var targetDirE = e.dot(targetDir);
+			accelDir = e.mul(targetDirE).setlen(1).add(this.v.setlen(2));
+		} else {
+			accelDir = this.v;
+		}
+		var a = accelDir.setlen(this.acceleration);
+		this.v.add_(a.mul(dt))
+		this.p.add_(this.v.mul(dt));
+
+		this.calculateDrag(dt);
+
+		if (timestamp > this.expire)
+			this.hp = 0;
+	},
+
+	collide: function(timestamp, other)
+	{
+		if (other instanceof Ship && other.faction != this.faction) {
+			other.takeDamage(timestamp, this.damage);
+			this.hp -= 1;
+			game.addEntity(new Explosion(this.p, other.v.clone(), 8, 20, 0, this.faction));
+			return true;
+		}
+		return false;
+	},
+
+	render: function()
+	{
+		game.setRenderColor(new Float32Array([1.0, 1.0, 0.6, 1.0]));
+		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
+		models.missile.render();
+	},
+});
+
 function Rocket(p, v, expire, faction)
 {
 	Projectile.call(this, p, v, 1, expire, faction);
