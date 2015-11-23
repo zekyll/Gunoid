@@ -1,9 +1,9 @@
 
 "use strict";
 
-function EnemyStar(p, v, hp)
+function EnemyStar(p, dir)
 {
-	Ship.call(this, p, v, hp);
+	Ship.call(this, p, dir.mul(30), 50);
 }
 
 inherit(EnemyStar, Ship,
@@ -33,10 +33,9 @@ inherit(EnemyStar, Ship,
 	}
 });
 
-function EnemyKamikaze(p, v)
+function EnemyKamikaze(p, dir)
 {
-	Ship.call(this, p, v, 150);
-	this.hp = 150;
+	Ship.call(this, p, dir.mul(50), 80);
 }
 
 inherit(EnemyKamikaze, Ship,
@@ -44,7 +43,7 @@ inherit(EnemyKamikaze, Ship,
 	m: 5e3,
 	faction: 2,
 	radius: 3,
-	acceleration: 80,
+	acceleration: 300,
 	dragCoefficient: 0.1,
 	color: new Float32Array([0.4, 0.9, 0.1, 1.0]),
 
@@ -81,12 +80,12 @@ inherit(EnemyKamikaze, Ship,
 		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
 		game.setRenderColor(new Float32Array([0.4, 0.9, 0.1, 1.0]));
 		models.enemyKamikaze.render();
-	},
+	}
 });
 
-function EnemyDestroyer(p, v, hp)
+function EnemyDestroyer(p, dir)
 {
-	Ship.call(this, p, v, 600);
+	Ship.call(this, p, dir.mul(25), 600);
 	this.lastShootTime = -1;
 }
 

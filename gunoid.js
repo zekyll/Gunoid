@@ -20,12 +20,11 @@ var game =
 	areaHeight: undefined,
 	entities: [],
 	newEntities: [],
-	lastEnemySpawnTime: -1,
-	enemySpawnInterval: 1,
 	fps: 0,
 	frameCounter: 0,
 	lastTimestamp: -1,
 	player: undefined,
+	spawner: undefined,
 
 	start: function()
 	{
@@ -84,6 +83,7 @@ var game =
 		this.player = new Player(new V(0, 0));
 		this.addEntity(this.player);
 		this._addNewEntities();
+		this.spawner = new Spawner();
 	},
 
 	initInput: function()
@@ -109,7 +109,7 @@ var game =
 		for (var i = 0; i < this.entities.length; ++i)
 			this.entities[i].step(timestamp, dt);
 
-		this.spawnEnemies(timestamp);
+		this.spawner.step(timestamp);
 		this.checkCollisions(timestamp);
 		this._addNewEntities();
 		this.removeDeadEntities();
@@ -142,24 +142,6 @@ var game =
 		var x = this.areaMinX + Math.random() * this.areaWidth;
 		var y = this.areaMinY + Math.random() * this.areaHeight;
 		return new V(x, y);
-	},
-
-	spawnEnemies: function(timestamp)
-	{
-		if (timestamp > this.lastEnemySpawnTime + this.enemySpawnInterval) {
-			// Enemies will start at random edge point and travel towards center.
-			var p = this.randomEdgePosition();
-			var dst = this.randomPosition().mul(0.9);
-			var v = dst.sub(p).setlen((0.5 +  Math.random()) * 25);
-
-			if (timestamp > 10 && Math.random() > 0.8)
-				this.addEntity(new EnemyDestroyer(p, v));
-			else if (timestamp > 5 && Math.random() > 0.5)
-				this.addEntity(new EnemyKamikaze(p, v));
-			else
-				this.addEntity(new EnemyStar(p, v, 100));
-			this.lastEnemySpawnTime = timestamp;
-		}
 	},
 
 	checkCollisions: function(timestamp)
@@ -279,6 +261,13 @@ var game =
 				ctx.font = '25pt Calibri';
 				ctx.fillStyle = 'yellow';
 				ctx.fillText("YOUR SHIP WAS DESTROYED!", 210, 300);
+				ctx.fillText("Press F2 to start a new game", 210, 350);
+			}
+
+			if (this.spawner.finished()) {
+				ctx.font = '25pt Calibri';
+				ctx.fillStyle = 'yellow';
+				ctx.fillText("FINISHED!", 330, 300);
 				ctx.fillText("Press F2 to start a new game", 210, 350);
 			}
 		}
