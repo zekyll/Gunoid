@@ -25,6 +25,9 @@ var game =
 	lastTimestamp: -1,
 	player: undefined,
 	spawner: undefined,
+	time: undefined,
+	dt: undefined,
+	paused: false,
 
 	start: function()
 	{
@@ -84,6 +87,8 @@ var game =
 		this.addEntity(this.player);
 		this._addNewEntities();
 		this.spawner = new Spawner();
+		this.time = null;
+		this.paused = false;
 	},
 
 	initInput: function()
@@ -96,11 +101,15 @@ var game =
 			"Accelerate down": 83,
 			"Accelerate left": 65,
 			"Accelerate right": 68,
-			"New game": 113
+			"New game": 113,
+			"Pause": 80
 		});
 
 		input.registerKeyPressHandler("New game", function() {
 			self.initGameWorld();
+		});
+		input.registerKeyPressHandler("Pause", function() {
+			self.paused = !self.paused;
 		});
 	},
 
@@ -220,15 +229,8 @@ var game =
 		}
 	},
 
-	render: function(timestamp)
+	render: function(timestamp, dt)
 	{
-		timestamp *= 0.001;
-		if (this.lastTimestamp < 0)
-			this.lastTimestamp = timestamp - 0.01;
-		var dt = timestamp - this.lastTimestamp;
-
-		this.step(timestamp, dt);
-
 		++this.frameCounter;
 
 		gl.clear(gl.COLOR_BUFFER_BIT);
@@ -236,16 +238,12 @@ var game =
 		for (var i = 0; i < this.entities.length; ++i)
 			this.entities[i].render();
 
-		this.renderOverlay(timestamp);
-
-		this.requestFrame();
-
-		this.lastTimestamp = timestamp;
+		this.renderOverlay(timestamp, dt);
 	},
 
-	renderOverlay: function(timestamp)
+	renderOverlay: function(timestamp, dt)
 	{
-		this.fps = 0.99 * this.fps + 0.01 / (timestamp - this.lastTimestamp);
+		this.fps = 0.99 * this.fps + 0.01 / dt;
 
 		if (this.frameCounter % 10 === 0) {
 			var ctx = this.overlayCanvas.getContext("2d");
@@ -255,20 +253,22 @@ var game =
 			ctx.fillText("fps: " + this.fps.toFixed(1), 10, 25);
 			//ctx.fillText("entities: " + this.entities.length, 10, 50);
 			ctx.fillText("hp: " + this.player.hp, 10, 50);
-			ctx.fillText("time: " + timestamp.toFixed(1), 10, 75);
+			ctx.fillText("time: " + this.time.toFixed(1), 10, 75);
 
 			if (this.player.hp <= 0) {
 				ctx.font = '25pt Calibri';
 				ctx.fillStyle = 'yellow';
 				ctx.fillText("YOUR SHIP WAS DESTROYED!", 210, 300);
 				ctx.fillText("Press F2 to start a new game", 210, 350);
-			}
-
-			if (this.spawner.finished()) {
+			} else if (this.spawner.finished()) {
 				ctx.font = '25pt Calibri';
 				ctx.fillStyle = 'yellow';
 				ctx.fillText("FINISHED!", 330, 300);
 				ctx.fillText("Press F2 to start a new game", 210, 350);
+			} else if (this.paused) {
+				ctx.font = '25pt Calibri';
+				ctx.fillStyle = 'yellow';
+				ctx.fillText("PAUSED!", 340, 300);
 			}
 		}
 	},
@@ -287,7 +287,23 @@ var game =
 	{
 		var self = this;
 		window.requestAnimationFrame(function(timestamp) {
-			self.render(timestamp);
+			timestamp *= 0.001;
+			self.realTime = timestamp;
+			self.dt = timestamp - self.lastTimestamp;
+
+			if (self.time === null) {
+				self.time = 0;
+			} else {
+				if (!self.paused) {
+					self.time += self.dt;
+					self.step(self.time, self.dt);
+				}
+			}
+
+			self.render(self.time, self.dt);
+
+			self.requestFrame();
+			self.lastTimestamp = timestamp;
 		});
 	},
 
