@@ -27,7 +27,7 @@ inherit(EnemyStar, Ship,
 
 	render: function()
 	{
-		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
+		game.setModelTransform(this.p, this.v);
 		game.setRenderColor(new Float32Array([0.5, 1.0, 0.2, 1.0]));
 		models.enemyStar.render();
 	}
@@ -61,7 +61,7 @@ inherit(EnemyStarYellow, Ship,
 
 	render: function()
 	{
-		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
+		game.setModelTransform(this.p, this.v);
 		game.setRenderColor(this.color);
 		models.enemyStar.render();
 	}
@@ -105,7 +105,7 @@ inherit(EnemyStarOrange, Ship,
 
 	render: function()
 	{
-		game.setModelMatrix(make2dTransformMatrix(this.p, this.v, 2));
+		game.setModelTransform(this.p, this.v.nonzero(), 2);
 		game.setRenderColor(this.color);
 		models.enemyStar.render();
 	}
@@ -155,7 +155,7 @@ inherit(EnemyKamikaze, Ship,
 
 	render: function()
 	{
-		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
+		game.setModelTransform(this.p, this.v);
 		game.setRenderColor(new Float32Array([0.4, 0.9, 0.1, 1.0]));
 		models.enemyKamikaze.render();
 	}
@@ -192,7 +192,7 @@ inherit(EnemyDestroyer, Ship,
 
 	render: function()
 	{
-		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
+		game.setModelTransform(this.p, this.v);
 		game.setRenderColor(new Float32Array([0.8, 0.5, 0.1, 1.0]));
 		models.enemyDestroyer.render();
 	},

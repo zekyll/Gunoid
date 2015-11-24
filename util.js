@@ -12,22 +12,6 @@ function makeOrthoMatrix(left, right, bottom, top)
 		]);
 }
 
-function make2dTransformMatrix(translate, rotateDir, scaling)
-{
-	if (rotateDir.x === 0 && rotateDir.y === 0)
-		rotateDir = new V(0, 1);
-	rotateDir = rotateDir.setlen(1);
-	if (typeof scaling === 'undefined')
-		scaling = 1;
-	var cost = rotateDir.y * scaling;
-	var sint = -rotateDir.x * scaling;
-	return new Float32Array([
-		cost, sint, 0,
-		-sint, cost, 0,
-		translate.x, translate.y, 1
-		]);
-}
-
 function inherit(derived, base, newProperties)
 {
 	derived.prototype = Object.create(base.prototype);

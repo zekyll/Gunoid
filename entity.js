@@ -155,7 +155,7 @@ inherit(Explosion, Entity,
 			var r = (n - i) / n;
 			var q = this.radius / this.maxRadius - 0.2 * i;
 			var color = [s(q, 0.8, 1, 1, 0.4), s(q, 1/3, 0.8, 1, 0.1), s(q, 0.1, 0.4, 1, 0), 1.0];
-			game.setModelMatrix(make2dTransformMatrix(this.p, new V(0, 1), r * this.radius));
+			game.setModelTransform(this.p, new V(0, 1), r * this.radius);
 			game.setRenderColor(new Float32Array(color));
 			models.circle16.render();
 		}

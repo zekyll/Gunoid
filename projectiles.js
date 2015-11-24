@@ -45,9 +45,9 @@ inherit(BlasterShot, Projectile,
 	render: function()
 	{
 		game.setRenderColor(new Float32Array([1.0, 1.0, 0.6, 1.0]));
-		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
+		game.setModelTransform(this.p, this.v);
 		models.blasterShot.render();
-	},
+	}
 });
 
 function PlasmaBall(p, v, expire, faction)
@@ -75,9 +75,9 @@ inherit(PlasmaBall, Projectile,
 	render: function()
 	{
 		game.setRenderColor(new Float32Array([0.1, 1.0, 0.9, 1.0]));
-		game.setModelMatrix(make2dTransformMatrix(this.p, this.v, 3));
+		game.setModelTransform(this.p, this.v, 3);
 		models.circle8.render();
-	},
+	}
 });
 
 function Missile(p, v, expire, faction)
@@ -131,9 +131,9 @@ inherit(Missile, Projectile,
 	render: function()
 	{
 		game.setRenderColor(new Float32Array([1.0, 1.0, 0.6, 1.0]));
-		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
+		game.setModelTransform(this.p, this.v);
 		models.missile.render();
-	},
+	}
 });
 
 function Rocket(p, v, expire, faction)
@@ -183,9 +183,9 @@ inherit(Rocket, Projectile,
 	render: function()
 	{
 		game.setRenderColor(new Float32Array([1.0, 1.0, 0.6, 1.0]));
-		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
+		game.setModelTransform(this.p, this.v);
 		models.rocket.render();
-	},
+	}
 });
 
 function Debris(p, v, expire, color)
@@ -213,7 +213,7 @@ inherit(Debris, Projectile,
 
 	render: function()
 	{
-		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
+		game.setModelTransform(this.p, this.v);
 		game.setRenderColor(new Float32Array([
 			this.brightness * this.color[0],
 			this.brightness * this.color[1],
@@ -221,5 +221,5 @@ inherit(Debris, Projectile,
 			1.0
 		]));
 		models.debris.render();
-	},
+	}
 });

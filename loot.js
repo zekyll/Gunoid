@@ -38,7 +38,7 @@ inherit(Loot, Entity,
 		if (this.blinkState === 0)
 			return;
 		game.setRenderColor(new Float32Array([1.0, 1.0, 1.0, 1.0]));
-		game.setModelMatrix(make2dTransformMatrix(this.p, new V(0, 1)));
+		game.setModelTransform(this.p, new V(0, 1));
 		this.model.render();
 	}
 });

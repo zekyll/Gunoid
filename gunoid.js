@@ -9,7 +9,7 @@ var game =
 	canvas: undefined,
 	overlayCanvas: undefined,
 	projViewMatrixLoc: undefined,
-	modelMatrixLoc: undefined,
+	modelTransformLoc: undefined,
 	renderColorLoc: undefined,
 	areaMinX: -200,
 	areaMaxX: 200,
@@ -358,7 +358,7 @@ var game =
 		gl.enableVertexAttribArray(vertexPositionAttribute);
 
 		this.projViewMatrixLoc = gl.getUniformLocation(shaderProgram, "projViewMatrix");
-		this.modelMatrixLoc = gl.getUniformLocation(shaderProgram, "modelMatrix");
+		this.modelTransformLoc = gl.getUniformLocation(shaderProgram, "modelTransform");
 		this.renderColorLoc = gl.getUniformLocation(shaderProgram, "renderColor");
 	},
 
@@ -410,9 +410,19 @@ var game =
 		gl.uniformMatrix3fv(this.projViewMatrixLoc, false, projViewMatrix);
 	},
 
-	setModelMatrix: function(modelMatrix)
+	setModelTransform: function(translate, rotateDir, scaling)
 	{
-		gl.uniformMatrix3fv(this.modelMatrixLoc, false, modelMatrix);
+		if (rotateDir.x === 0 && rotateDir.y === 0)
+			rotateDir = new V(0, 1);
+		rotateDir = rotateDir.setlen(1);
+		if (typeof scaling === 'undefined')
+			scaling = 1;
+		var cosa_x_scaling = rotateDir.y * scaling;
+		var sina_x_scaling = -rotateDir.x * scaling;
+		gl.uniform2fv(this.modelTransformLoc, new Float32Array([
+			cosa_x_scaling, sina_x_scaling,
+			translate.x, translate.y
+			]));
 	},
 
 	setRenderColor: function(color)
