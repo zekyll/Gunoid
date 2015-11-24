@@ -149,6 +149,10 @@ Spawner.prototype =
 		);
 
 		this.addWave(
+			[0, 0.5, 5, 1, EnemyStarOrange, this.standardSpawnParams, {remaining: 0}]
+		);
+
+		this.addWave(
 			[0, 5, 3, 20, EnemyStar, this.standardSpawnParams, {remaining: 3}]
 		);
 

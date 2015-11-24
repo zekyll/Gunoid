@@ -3,7 +3,7 @@
 
 function EnemyStar(p, dir)
 {
-	Ship.call(this, p, dir.mul(30), 50);
+	Ship.call(this, p, dir.mul(40), 60);
 }
 
 inherit(EnemyStar, Ship,
@@ -62,6 +62,50 @@ inherit(EnemyStarYellow, Ship,
 	render: function()
 	{
 		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
+		game.setRenderColor(this.color);
+		models.enemyStar.render();
+	}
+});
+
+function EnemyStarOrange(p, dir)
+{
+	Ship.call(this, p, dir.mul(60), 200);
+}
+
+inherit(EnemyStarOrange, Ship,
+{
+	m: 20e3,
+	faction: 2,
+	radius: 6,
+	collisionDamage: 30,
+	dragCoefficient: 0,
+	childCount: 15,
+	color: new Float32Array([0.8, 0.5, 0.2, 1]),
+
+	step: function(timestamp, dt)
+	{
+		this.p.add_(this.v.mul(dt));
+		if (this.p.x < game.areaMinX || this.p.x > game.areaMaxX)
+			this.v.x *= -1.0;
+		if (this.p.y < game.areaMinY || this.p.y > game.areaMaxY)
+			this.v.y *= -1.0;
+		Ship.prototype.step.apply(this, arguments);
+	},
+
+	takeDamage: function(timestamp, damage)
+	{
+		Ship.prototype.takeDamage.apply(this, arguments);
+		if (this.hp <= 0) {
+			for (var i = 0; i < this.childCount; ++i) {
+				var dir = (new V(0, 1)).rot(2 * Math.PI * Math.random()).mul(0.7 + 0.3 * Math.random());
+				game.addEntity(new EnemyStar(this.p.clone(), dir));
+			}
+		}
+	},
+
+	render: function()
+	{
+		game.setModelMatrix(make2dTransformMatrix(this.p, this.v, 2));
 		game.setRenderColor(this.color);
 		models.enemyStar.render();
 	}
