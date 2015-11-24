@@ -91,6 +91,34 @@ var game =
 		this.paused = false;
 	},
 
+	initBenchmark: function()
+	{
+		this.areaWidth = this.areaMaxX - this.areaMinX;
+		this.areaHeight = this.areaWidth / this.aspectRatio;
+		this.areaMinY = -0.5 * this.areaHeight;
+		this.areaMaxY = 0.5 * this.areaHeight;
+
+		this.player = null;
+		this.entities = [];
+		this.newEntities = [];
+
+		function BmSpawner() { Spawner.call(this); }
+		inherit(BmSpawner, Spawner, {
+			initWaves: function() {
+				function prm() {
+					return {p: game.randomPosition(), dir: new V(0, Math.random() - 0.5)};
+				}
+				this.addWave(
+					[0, 1, 1, 500, EnemyStar, prm, {remaining: 0}]
+				);
+			}
+		});
+		this.spawner = new BmSpawner();
+
+		this.time = null;
+		this.paused = false;
+	},
+
 	initInput: function()
 	{
 		var self = this;
@@ -102,6 +130,7 @@ var game =
 			"Accelerate left": 65,
 			"Accelerate right": 68,
 			"New game": 113,
+			"Benchmark": 115,
 			"Pause": 80
 		});
 
@@ -110,6 +139,9 @@ var game =
 		});
 		input.registerKeyPressHandler("Pause", function() {
 			self.paused = !self.paused;
+		});
+		input.registerKeyPressHandler("Benchmark", function() {
+			self.initBenchmark();
 		});
 	},
 
@@ -251,11 +283,10 @@ var game =
 			ctx.font = '10pt Calibri';
 			ctx.fillStyle = 'orange';
 			ctx.fillText("fps: " + this.fps.toFixed(1), 10, 25);
-			//ctx.fillText("entities: " + this.entities.length, 10, 50);
-			ctx.fillText("hp: " + this.player.hp, 10, 50);
-			ctx.fillText("time: " + this.time.toFixed(1), 10, 75);
-
-			if (this.player.hp <= 0) {
+			ctx.fillText("time: " + this.time.toFixed(1), 10, 50);
+			if (this.player)
+				ctx.fillText("hp: " + this.player.hp, 10, 75);
+			if (this.player && this.player.hp <= 0) {
 				ctx.font = '25pt Calibri';
 				ctx.fillStyle = 'yellow';
 				ctx.fillText("YOUR SHIP WAS DESTROYED!", 210, 300);
