@@ -304,16 +304,6 @@ var game =
 		}
 	},
 
-	renderEnemies: function()
-	{
-		models.enemyStar.prepare();
-		for (var i = 0; i < this.enemies.length; ++i) {
-			var mat = make2dTransformMatrix(this.enemies[i].p, this.enemies[i].v);
-			this.setModelMatrix(mat);
-			models.enemyStar.render();
-		}
-	},
-
 	requestFrame: function()
 	{
 		var self = this;
