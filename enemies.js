@@ -33,6 +33,40 @@ inherit(EnemyStar, Ship,
 	}
 });
 
+function EnemyStarYellow(p, dir)
+{
+	Ship.call(this, p, dir.mul(20), 300);
+	this.weapon = new PlasmaSprinkler(this);
+}
+
+inherit(EnemyStarYellow, Ship,
+{
+	m: 10e3,
+	faction: 2,
+	radius: 3,
+	collisionDamage: 25,
+	dragCoefficient: 0,
+	color: new Float32Array([1, 1, 0, 1]),
+
+	step: function(timestamp, dt)
+	{
+		this.p.add_(this.v.mul(dt));
+		if (this.p.x < game.areaMinX || this.p.x > game.areaMaxX)
+			this.v.x *= -1.0;
+		if (this.p.y < game.areaMinY || this.p.y > game.areaMaxY)
+			this.v.y *= -1.0;
+		this.weapon.step(timestamp, dt);
+		Ship.prototype.step.apply(this, arguments);
+	},
+
+	render: function()
+	{
+		game.setModelMatrix(make2dTransformMatrix(this.p, this.v));
+		game.setRenderColor(this.color);
+		models.enemyStar.render();
+	}
+});
+
 function EnemyKamikaze(p, dir)
 {
 	Ship.call(this, p, dir.mul(50), 80);

@@ -50,6 +50,36 @@ inherit(BlasterShot, Projectile,
 	},
 });
 
+function PlasmaBall(p, v, expire, faction)
+{
+	Projectile.call(this, p, v, 1, expire, faction);
+}
+
+inherit(PlasmaBall, Projectile,
+{
+	radius: 3,
+	damage: 30,
+	m: 10,
+
+	collide: function(timestamp, other)
+	{
+		if (other instanceof Ship && other.faction != this.faction) {
+			other.takeDamage(timestamp, this.damage);
+			this.hp -= 1;
+			game.addEntity(new Explosion(this.p, other.v.clone(), 4, 10, 0, this.faction));
+			return true;
+		}
+		return false;
+	},
+
+	render: function()
+	{
+		game.setRenderColor(new Float32Array([0.1, 1.0, 0.9, 1.0]));
+		game.setModelMatrix(make2dTransformMatrix(this.p, this.v, 3));
+		models.circle8.render();
+	},
+});
+
 function Missile(p, v, expire, faction)
 {
 	Projectile.call(this, p, v, 1, expire, faction);

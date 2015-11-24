@@ -62,6 +62,33 @@ inherit(DualBlaster, Weapon,
 	}
 });
 
+function PlasmaSprinkler(ship)
+{
+	this.ship = ship
+	this.lastShootTime = -1;
+	this.targetDir = (new V(0, 1)).rot(2 * Math.PI * Math.random());
+	this.rotateDir = Math.random() < 0.5 ? 1 : -1;
+}
+
+inherit(PlasmaSprinkler, Weapon,
+{
+	slot: 1,
+	rotateSpeed: 1.8,
+	projectileSpeed: 150,
+	shootInterval: 0.09,
+
+	step: function(timestamp, dt)
+	{
+		if (timestamp > this.lastShootTime + this.shootInterval) {
+			this.targetDir.rot_((timestamp - this.lastShootTime) * this.rotateSpeed * this.rotateDir);
+			var v = this.targetDir.setlen(this.projectileSpeed);
+			game.addEntity(new PlasmaBall(this.ship.p.clone(), v, timestamp + 10, this.ship.faction));
+			this.lastShootTime = timestamp;
+		}
+	}
+});
+
+
 function RocketLauncher(ship)
 {
 	this.ship = ship

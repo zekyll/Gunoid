@@ -98,6 +98,24 @@ V.prototype =
 		return new V(-this.y, this.x);
 	},
 
+	rot: function(angle)
+	{
+		var cosa = Math.cos(angle);
+		var sina = Math.sin(angle);
+		return new V(cosa * this.x - sina * this.y, sina * this.x + cosa * this.y)
+	},
+
+	rot_: function(angle)
+	{
+		var cosa = Math.cos(angle);
+		var sina = Math.sin(angle);
+		var newx = cosa * this.x - sina * this.y;
+		var newy = sina * this.x + cosa * this.y;
+		this.x = newx;
+		this.y = newy;
+		return this;
+	},
+
 	clone: function()
 	{
 		return new V(this.x, this.y);
