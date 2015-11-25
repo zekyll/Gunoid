@@ -105,7 +105,7 @@ inherit(EnemyStarOrange, Ship,
 
 	render: function()
 	{
-		game.setModelTransform(this.p, this.v.nonzero(), 2);
+		game.setModelTransform(this.p, this.v, 2);
 		game.setRenderColor(this.color);
 		models.enemyStar.render();
 	}
