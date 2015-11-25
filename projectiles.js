@@ -30,6 +30,7 @@ inherit(BlasterShot, Projectile,
 	radius: 2,
 	damage: 30,
 	m: 10,
+	color: [1.0, 1.0, 0.6, 1.0],
 
 	collide: function(timestamp, other)
 	{
@@ -44,9 +45,7 @@ inherit(BlasterShot, Projectile,
 
 	render: function()
 	{
-		game.setRenderColor(new Float32Array([1.0, 1.0, 0.6, 1.0]));
-		game.setModelTransform(this.p, this.v);
-		models.blasterShot.render();
+		models.blasterShot.render(this.color, this.p, this.v);
 	}
 });
 
@@ -60,6 +59,7 @@ inherit(PlasmaBall, Projectile,
 	radius: 3,
 	damage: 30,
 	m: 10,
+	color: [0.1, 1.0, 0.9, 1.0],
 
 	collide: function(timestamp, other)
 	{
@@ -74,9 +74,7 @@ inherit(PlasmaBall, Projectile,
 
 	render: function()
 	{
-		game.setRenderColor(new Float32Array([0.1, 1.0, 0.9, 1.0]));
-		game.setModelTransform(this.p, this.v, 3);
-		models.circle8.render();
+		models.circle8.render(this.color, this.p, this.v, 3);
 	}
 });
 
@@ -92,6 +90,7 @@ inherit(Missile, Projectile,
 	m: 30,
 	acceleration: 400,
 	dragCoefficient: 0.05,
+	color: [1.0, 1.0, 0.6, 1.0],
 
 	step: function(timestamp, dt)
 	{
@@ -130,9 +129,7 @@ inherit(Missile, Projectile,
 
 	render: function()
 	{
-		game.setRenderColor(new Float32Array([1.0, 1.0, 0.6, 1.0]));
-		game.setModelTransform(this.p, this.v);
-		models.missile.render();
+		models.missile.render(this.color, this.p, this.v);
 	}
 });
 
@@ -150,6 +147,7 @@ inherit(Rocket, Projectile,
 	dragCoefficient: 0.01,
 	explosionRadius: 15,
 	explosionSpeed: 15,
+	color: [1.0, 1.0, 0.6, 1.0],
 
 	step: function(timestamp, dt)
 	{
@@ -182,9 +180,7 @@ inherit(Rocket, Projectile,
 
 	render: function()
 	{
-		game.setRenderColor(new Float32Array([1.0, 1.0, 0.6, 1.0]));
-		game.setModelTransform(this.p, this.v);
-		models.rocket.render();
+		models.rocket.render(this.color, this.p, this.v);
 	}
 });
 
@@ -213,13 +209,12 @@ inherit(Debris, Projectile,
 
 	render: function()
 	{
-		game.setModelTransform(this.p, this.v);
-		game.setRenderColor(new Float32Array([
+		var color = [
 			this.brightness * this.color[0],
 			this.brightness * this.color[1],
 			this.brightness * this.color[2],
 			1.0
-		]));
-		models.debris.render();
+		];
+		models.debris.render(color, this.p, this.v);
 	}
 });

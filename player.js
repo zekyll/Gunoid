@@ -11,7 +11,7 @@ function Player(p)
 	this.acceleration = 2000;
 	this.dragCoefficient = 0.1;
 
-	this.color = new Float32Array([0.9, 0.9, 1.0, 1.0]);
+	this.color = [0.9, 0.9, 1.0, 1.0];
 	this.primaryWeapon = new Blaster(this);
 	this.secondaryWeapon = null;
 }
@@ -51,8 +51,6 @@ inherit(Player, Ship,
 	render: function()
 	{
 		var targetDir = this.targetp.sub(this.p);
-		game.setModelTransform(this.p, targetDir);
-		game.setRenderColor(new Float32Array([0.9, 0.9, 1.0, 1.0]));
-		models.ship.render();
+		models.ship.render(this.color, this.p, targetDir);
 	}
 });

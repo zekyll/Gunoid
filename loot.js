@@ -15,6 +15,7 @@ inherit(Loot, Entity,
 {
 	radius: 5,
 	faction: 1,
+	color: [1.0, 1.0, 1.0, 1.0],
 
 	step: function(timestamp, dt)
 	{
@@ -37,9 +38,7 @@ inherit(Loot, Entity,
 	{
 		if (this.blinkState === 0)
 			return;
-		game.setRenderColor(new Float32Array([1.0, 1.0, 1.0, 1.0]));
-		game.setModelTransform(this.p, new V(0, 1));
-		this.model.render();
+		this.model.render(this.color, this.p, new V(0, 1));
 	}
 });
 

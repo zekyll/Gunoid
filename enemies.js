@@ -27,9 +27,7 @@ inherit(EnemyStar, Ship,
 
 	render: function()
 	{
-		game.setModelTransform(this.p, this.v);
-		game.setRenderColor(new Float32Array([0.5, 1.0, 0.2, 1.0]));
-		models.enemyStar.render();
+		models.enemyStar.render(this.color, this.p, this.v);
 	}
 });
 
@@ -61,9 +59,7 @@ inherit(EnemyStarYellow, Ship,
 
 	render: function()
 	{
-		game.setModelTransform(this.p, this.v);
-		game.setRenderColor(this.color);
-		models.enemyStar.render();
+		models.enemyStar.render(this.color, this.p, this.v);
 	}
 });
 
@@ -105,9 +101,7 @@ inherit(EnemyStarOrange, Ship,
 
 	render: function()
 	{
-		game.setModelTransform(this.p, this.v, 2);
-		game.setRenderColor(this.color);
-		models.enemyStar.render();
+		models.enemyStar.render(this.color, this.p, this.v, 2);
 	}
 });
 
@@ -155,9 +149,7 @@ inherit(EnemyKamikaze, Ship,
 
 	render: function()
 	{
-		game.setModelTransform(this.p, this.v);
-		game.setRenderColor(new Float32Array([0.4, 0.9, 0.1, 1.0]));
-		models.enemyKamikaze.render();
+		models.enemyKamikaze.render(this.color, this.p, this.v);
 	}
 });
 
@@ -192,9 +184,7 @@ inherit(EnemyDestroyer, Ship,
 
 	render: function()
 	{
-		game.setModelTransform(this.p, this.v);
-		game.setRenderColor(new Float32Array([0.8, 0.5, 0.1, 1.0]));
-		models.enemyDestroyer.render();
+		models.enemyDestroyer.render(this.color, this.p, this.v);
 	},
 
 	fireBullets: function(timestamp, targetp)
