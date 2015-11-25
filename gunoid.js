@@ -2,15 +2,16 @@
 "use strict";
 
 var gl;
+var glext
 var vertexPositionAttribute;
+var modelTransformAttribLoc;
+var modelColorAttribLoc;
 
 var game =
 {
 	canvas: undefined,
 	overlayCanvas: undefined,
 	projViewMatrixLoc: undefined,
-	modelTransformLoc: undefined,
-	renderColorLoc: undefined,
 	areaMinX: -200,
 	areaMaxX: 200,
 	aspectRatio: 16.0 / 10.0,
@@ -252,6 +253,7 @@ var game =
 
 		try {
 			gl = this.canvas.getContext("webgl", {antialias: true, depth: false});
+			glext = gl.getExtension("ANGLE_instanced_arrays");
 		}
 		catch(e) {
 		}
@@ -267,8 +269,11 @@ var game =
 
 		gl.clear(gl.COLOR_BUFFER_BIT);
 		this.setProjViewMatrix();
+
+		models.resetInstances();
 		for (var i = 0; i < this.entities.length; ++i)
 			this.entities[i].render();
+		models.renderInstances();
 
 		this.renderOverlay(timestamp, dt);
 	},
@@ -346,10 +351,13 @@ var game =
 
 		vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "position");
 		gl.enableVertexAttribArray(vertexPositionAttribute);
+		modelTransformAttribLoc = gl.getAttribLocation(shaderProgram, "modelTransform");
+		gl.enableVertexAttribArray(modelTransformAttribLoc);
+		modelColorAttribLoc = gl.getAttribLocation(shaderProgram, "modelColor");
+		gl.enableVertexAttribArray(modelColorAttribLoc);
+
 
 		this.projViewMatrixLoc = gl.getUniformLocation(shaderProgram, "projViewMatrix");
-		this.modelTransformLoc = gl.getUniformLocation(shaderProgram, "modelTransform");
-		this.renderColorLoc = gl.getUniformLocation(shaderProgram, "renderColor");
 	},
 
 	getShader: function(gl, id)
@@ -409,14 +417,14 @@ var game =
 			scaling = 1;
 		var cosa_x_scaling = rotateDir.y * scaling;
 		var sina_x_scaling = -rotateDir.x * scaling;
-		gl.uniform2fv(this.modelTransformLoc, new Float32Array([
+		this.modelTransform = [
 			cosa_x_scaling, sina_x_scaling,
 			translate.x, translate.y
-			]));
+			];
 	},
 
 	setRenderColor: function(color)
 	{
-		gl.uniform4fv(this.renderColorLoc, color);
+		this.modelColor = color;
 	}
 };

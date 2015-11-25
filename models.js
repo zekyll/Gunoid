@@ -3,6 +3,8 @@
 
 function Model(verticeData)
 {
+	this.instanceData = [];
+	this.instanceDataBuffer = gl.createBuffer();
 	this.vertexCount = verticeData.length / 2;
 	this.vertexBufferOffset = this.vertexArray.length / 2;
 	for (var i = 0; i < verticeData.length; ++i)
@@ -24,7 +26,30 @@ Model.prototype =
 
 	render: function ()
 	{
-		gl.drawArrays(gl.LINES, this.vertexBufferOffset, this.vertexCount);
+		this.instanceData.push.apply(this.instanceData, game.modelTransform)
+		this.instanceData.push.apply(this.instanceData, game.modelColor)
+	},
+
+	resetInstances: function()
+	{
+		this.instanceData.length = 0;
+	},
+
+	renderInstances: function()
+	{
+		var instanceCount = this.instanceData.length / 8;
+		if (instanceCount === 0)
+			return;
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.instanceDataBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.instanceData), gl.STATIC_DRAW);
+
+		gl.vertexAttribPointer(modelTransformAttribLoc, 4, gl.FLOAT, false, 8 * 4, 0);
+		glext.vertexAttribDivisorANGLE(modelTransformAttribLoc, 1);
+		gl.vertexAttribPointer(modelColorAttribLoc, 4, gl.FLOAT, false, 8 * 4, 4 * 4);
+		glext.vertexAttribDivisorANGLE(modelColorAttribLoc, 1);
+
+		glext.drawArraysInstancedANGLE(gl.LINES, this.vertexBufferOffset, this.vertexCount, instanceCount)
 	}
 };
 
@@ -36,6 +61,22 @@ var models =
 			if (modelData.hasOwnProperty(modelName)) {
 				this[modelName] = new Model(modelData[modelName]);
 			}
+		}
+	},
+
+	resetInstances: function()
+	{
+		for (var modelName in this) {
+			if (this[modelName] instanceof Model)
+				this[modelName].resetInstances();
+		}
+	},
+
+	renderInstances: function()
+	{
+		for (var modelName in this) {
+			if (this[modelName] instanceof Model)
+				this[modelName].renderInstances();
 		}
 	}
 };
