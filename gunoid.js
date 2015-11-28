@@ -2,16 +2,12 @@
 "use strict";
 
 var gl;
-var glext
-var vertexPositionAttribute;
-var modelTransformAttribLoc;
-var modelColorAttribLoc;
+var glext;
 
 var game =
 {
 	canvas: undefined,
 	overlayCanvas: undefined,
-	projViewMatrixLoc: undefined,
 	areaMinX: -200,
 	areaMaxX: 200,
 	aspectRatio: 16.0 / 10.0,
@@ -29,6 +25,10 @@ var game =
 	time: undefined,
 	dt: undefined,
 	paused: false,
+	textRenderer: undefined,
+	entityShaderProg: undefined,
+	textShaderProg: undefined,
+	currentShaderProg: null,
 
 	start: function()
 	{
@@ -69,6 +69,7 @@ var game =
 			gl.clearColor(0.10, 0.0, 0.25, 1.0);
 			this.initShaders();
 			models.init();
+			this.textRenderer = new TextRenderer();
 			this.initInput();
 			this.initGameWorld();
 			this.requestFrame();
@@ -252,7 +253,15 @@ var game =
 		gl = null;
 
 		try {
-			gl = this.canvas.getContext("webgl", {antialias: true, depth: false});
+			gl = this.canvas.getContext("webgl", {
+				antialias: true,
+				//alpha: true,
+				depth: false,
+				//stencil: false,
+				//preserveDrawingBuffer: true,
+				//premultipliedAlpha: true,
+				//preferLowPowerToHighPerformance: false
+			});
 			glext = gl.getExtension("ANGLE_instanced_arrays");
 		}
 		catch(e) {
@@ -268,12 +277,19 @@ var game =
 		++this.frameCounter;
 
 		gl.clear(gl.COLOR_BUFFER_BIT);
-		this.setProjViewMatrix();
 
+		// Entities
+		this.useShaderProg(this.entityShaderProg);
+		this.setProjViewMatrix();
 		models.resetInstances();
 		for (var i = 0; i < this.entities.length; ++i)
 			this.entities[i].render();
 		models.renderInstances();
+		
+		// Text
+		this.useShaderProg(this.textShaderProg);
+		this.setProjViewMatrix();
+		this.textRenderer.render();
 
 		this.renderOverlay(timestamp, dt);
 	},
@@ -335,29 +351,68 @@ var game =
 
 	initShaders: function()
 	{
-		var fragmentShader = this.getShader(gl, "shader-fs");
-		var vertexShader = this.getShader(gl, "shader-vs");
+		this.entityShaderProg = this.createShaderProg("entityVertexShader", "shader-fs")
+		this.textShaderProg = this.createShaderProg("textVertexShader", "shader-fs");
+	},
+
+	createShaderProg: function(vertexShaderName, fragmentShaderName)
+	{
+		var vertexShader = this.getShader(gl, vertexShaderName);
+		var fragmentShader = this.getShader(gl, fragmentShaderName);
 
 		var shaderProgram = gl.createProgram();
 		gl.attachShader(shaderProgram, vertexShader);
 		gl.attachShader(shaderProgram, fragmentShader);
 		gl.linkProgram(shaderProgram);
 
-		if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+		if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS))
 			alert("Unable to initialize the shader program.");
+
+		var attribCount = gl.getProgramParameter(shaderProgram, gl.ACTIVE_ATTRIBUTES);
+		shaderProgram.attribLocations = {}
+		for (var i = 0; i < attribCount; ++i) {
+			var attribName = gl.getActiveAttrib(shaderProgram, i).name;
+			var attribLoc = gl.getAttribLocation(shaderProgram, attribName);
+			shaderProgram.attribLocations[attribName] = attribLoc;
 		}
 
-		gl.useProgram(shaderProgram);
+		var uniformCount = gl.getProgramParameter(shaderProgram, gl.ACTIVE_UNIFORMS);
+		shaderProgram.uniformLocations = {}
+		for (var i = 0; i < uniformCount; ++i) {
+			var uniformName = gl.getActiveUniform(shaderProgram, i).name;
+			var uniformLoc = gl.getUniformLocation(shaderProgram, uniformName);
+			shaderProgram.uniformLocations[uniformName] = uniformLoc;
+		}
 
-		vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "position");
-		gl.enableVertexAttribArray(vertexPositionAttribute);
-		modelTransformAttribLoc = gl.getAttribLocation(shaderProgram, "modelTransform");
-		gl.enableVertexAttribArray(modelTransformAttribLoc);
-		modelColorAttribLoc = gl.getAttribLocation(shaderProgram, "modelColor");
-		gl.enableVertexAttribArray(modelColorAttribLoc);
+		shaderProgram.toggleAttribArrays = function(enable)
+		{
+			for (attribName in this.attribLocations) {
+				if (this.attribLocations.hasOwnProperty(attribName)) {
+					var attribLoc = this.attribLocations[attribName];
+					if (enable)
+						gl.enableVertexAttribArray(attribLoc);
+					else
+						gl.disableVertexAttribArray(attribLoc);
+				}
+			}
+		};
 
+		gl.enableVertexAttribArray(shaderProgram.attribLocations.position);
+		gl.enableVertexAttribArray(shaderProgram.attribLocations.modelTransform);
+		gl.enableVertexAttribArray(shaderProgram.attribLocations.modelColor);
 
-		this.projViewMatrixLoc = gl.getUniformLocation(shaderProgram, "projViewMatrix");
+		return shaderProgram;
+	},
+
+	useShaderProg: function(prog)
+	{
+		if (prog === this.currentShaderProg)
+			return;
+		if (this.currentShaderProg)
+			this.currentShaderProg.toggleAttribArrays(false);
+		gl.useProgram(prog);
+		prog.toggleAttribArrays(true);
+		this.currentShaderProg = prog;
 	},
 
 	getShader: function(gl, id)
@@ -405,6 +460,7 @@ var game =
 	{
 		var projViewMatrix = makeOrthoMatrix(this.areaMinX, this.areaMaxX,
 			this.areaMinY, this.areaMaxY);
-		gl.uniformMatrix3fv(this.projViewMatrixLoc, false, projViewMatrix);
+		var loc = this.currentShaderProg.uniformLocations.projViewMatrix;
+		gl.uniformMatrix3fv(loc, false, projViewMatrix);
 	}
 };

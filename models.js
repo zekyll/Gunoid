@@ -11,12 +11,10 @@ function Model(verticeData)
 	for (var i = 0; i < verticeData.length; ++i)
 		this.vertexArray.push(verticeData[i]);
 
-	if (this.vertexBuffer === null) {
+	if (this.vertexBuffer === null)
 		this.__proto__.vertexBuffer = gl.createBuffer();
-		gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-		gl.vertexAttribPointer(vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
-	}
 
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertexArray), gl.STATIC_DRAW);
 }
 
@@ -65,15 +63,20 @@ Model.prototype =
 		if (this.instanceCount === 0)
 			return;
 
+		var attribs = game.currentShaderProg.attribLocations;
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+		gl.vertexAttribPointer(attribs.position, 2, gl.FLOAT, false, 2 * 4, 0);
+		glext.vertexAttribDivisorANGLE(attribs.position, 0);
+
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.instanceDataBuffer);
 		// Create a new view to only copy instance data that is currently used.
 		var instanceDataView = new Float32Array(this.instanceData.buffer, 0, this.instanceSize * this.instanceCount);
 		gl.bufferData(gl.ARRAY_BUFFER, instanceDataView, gl.STREAM_DRAW);
 
-		gl.vertexAttribPointer(modelTransformAttribLoc, 4, gl.FLOAT, false, 8 * 4, 0);
-		glext.vertexAttribDivisorANGLE(modelTransformAttribLoc, 1);
-		gl.vertexAttribPointer(modelColorAttribLoc, 4, gl.FLOAT, false, 8 * 4, 4 * 4);
-		glext.vertexAttribDivisorANGLE(modelColorAttribLoc, 1);
+		gl.vertexAttribPointer(attribs.modelTransform, 4, gl.FLOAT, false, 8 * 4, 0);
+		glext.vertexAttribDivisorANGLE(attribs.modelTransform, 1);
+		gl.vertexAttribPointer(attribs.modelColor, 4, gl.FLOAT, false, 8 * 4, 4 * 4);
+		glext.vertexAttribDivisorANGLE(attribs.modelColor, 1);
 
 		glext.drawArraysInstancedANGLE(gl.LINES, this.vertexBufferOffset, this.vertexCount, this.instanceCount)
 	}
