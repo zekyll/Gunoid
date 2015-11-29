@@ -1,4 +1,6 @@
 
+/* global game, models, MissileLauncher, RocketLauncher, DualBlaster */
+
 "use strict";
 
 function Entity(p)
@@ -63,7 +65,7 @@ inherit(Ship, Entity,
 
 	collide: function(timestamp, other)
 	{
-		if (other instanceof Ship && other.faction != this.faction) {
+		if (other instanceof Ship && other.faction !== this.faction) {
 			other.takeDamage(timestamp, this.collisionDamage);
 			return true;
 		}
@@ -131,7 +133,7 @@ inherit(Explosion, Entity,
 
 	collide: function(timestamp, other)
 	{
-		if (other instanceof Ship && other.faction != this.faction) {
+		if (other instanceof Ship && other.faction !== this.faction) {
 			if (!this.hitEntities[other.id]) {
 				other.takeDamage(timestamp, this.damage);
 				this.hitEntities[other.id] = true;

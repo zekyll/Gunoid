@@ -1,4 +1,6 @@
 
+/* global models, Spawner, EnemyStar, input */
+
 "use strict";
 
 var gl;
@@ -248,7 +250,7 @@ var game =
 			gl = this.canvas.getContext("webgl", {
 				antialias: true,
 				//alpha: true,
-				depth: false,
+				depth: false
 				//stencil: false,
 				//preserveDrawingBuffer: true,
 				//premultipliedAlpha: true,
@@ -343,7 +345,7 @@ var game =
 
 	initShaders: function()
 	{
-		this.entityShaderProg = this.createShaderProg("entityVertexShader", "entityFragmentShader")
+		this.entityShaderProg = this.createShaderProg("entityVertexShader", "entityFragmentShader");
 		this.textShaderProg = this.createShaderProg("textVertexShader", "textFragmentShader");
 	},
 
@@ -361,7 +363,7 @@ var game =
 			alert("Unable to initialize the shader program.");
 
 		var attribCount = gl.getProgramParameter(shaderProgram, gl.ACTIVE_ATTRIBUTES);
-		shaderProgram.attribLocations = {}
+		shaderProgram.attribLocations = {};
 		for (var i = 0; i < attribCount; ++i) {
 			var attribName = gl.getActiveAttrib(shaderProgram, i).name;
 			var attribLoc = gl.getAttribLocation(shaderProgram, attribName);
@@ -369,7 +371,7 @@ var game =
 		}
 
 		var uniformCount = gl.getProgramParameter(shaderProgram, gl.ACTIVE_UNIFORMS);
-		shaderProgram.uniformLocations = {}
+		shaderProgram.uniformLocations = {};
 		for (var i = 0; i < uniformCount; ++i) {
 			var uniformName = gl.getActiveUniform(shaderProgram, i).name;
 			var uniformLoc = gl.getUniformLocation(shaderProgram, uniformName);

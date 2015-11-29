@@ -1,4 +1,6 @@
 
+/* global Ship, game, models, V */
+
 "use strict";
 
 function EnemyStar(p, dir)
@@ -123,7 +125,7 @@ inherit(EnemyKamikaze, Ship,
 	{
 		var targetDir = game.player.p.sub(this.p).setlen(1).add(this.v.setlen(4));
 		var a = targetDir.setlen(this.acceleration);
-		this.v.add_(a.mul(dt))
+		this.v.add_(a.mul(dt));
 
 		Ship.prototype.step.apply(this, arguments);
 	},
@@ -134,7 +136,7 @@ inherit(EnemyKamikaze, Ship,
 		if (this.hp <= 0) {
 			game.addEntity(new Explosion(this.p.clone(), this.v.clone(), 25, 15, 30, this.faction));
 			for (var i = 0; i < 3; ++i) {
-				var p = this.p.clone().add(new V(-3 + Math.random() * 6, -3 + Math.random() * 6))
+				var p = this.p.clone().add(new V(-3 + Math.random() * 6, -3 + Math.random() * 6));
 				game.addEntity(new Explosion(p, this.v.clone(), 15, 15, 0, this.faction));
 			}
 		}
@@ -142,7 +144,7 @@ inherit(EnemyKamikaze, Ship,
 
 	collide: function(timestamp, other)
 	{
-		if (other instanceof Ship && other.faction != this.faction)
+		if (other instanceof Ship && other.faction !== this.faction)
 			this.takeDamage(timestamp, this.hp);
 		return Ship.prototype.collide.apply(this, arguments);;
 	},
@@ -175,7 +177,7 @@ inherit(EnemyDestroyer, Ship,
 	{
 		var targetDir = game.player.p.sub(this.p).setlen(1).add(this.v.setlen(5));
 		var a = targetDir.setlen(this.acceleration);
-		this.v.add_(a.mul(dt))
+		this.v.add_(a.mul(dt));
 
 		this.fireBullets(timestamp, game.player.p);
 

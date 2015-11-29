@@ -1,4 +1,6 @@
 
+/* global game */
+
 "use strict";
 
 function Weapon()
@@ -11,7 +13,7 @@ Weapon.prototype =
 
 function Blaster(ship)
 {
-	this.ship = ship
+	this.ship = ship;
 	this.shootInterval = 0.15;
 	this.lastShootTime = -1;
 	this.bulletSpeed = 300;
@@ -36,7 +38,7 @@ inherit(Blaster, Weapon,
 
 function DualBlaster(ship)
 {
-	this.ship = ship
+	this.ship = ship;
 	this.shootInterval = 0.15;
 	this.lastShootTime = -1;
 	this.bulletSpeed = 300;
@@ -64,7 +66,7 @@ inherit(DualBlaster, Weapon,
 
 function PlasmaSprinkler(ship)
 {
-	this.ship = ship
+	this.ship = ship;
 	this.lastShootTime = -1;
 	this.targetDir = (new V(0, 1)).rot(2 * Math.PI * Math.random());
 	this.rotateDir = Math.random() < 0.5 ? 1 : -1;
@@ -91,7 +93,7 @@ inherit(PlasmaSprinkler, Weapon,
 
 function RocketLauncher(ship)
 {
-	this.ship = ship
+	this.ship = ship;
 	this.shootInterval = 0.5;
 	this.lastShootTime = -1;
 	this.projectileSpeed = 5;
@@ -116,7 +118,7 @@ inherit(RocketLauncher, Weapon,
 
 function MissileLauncher(ship)
 {
-	this.ship = ship
+	this.ship = ship;
 	this.shootInterval = 0.5;
 	this.lastShootTime = -1;
 	this.projectileSpeed = 50;

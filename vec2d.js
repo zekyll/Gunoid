@@ -102,7 +102,7 @@ V.prototype =
 	{
 		var cosa = Math.cos(angle);
 		var sina = Math.sin(angle);
-		return new V(cosa * this.x - sina * this.y, sina * this.x + cosa * this.y)
+		return new V(cosa * this.x - sina * this.y, sina * this.x + cosa * this.y);
 	},
 
 	rot_: function(angle)

@@ -1,4 +1,6 @@
 
+/* global gl, game, glext, modelData */
+
 "use strict";
 
 function Model(verticeData)
@@ -78,7 +80,7 @@ Model.prototype =
 		gl.vertexAttribPointer(attribs.modelColor, 4, gl.FLOAT, false, 8 * 4, 4 * 4);
 		glext.vertexAttribDivisorANGLE(attribs.modelColor, 1);
 
-		glext.drawArraysInstancedANGLE(gl.LINES, this.vertexBufferOffset, this.vertexCount, this.instanceCount)
+		glext.drawArraysInstancedANGLE(gl.LINES, this.vertexBufferOffset, this.vertexCount, this.instanceCount);
 	}
 };
 

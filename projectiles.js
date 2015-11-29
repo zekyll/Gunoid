@@ -1,4 +1,6 @@
 
+/* global Entity, Ship, game, models */
+
 "use strict";
 
 function Projectile(p, v, hp, expire, faction)
@@ -34,7 +36,7 @@ inherit(BlasterShot, Projectile,
 
 	collide: function(timestamp, other)
 	{
-		if (other instanceof Ship && other.faction != this.faction) {
+		if (other instanceof Ship && other.faction !== this.faction) {
 			other.takeDamage(timestamp, this.damage);
 			this.hp -= 1;
 			game.addEntity(new Explosion(this.p, other.v.clone(), 2, 10, 0, this.faction));
@@ -63,7 +65,7 @@ inherit(PlasmaBall, Projectile,
 
 	collide: function(timestamp, other)
 	{
-		if (other instanceof Ship && other.faction != this.faction) {
+		if (other instanceof Ship && other.faction !== this.faction) {
 			other.takeDamage(timestamp, this.damage);
 			this.hp -= 1;
 			game.addEntity(new Explosion(this.p, other.v.clone(), 4, 10, 0, this.faction));
@@ -107,7 +109,7 @@ inherit(Missile, Projectile,
 			accelDir = this.v;
 		}
 		var a = accelDir.setlen(this.acceleration);
-		this.v.add_(a.mul(dt))
+		this.v.add_(a.mul(dt));
 		this.p.add_(this.v.mul(dt));
 
 		this.calculateDrag(dt);
@@ -118,7 +120,7 @@ inherit(Missile, Projectile,
 
 	collide: function(timestamp, other)
 	{
-		if (other instanceof Ship && other.faction != this.faction) {
+		if (other instanceof Ship && other.faction !== this.faction) {
 			other.takeDamage(timestamp, this.damage);
 			this.hp -= 1;
 			game.addEntity(new Explosion(this.p, other.v.clone(), 8, 20, 0, this.faction));
@@ -152,7 +154,7 @@ inherit(Rocket, Projectile,
 	step: function(timestamp, dt)
 	{
 		var a = this.v.setlen(this.acceleration);
-		this.v.add_(a.mul(dt))
+		this.v.add_(a.mul(dt));
 		this.p.add_(this.v.mul(dt));
 
 		this.calculateDrag(dt);
@@ -163,14 +165,14 @@ inherit(Rocket, Projectile,
 
 	collide: function(timestamp, other)
 	{
-		if (other instanceof Ship && other.faction != this.faction) {
+		if (other instanceof Ship && other.faction !== this.faction) {
 			this.hp -= 1;
 			game.addEntity(new Explosion(this.p, other.v.clone(), this.explosionRadius,
 					this.explosionSpeed, this.damage, this.faction));
 			for (var i = 0; i < 5; ++i) {
 				var delta = new V((Math.random() - 0.5) * 0.5 * this.explosionRadius,
 						(Math.random() - 0.5) * 0.5 * this.explosionRadius);
-				var p = this.p.clone().add(delta)
+				var p = this.p.clone().add(delta);
 				game.addEntity(new Explosion(p, other.v.clone(), 0.7 * this.explosionRadius, this.explosionSpeed, 0, this.faction));
 			}
 			return true;

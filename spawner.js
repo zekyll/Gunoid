@@ -1,4 +1,6 @@
 
+/* global game, EnemyStar, EnemyKamikaze, EnemyDestroyer, EnemyStarYellow, EnemyStarOrange */
+
 "use strict";
 
 function Wave(subwaves)

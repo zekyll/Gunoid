@@ -1,4 +1,6 @@
 
+/* global Ship, input, game, models */
+
 "use strict";
 
 function Player(p)
@@ -26,7 +28,7 @@ inherit(Player, Ship,
 		var a = new V((input.keyDown("Accelerate right") & 1) - (input.keyDown("Accelerate left") & 1),
 				(input.keyDown("Accelerate up") & 1) - (input.keyDown("Accelerate down") & 1));
 		if (a.len() > 0)
-			a.setlen_(this.acceleration * dt)
+			a.setlen_(this.acceleration * dt);
 		this.v.add_(a);
 
 		this.primaryWeapon.step(timestamp, dt);
@@ -41,7 +43,7 @@ inherit(Player, Ship,
 		Ship.prototype.takeDamage.apply(this, arguments);
 		if (this.hp <= 0) {
 			for (var i = 0; i < 10; ++i) {
-				var p = this.p.clone().add(new V(-15 + Math.random() * 30, -15 + Math.random() * 30))
+				var p = this.p.clone().add(new V(-15 + Math.random() * 30, -15 + Math.random() * 30));
 				game.addEntity(new Explosion(p, this.v.clone(), 100, 30, 100, this.faction));
 			}
 			this.spreadDebris(timestamp);

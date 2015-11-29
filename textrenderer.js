@@ -1,4 +1,6 @@
 
+/* global gl, game, glext */
+
 "use strict";
 
 function TextRenderer()

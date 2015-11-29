@@ -1,4 +1,6 @@
 
+/* global Entity, Ship, models */
+
 "use strict";
 
 function Loot(p, expire, model)
@@ -28,7 +30,7 @@ inherit(Loot, Entity,
 	collide: function(timestamp, other)
 	{
 		if (other.faction === this.faction && other instanceof Ship) {
-			this.pickup(timestamp, other)
+			this.pickup(timestamp, other);
 			this.hp = 0;
 		}
 		return false;
@@ -54,7 +56,7 @@ inherit(RepairKit, Loot,
 	pickup: function(timestamp, ship)
 	{
 		ship.hp += this.repairAmount;
-	},
+	}
 });
 
 function LootWeapon(p, expire, weaponClass, model, weaponSlot)
@@ -71,5 +73,5 @@ inherit(LootWeapon, Loot,
 			ship.primaryWeapon = w;
 		else if (w.slot === 2)
 			ship.secondaryWeapon = w;
-	},
+	}
 });
