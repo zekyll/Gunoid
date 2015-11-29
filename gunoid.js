@@ -249,12 +249,12 @@ var game =
 		try {
 			gl = this.canvas.getContext("webgl", {
 				antialias: true,
-				//alpha: true,
-				depth: false
-				//stencil: false,
-				//preserveDrawingBuffer: true,
-				//premultipliedAlpha: true,
-				//preferLowPowerToHighPerformance: false
+				alpha: true,
+				depth: false,
+				stencil: false,
+				preserveDrawingBuffer: true,
+				premultipliedAlpha: true,
+				preferLowPowerToHighPerformance: false
 			});
 			glext = gl.getExtension("ANGLE_instanced_arrays");
 		}
