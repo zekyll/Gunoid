@@ -2,7 +2,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<link rel="stylesheet" type="text/css" href="gunoid.css">
-		<script id="shader-fs" type="x-shader/x-fragment">
+		<script id="entityFragmentShader" type="x-shader/x-fragment">
 			precision mediump float;
 			varying vec4 color;
 
@@ -32,12 +32,27 @@
 		<script id="textVertexShader" type="x-shader/x-vertex">
 			attribute vec2 position;
 			attribute vec4 modelColor;
+			attribute vec2 texCoords;
 			uniform mat3 projViewMatrix;
 			varying vec4 color;
+			varying vec2 fragTexCoords;
 
 			void main(void) {
-				gl_Position = vec4(projViewMatrix * vec3(position, 1.0), 1.0);
+				vec2 pos2 = position;
+				gl_Position = vec4(projViewMatrix * vec3(pos2, 1.0), 1.0);
 				color = modelColor;
+				fragTexCoords = texCoords;
+			}
+		</script>
+		<script id="textFragmentShader" type="x-shader/x-fragment">
+			precision mediump float;
+			varying vec4 color;
+			varying vec2 fragTexCoords;
+			uniform sampler2D sampler;
+
+			void main(void) {
+				vec4 s = texture2D(sampler, fragTexCoords);
+				gl_FragColor = color * vec4(s.rgb, s.r);
 			}
 		</script>
 		<script src="vec2d.js" type="text/javascript"></script>
@@ -57,6 +72,5 @@
 	</head>
 	<body onload="game.start()">
 		<canvas id="webglcanvas" width="800" height="600" moz-opaque></canvas>
-		<canvas id="overlaycanvas" width="800" height="600"></canvas>
 	</body>
 </html>
