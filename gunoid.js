@@ -2,16 +2,11 @@
 "use strict";
 
 var gl;
-var glext
-var vertexPositionAttribute;
-var modelTransformAttribLoc;
-var modelColorAttribLoc;
+var glext;
 
 var game =
 {
 	canvas: undefined,
-	overlayCanvas: undefined,
-	projViewMatrixLoc: undefined,
 	areaMinX: -200,
 	areaMaxX: 200,
 	aspectRatio: 16.0 / 10.0,
@@ -29,32 +24,29 @@ var game =
 	time: undefined,
 	dt: undefined,
 	paused: false,
+	textRenderer: undefined,
+	entityShaderProg: undefined,
+	textShaderProg: undefined,
+	currentShaderProg: null,
 
 	start: function()
 	{
 		this.canvas = document.getElementById("webglcanvas");
-		this.overlayCanvas = document.getElementById("overlaycanvas");
 
 		var self = this;
 		var resizeCanvas = function () {
 			var w = window.innerWidth;
 			var h = window.innerHeight;
 			if (w < self.aspectRatio * h)
-				h = w / self.aspectRatio;
+				h = Math.round(w / self.aspectRatio);
 			else
-				w = h * self.aspectRatio;
+				w = Math.round(h * self.aspectRatio);
 
 			var scaling = 1.0;
 			self.canvas.width = scaling * w;
 			self.canvas.height = scaling * h;
 			self.canvas.style.width = w;
 			self.canvas.style.height = h;
-
-			// Match overlay canvas dimensions with webgl canvas
-			self.overlayCanvas.width = 800;
-			self.overlayCanvas.height = 600;
-			self.overlayCanvas.style.width = self.canvas.style.width;
-			self.overlayCanvas.style.height = self.canvas.style.height;
 
 			if (gl)
 				gl.viewport(0, 0, self.canvas.width, self.canvas.height);
@@ -69,6 +61,7 @@ var game =
 			gl.clearColor(0.10, 0.0, 0.25, 1.0);
 			this.initShaders();
 			models.init();
+			this.textRenderer = new TextRenderer();
 			this.initInput();
 			this.initGameWorld();
 			this.requestFrame();
@@ -124,7 +117,7 @@ var game =
 	{
 		var self = this;
 
-		input.init(this.overlayCanvas);
+		input.init(this.canvas);
 		input.setBindings({
 			"Accelerate up": 87,
 			"Accelerate down": 83,
@@ -252,7 +245,15 @@ var game =
 		gl = null;
 
 		try {
-			gl = this.canvas.getContext("webgl", {antialias: true, depth: false});
+			gl = this.canvas.getContext("webgl", {
+				antialias: true,
+				//alpha: true,
+				depth: false,
+				//stencil: false,
+				//preserveDrawingBuffer: true,
+				//premultipliedAlpha: true,
+				//preferLowPowerToHighPerformance: false
+			});
 			glext = gl.getExtension("ANGLE_instanced_arrays");
 		}
 		catch(e) {
@@ -268,45 +269,52 @@ var game =
 		++this.frameCounter;
 
 		gl.clear(gl.COLOR_BUFFER_BIT);
-		this.setProjViewMatrix();
 
+		// Entities
+		this.useShaderProg(this.entityShaderProg);
+		this.setProjViewMatrix();
 		models.resetInstances();
 		for (var i = 0; i < this.entities.length; ++i)
 			this.entities[i].render();
 		models.renderInstances();
-
-		this.renderOverlay(timestamp, dt);
+		
+		// Text
+		this.renderText(timestamp, dt);
 	},
 
-	renderOverlay: function(timestamp, dt)
+	renderText: function(timestamp, dt)
 	{
 		this.fps = 0.99 * this.fps + 0.01 / dt;
 
-		if (this.frameCounter % 10 === 0) {
-			var ctx = this.overlayCanvas.getContext("2d");
-			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-			ctx.font = '10pt Calibri';
-			ctx.fillStyle = 'orange';
-			ctx.fillText("fps: " + this.fps.toFixed(1), 10, 25);
-			ctx.fillText("time: " + this.time.toFixed(1), 10, 50);
+		if (this.frameCounter % 100 === 0) {
+			var txt = this.textRenderer;
+			txt.reset();
+			txt.setSize(10);
+			txt.setColor(new Float32Array([1, 0.5, 0, 1]));
+
+			txt.addText("fps: " + this.fps.toFixed(1), 10, 10);
+			txt.addText("time: " + this.time.toFixed(1), 10, 30);
 			if (this.player)
-				ctx.fillText("hp: " + this.player.hp, 10, 75);
+				txt.addText("hp: " + this.player.hp, 10, 50);
+
 			if (this.player && this.player.hp <= 0) {
-				ctx.font = '25pt Calibri';
-				ctx.fillStyle = 'yellow';
-				ctx.fillText("YOUR SHIP WAS DESTROYED!", 210, 300);
-				ctx.fillText("Press F2 to start a new game", 210, 350);
+				txt.setSize(25);
+				txt.setColor(new Float32Array([1, 1, 0, 1]));
+				txt.addText("YOUR SHIP WAS DESTROYED!", 230, 200, 500, 50);
+				txt.addText("Press F2 to start a new game", 250, 250, 500, 50);
 			} else if (this.spawner.finished()) {
-				ctx.font = '25pt Calibri';
-				ctx.fillStyle = 'yellow';
-				ctx.fillText("FINISHED!", 330, 300);
-				ctx.fillText("Press F2 to start a new game", 210, 350);
+				txt.setSize(25);
+				txt.setColor(new Float32Array([1, 1, 0, 1]));
+				txt.addText("FINISHED!", 400, 200, 200, 100);
+				txt.addText("Press F2 to start a new game", 250, 250, 500, 50);
 			} else if (this.paused) {
-				ctx.font = '25pt Calibri';
-				ctx.fillStyle = 'yellow';
-				ctx.fillText("PAUSED!", 340, 300);
+				txt.setSize(25);
+				txt.setColor(new Float32Array([1, 1, 0, 1]));
+				txt.addText("PAUSED!", 400, 230, 200, 50);
 			}
 		}
+		this.useShaderProg(this.textShaderProg);
+		this.textRenderer.render();
 	},
 
 	requestFrame: function()
@@ -335,29 +343,68 @@ var game =
 
 	initShaders: function()
 	{
-		var fragmentShader = this.getShader(gl, "shader-fs");
-		var vertexShader = this.getShader(gl, "shader-vs");
+		this.entityShaderProg = this.createShaderProg("entityVertexShader", "entityFragmentShader")
+		this.textShaderProg = this.createShaderProg("textVertexShader", "textFragmentShader");
+	},
+
+	createShaderProg: function(vertexShaderName, fragmentShaderName)
+	{
+		var vertexShader = this.getShader(gl, vertexShaderName);
+		var fragmentShader = this.getShader(gl, fragmentShaderName);
 
 		var shaderProgram = gl.createProgram();
 		gl.attachShader(shaderProgram, vertexShader);
 		gl.attachShader(shaderProgram, fragmentShader);
 		gl.linkProgram(shaderProgram);
 
-		if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+		if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS))
 			alert("Unable to initialize the shader program.");
+
+		var attribCount = gl.getProgramParameter(shaderProgram, gl.ACTIVE_ATTRIBUTES);
+		shaderProgram.attribLocations = {}
+		for (var i = 0; i < attribCount; ++i) {
+			var attribName = gl.getActiveAttrib(shaderProgram, i).name;
+			var attribLoc = gl.getAttribLocation(shaderProgram, attribName);
+			shaderProgram.attribLocations[attribName] = attribLoc;
 		}
 
-		gl.useProgram(shaderProgram);
+		var uniformCount = gl.getProgramParameter(shaderProgram, gl.ACTIVE_UNIFORMS);
+		shaderProgram.uniformLocations = {}
+		for (var i = 0; i < uniformCount; ++i) {
+			var uniformName = gl.getActiveUniform(shaderProgram, i).name;
+			var uniformLoc = gl.getUniformLocation(shaderProgram, uniformName);
+			shaderProgram.uniformLocations[uniformName] = uniformLoc;
+		}
 
-		vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "position");
-		gl.enableVertexAttribArray(vertexPositionAttribute);
-		modelTransformAttribLoc = gl.getAttribLocation(shaderProgram, "modelTransform");
-		gl.enableVertexAttribArray(modelTransformAttribLoc);
-		modelColorAttribLoc = gl.getAttribLocation(shaderProgram, "modelColor");
-		gl.enableVertexAttribArray(modelColorAttribLoc);
+		shaderProgram.toggleAttribArrays = function(enable)
+		{
+			for (attribName in this.attribLocations) {
+				if (this.attribLocations.hasOwnProperty(attribName)) {
+					var attribLoc = this.attribLocations[attribName];
+					if (enable)
+						gl.enableVertexAttribArray(attribLoc);
+					else
+						gl.disableVertexAttribArray(attribLoc);
+				}
+			}
+		};
 
+		gl.enableVertexAttribArray(shaderProgram.attribLocations.position);
+		gl.enableVertexAttribArray(shaderProgram.attribLocations.modelTransform);
+		gl.enableVertexAttribArray(shaderProgram.attribLocations.modelColor);
 
-		this.projViewMatrixLoc = gl.getUniformLocation(shaderProgram, "projViewMatrix");
+		return shaderProgram;
+	},
+
+	useShaderProg: function(prog)
+	{
+		if (prog === this.currentShaderProg)
+			return;
+		if (this.currentShaderProg)
+			this.currentShaderProg.toggleAttribArrays(false);
+		gl.useProgram(prog);
+		prog.toggleAttribArrays(true);
+		this.currentShaderProg = prog;
 	},
 
 	getShader: function(gl, id)
@@ -405,6 +452,7 @@ var game =
 	{
 		var projViewMatrix = makeOrthoMatrix(this.areaMinX, this.areaMaxX,
 			this.areaMinY, this.areaMaxY);
-		gl.uniformMatrix3fv(this.projViewMatrixLoc, false, projViewMatrix);
+		var loc = this.currentShaderProg.uniformLocations.projViewMatrix;
+		gl.uniformMatrix3fv(loc, false, projViewMatrix);
 	}
 };
