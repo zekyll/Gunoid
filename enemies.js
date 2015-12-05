@@ -5,7 +5,7 @@
 
 function EnemyStar(p, dir)
 {
-	Ship.call(this, p, dir.mul(40), 60);
+	Ship.call(this, p, dir.mul(80), 60);
 }
 
 inherit(EnemyStar, Ship,
@@ -19,7 +19,6 @@ inherit(EnemyStar, Ship,
 
 	step: function(timestamp, dt)
 	{
-		this.p.add_(this.v.mul(dt));
 		if (this.p.x < game.areaMinX || this.p.x > game.areaMaxX)
 			this.v.x *= -1.0;
 		if (this.p.y < game.areaMinY || this.p.y > game.areaMaxY)
@@ -35,7 +34,7 @@ inherit(EnemyStar, Ship,
 
 function EnemyStarYellow(p, dir)
 {
-	Ship.call(this, p, dir.mul(20), 300);
+	Ship.call(this, p, dir.mul(40), 300);
 	this.weapon = new PlasmaSprinkler(this);
 }
 
@@ -50,7 +49,6 @@ inherit(EnemyStarYellow, Ship,
 
 	step: function(timestamp, dt)
 	{
-		this.p.add_(this.v.mul(dt));
 		if (this.p.x < game.areaMinX || this.p.x > game.areaMaxX)
 			this.v.x *= -1.0;
 		if (this.p.y < game.areaMinY || this.p.y > game.areaMaxY)
@@ -67,7 +65,7 @@ inherit(EnemyStarYellow, Ship,
 
 function EnemyStarOrange(p, dir)
 {
-	Ship.call(this, p, dir.mul(60), 200);
+	Ship.call(this, p, dir.mul(120), 200);
 }
 
 inherit(EnemyStarOrange, Ship,
@@ -82,7 +80,6 @@ inherit(EnemyStarOrange, Ship,
 
 	step: function(timestamp, dt)
 	{
-		this.p.add_(this.v.mul(dt));
 		if (this.p.x < game.areaMinX || this.p.x > game.areaMaxX)
 			this.v.x *= -1.0;
 		if (this.p.y < game.areaMinY || this.p.y > game.areaMaxY)
