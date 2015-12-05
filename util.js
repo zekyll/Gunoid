@@ -22,3 +22,8 @@ function inherit(derived, base, newProperties)
 	}
 	return derived;
 }
+
+function getFileExtension(filename)
+{
+	return filename.substr(filename.lastIndexOf('.') + 1);
+}

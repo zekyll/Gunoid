@@ -2,6 +2,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<link rel="stylesheet" type="text/css" href="gunoid.css">
+
 		<script id="entityFragmentShader" type="x-shader/x-fragment">
 			precision mediump float;
 			varying vec4 color;
@@ -29,6 +30,40 @@
 				color = modelColor;
 			}
 		</script>
+
+		<script id="texturedModelVertexShader" type="x-shader/x-vertex">
+			attribute vec2 position;
+			attribute vec2 texCoords;
+			// modelTransform.xy: [scaling * cos(angle), scaling * sin(angle)]
+			// modelTransform.zw: translation
+			attribute vec4 modelTransform;
+			attribute vec4 modelColor;
+			uniform mat3 projViewMatrix;
+			varying vec4 color;
+			varying vec2 fragTexCoords;
+
+			void main(void) {
+				vec2 scaledAndRotated = vec2(
+					dot(modelTransform.xy, vec2(position.x, -position.y)),
+					dot(modelTransform.xy, position.yx)
+					);
+				vec3 translated = vec3(scaledAndRotated + modelTransform.zw, 1.0);
+				gl_Position = vec4(projViewMatrix * translated, 1.0);
+				color = modelColor;
+				fragTexCoords = texCoords;
+			}
+		</script>
+		<script id="texturedModelFragmentShader" type="x-shader/x-fragment">
+			precision mediump float;
+			varying vec4 color;
+			varying vec2 fragTexCoords;
+			uniform sampler2D sampler;
+
+			void main(void) {
+				gl_FragColor = texture2D(sampler, fragTexCoords);
+			}
+		</script>
+
 		<script id="textVertexShader" type="x-shader/x-vertex">
 			attribute vec2 position;
 			attribute vec4 modelColor;
@@ -55,12 +90,17 @@
 				gl_FragColor = color * vec4(s.rgb, s.r);
 			}
 		</script>
+
+		<script>
+			var Module = { TOTAL_MEMORY: 20 * (1 << 20) };
+		</script>
+		<script src="dependencies/bpgdec8.js"></script>
 		<script src="vec2d.js" type="text/javascript"></script>
+		<script src="util.js" type="text/javascript"></script>
 		<script src="modeldata.js" type="text/javascript"></script>
 		<script src="models.js" type="text/javascript"></script>
 		<script src="input.js" type="text/javascript"></script>
 		<script src="textrenderer.js" type="text/javascript"></script>
-		<script src="util.js" type="text/javascript"></script>
 		<script src="entity.js" type="text/javascript"></script>
 		<script src="enemies.js" type="text/javascript"></script>
 		<script src="projectiles.js" type="text/javascript"></script>

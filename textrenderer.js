@@ -145,8 +145,8 @@ TextRenderer.prototype =
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, gl.LUMINANCE, gl.UNSIGNED_BYTE, this.canvas);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-			gl.generateMipmap(gl.TEXTURE_2D);
 		} else {
+			gl.bindTexture(gl.TEXTURE_2D, this.tex);
 			gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, this.canvas);
 		}
 

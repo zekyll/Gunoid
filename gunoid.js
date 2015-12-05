@@ -273,8 +273,6 @@ var game =
 		gl.clear(gl.COLOR_BUFFER_BIT);
 
 		// Entities
-		this.useShaderProg(this.entityShaderProg);
-		this.setProjViewMatrix();
 		models.resetInstances();
 		for (var i = 0; i < this.entities.length; ++i)
 			this.entities[i].render();
@@ -323,6 +321,11 @@ var game =
 	{
 		var self = this;
 		window.requestAnimationFrame(function(timestamp) {
+			if (!textures.loaded()) {
+				self.requestFrame();
+				return;
+			}
+
 			timestamp *= 0.001;
 			self.realTime = timestamp;
 			self.dt = timestamp - self.lastTimestamp;
@@ -345,6 +348,8 @@ var game =
 
 	initShaders: function()
 	{
+		this.texturedModelShaderProg = this.createShaderProg("texturedModelVertexShader",
+				"texturedModelFragmentShader");
 		this.entityShaderProg = this.createShaderProg("entityVertexShader", "entityFragmentShader");
 		this.textShaderProg = this.createShaderProg("textVertexShader", "textFragmentShader");
 	},
@@ -390,10 +395,6 @@ var game =
 				}
 			}
 		};
-
-		gl.enableVertexAttribArray(shaderProgram.attribLocations.position);
-		gl.enableVertexAttribArray(shaderProgram.attribLocations.modelTransform);
-		gl.enableVertexAttribArray(shaderProgram.attribLocations.modelColor);
 
 		return shaderProgram;
 	},
