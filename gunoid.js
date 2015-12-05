@@ -270,14 +270,15 @@ var game =
 	{
 		++this.frameCounter;
 
-		gl.clear(gl.COLOR_BUFFER_BIT);
+		//gl.clear(gl.COLOR_BUFFER_BIT);
 
 		// Entities
 		models.resetInstances();
+		models.background.render(new Float32Array([1, 1, 0.7, 1]), new V(0, 0), new V(0, 1), this.areaWidth / 2);
 		for (var i = 0; i < this.entities.length; ++i)
 			this.entities[i].render();
 		models.renderInstances();
-		
+
 		// Text
 		this.renderText(timestamp, dt);
 	},

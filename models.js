@@ -172,6 +172,15 @@ var models =
 				this[modelName] = new Model(modelData[modelName]);
 			}
 		}
+
+		this.background = new TexturedModel([
+			-1, 1, 0, 1,
+			-1, -1, 0, 0,
+			1, 1, 1, 1,
+			1, 1, 1, 1,
+			-1, -1, 0, 0,
+			1, -1, 1, 0
+		], new Texture("textures/starfield.bpg"));
 	},
 
 	resetInstances: function()
