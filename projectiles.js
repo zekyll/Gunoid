@@ -39,7 +39,7 @@ inherit(BlasterShot, Projectile,
 		if (other instanceof Ship && other.faction !== this.faction) {
 			other.takeDamage(timestamp, this.damage);
 			this.hp -= 1;
-			game.addEntity(new Explosion(this.p, other.v.clone(), 2, 10, 0, this.faction));
+			game.addEntity(new Explosion(this.p, other.v.clone(), 3, 10, 0, this.faction));
 			return true;
 		}
 		return false;
