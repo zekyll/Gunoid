@@ -1,5 +1,5 @@
 
-/* global models, Spawner, EnemyStar, input */
+/* global models, Spawner, EnemyStar, input, textures */
 
 "use strict";
 
@@ -274,7 +274,7 @@ var game =
 		try {
 			gl = this.canvas.getContext("webgl", {
 				antialias: true,
-				alpha: true,
+				alpha: true, // Alpha channel is not needed but disabling it seems to hurt performance.
 				depth: false,
 				stencil: false,
 				preserveDrawingBuffer: true,

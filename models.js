@@ -1,5 +1,5 @@
 
-/* global gl, game, glext, modelData */
+/* global gl, game, glext, modelData, getFileExtension */
 
 "use strict";
 
