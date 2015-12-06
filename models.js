@@ -206,6 +206,7 @@ function Texture(filename)
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 		gl.generateMipmap(gl.TEXTURE_2D);
 		--textures.unloadedCount;
+		delete tex.img;
 	};
 	if (isBpg)
 		tex.img.load(filename);
