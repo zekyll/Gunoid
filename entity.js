@@ -141,7 +141,7 @@ inherit(Explosion, Entity,
 
 	collide: function(timestamp, other)
 	{
-		if (other instanceof Ship && other.faction !== this.faction) {
+		if (this.damage > 0 && other instanceof Ship && other.faction !== this.faction) {
 			if (!this.hitEntities[other.id]) {
 				other.takeDamage(timestamp, this.damage);
 				this.hitEntities[other.id] = true;
