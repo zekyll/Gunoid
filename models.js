@@ -10,7 +10,9 @@ function Model(vertexData)
 	this.instanceDataBuffer = gl.createBuffer();
 	this.instanceCount = 0;
 	this.vertexCount = vertexData.length / this.vertexSize;
-	this.vertexBufferOffset = this.vertexArray.length / this.vertexSize;
+	this.vertexBufferOffset = Math.floor((this.vertexArray.length + this.vertexSize - 1) / this.vertexSize);
+	while (this.vertexArray.length < this.vertexBufferOffset * this.vertexSize)
+		this.vertexArray.push(0);
 	for (var i = 0; i < vertexData.length; ++i)
 		this.vertexArray.push(vertexData[i]);
 
@@ -89,14 +91,71 @@ Model.prototype =
 	{
 		gl.vertexAttribPointer(attribs.position, 2, gl.FLOAT, false, this.vertexSize * 4, 0);
 		glext.vertexAttribDivisorANGLE(attribs.position, 0);
-	}
+	},
+
+	constructor: Model
 };
 
-function TexturedModel(vertexData, texture)
+function SolidModel(vertexData)
+{
+	Model.call(this, vertexData);
+	this.primitiveType = gl.TRIANGLES;
+}
+
+inherit(SolidModel, Model,
+{
+	vertexSize: 2,
+
+	renderInstances: function()
+	{
+		if (this.instanceCount === 0)
+			return;
+
+		gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
+		gl.enable(gl.BLEND);
+
+		Model.prototype.renderInstances.apply(this, arguments);
+
+		gl.disable(gl.BLEND);
+	}
+});
+
+function TexturedPointModel(vertexData, texture)
+{
+	Model.call(this, vertexData);
+	this.primitiveType = gl.POINTS;
+	this.texture = texture;
+}
+
+inherit(TexturedPointModel, Model,
+{
+	vertexSize: 2,
+
+	renderInstances: function()
+	{
+		if (this.instanceCount === 0)
+			return;
+
+		gl.activeTexture(gl.TEXTURE0);
+		gl.bindTexture(gl.TEXTURE_2D, this.texture);
+		gl.uniform1i(game.currentShaderProg.uniformLocations.sampler, 0);
+
+		gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE);
+		gl.enable(gl.BLEND);
+
+		Model.prototype.renderInstances.apply(this, arguments);
+
+		gl.disable(gl.BLEND);
+	}
+});
+
+// alphaBlend: 0 disabled, 1 normal, 2 additive
+function TexturedModel(vertexData, texture, alphaBlend)
 {
 	Model.call(this, vertexData);
 	this.primitiveType = gl.TRIANGLES;
 	this.texture = texture;
+	this.alphaBlend = alphaBlend;
 }
 
 inherit(TexturedModel, Model,
@@ -110,20 +169,22 @@ inherit(TexturedModel, Model,
 
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, this.texture);
-
 		gl.uniform1i(game.currentShaderProg.uniformLocations.sampler, 0);
 
-		//gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-		//gl.enable(gl.BLEND);
+		if (this.alphaBlend) {
+			var dstFactor = this.alphaBlend === 1 ? gl.ONE_MINUS_SRC_ALPHA : gl.ONE;
+			gl.blendFuncSeparate(gl.SRC_ALPHA, dstFactor, gl.ZERO, gl.ONE);
+			gl.enable(gl.BLEND);
+		}
 
 		Model.prototype.renderInstances.apply(this, arguments);
 
-		//gl.disable(gl.BLEND);
+		if (this.alphaBlend)
+			gl.disable(gl.BLEND);
 	},
 
 	defineVertexAttribs: function(attribs)
 	{
-		//console.log("TexturedModel.defineVertexAttribs");
 		Model.prototype.defineVertexAttribs.apply(this, arguments);
 		gl.vertexAttribPointer(attribs.texCoords, 2, gl.FLOAT, false, this.vertexSize * 4, 2 * 4);
 		glext.vertexAttribDivisorANGLE(attribs.texCoords, 0);
@@ -132,7 +193,7 @@ inherit(TexturedModel, Model,
 
 function Texture(filename)
 {
-	++textures.unloadedCount
+	++textures.unloadedCount;
 	var tex = gl.createTexture();
 	var isBpg = getFileExtension(filename).toLowerCase() === "bpg";
 	tex.img = isBpg ? new BPGDecoder(document.createElement("canvas").getContext("2d")) : new Image();
@@ -169,7 +230,8 @@ var models =
 	{
 		for (var modelName in modelData) {
 			if (modelData.hasOwnProperty(modelName)) {
-				this[modelName] = new Model(modelData[modelName]);
+				var solid = modelName.indexOf("solid") === 0;
+				this[modelName] = new (solid ? SolidModel : Model)(modelData[modelName]);
 			}
 		}
 
@@ -180,7 +242,7 @@ var models =
 			1, 1, 1, 1,
 			-1, -1, 0, 0,
 			1, -1, 1, 0
-		], new Texture("textures/starfield.bpg"));
+		], new Texture("textures/starfield.bpg"), false);
 	},
 
 	resetInstances: function()
@@ -200,10 +262,23 @@ var models =
 				this[modelName].renderInstances();
 		}
 
-		game.useShaderProg(game.entityShaderProg);
+		game.useShaderProg(game.wireframeShaderProg);
 		game.setProjViewMatrix();
 		for (var modelName in this) {
-			if (this[modelName] instanceof Model && !(this[modelName] instanceof TexturedModel))
+			if (this[modelName].constructor === Model)
+				this[modelName].renderInstances();
+		}
+		for (var modelName in this) {
+			if (this[modelName] instanceof SolidModel)
+				this[modelName].renderInstances();
+		}
+
+		game.useShaderProg(game.texturedPointShaderProg);
+		game.setProjViewMatrix();
+		var loc = game.currentShaderProg.uniformLocations.viewportWidth;
+		gl.uniform1f(loc, game.canvas.width);
+		for (var modelName in this) {
+			if (this[modelName] instanceof TexturedPointModel)
 				this[modelName].renderInstances();
 		}
 	}

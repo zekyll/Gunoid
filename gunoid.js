@@ -27,7 +27,9 @@ var game =
 	dt: undefined,
 	paused: false,
 	textRenderer: undefined,
-	entityShaderProg: undefined,
+	wireframeShaderProg: undefined,
+	texturedPointShaderProg: undefined,
+	texturedModelShaderProg: undefined,
 	textShaderProg: undefined,
 	currentShaderProg: null,
 
@@ -61,6 +63,7 @@ var game =
 
 		if (gl) {
 			gl.clearColor(0.10, 0.0, 0.25, 1.0);
+			gl.clear(gl.COLOR_BUFFER_BIT);
 			this.initShaders();
 			models.init();
 			this.textRenderer = new TextRenderer();
@@ -373,7 +376,8 @@ var game =
 	{
 		this.texturedModelShaderProg = this.createShaderProg("texturedModelVertexShader",
 				"texturedModelFragmentShader");
-		this.entityShaderProg = this.createShaderProg("entityVertexShader", "entityFragmentShader");
+		this.wireframeShaderProg = this.createShaderProg("wireframeVertexShader", "wireframeFragmentShader");
+		this.texturedPointShaderProg = this.createShaderProg("texturedPointVertexShader", "texturedPointFragmentShader");
 		this.textShaderProg = this.createShaderProg("textVertexShader", "textFragmentShader");
 	},
 
