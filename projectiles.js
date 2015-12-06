@@ -194,6 +194,8 @@ function Debris(p, v, expire, color)
 	this.expire = expire;
 	this.color = color;
 	this.brightness = 1;
+	var angle = Math.random() * 2 * Math.PI;
+	this.dir = new V(Math.cos(angle), Math.sin(angle));
 }
 
 inherit(Debris, Projectile,
@@ -217,6 +219,6 @@ inherit(Debris, Projectile,
 			this.brightness * this.color[2],
 			1.0
 		];
-		models.debris.render(color, this.p, this.v);
+		models.debris.render(color, this.p, this.dir);
 	}
 });
