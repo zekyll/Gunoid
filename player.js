@@ -46,13 +46,16 @@ inherit(Player, Ship,
 				var p = this.p.clone().add(new V(-15 + Math.random() * 30, -15 + Math.random() * 30));
 				game.addEntity(new Explosion(p, this.v.clone(), 100, 30, 100, this.faction));
 			}
-			this.spreadDebris(timestamp);
 		}
 	},
 
-	render: function()
+	render: function(timestamp)
 	{
 		var targetDir = this.targetp.sub(this.p);
 		models.ship.render(this.color, this.p, targetDir);
+
+		this.primaryWeapon.render(timestamp);
+		if (this.secondaryWeapon)
+			this.secondaryWeapon.step(timestamp);
 	}
 });

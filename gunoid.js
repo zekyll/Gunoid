@@ -230,6 +230,28 @@ var game =
 		return closestEntity;
 	},
 
+	findClosestEntityInDirection: function(p, dir, type, faction)
+	{
+		var closestDist = 1e99;
+		var closestEntity = undefined;
+		dir = dir.setlen(1);
+		var normal = dir.rot90left();
+		for (var i = 0; i < this.entities.length; ++i) {
+			if (this.entities[i] instanceof type && this.entities[i].faction === faction) {
+				var r = this.entities[i].p.sub(p);
+				var distanceFromLine = Math.abs(normal.dot(r));
+				if (distanceFromLine > this.entities[i].radius)
+					continue;
+				var distanceAlongLine = dir.dot(r);
+				if (distanceAlongLine < closestDist) {
+					closestDist = distanceAlongLine;
+					closestEntity = this.entities[i];
+				}
+			}
+		}
+		return closestEntity;
+	},
+
 	addEntity: function(newEntity)
 	{
 		this.newEntities.push(newEntity);

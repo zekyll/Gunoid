@@ -1,5 +1,5 @@
 
-/* global game, models, MissileLauncher, RocketLauncher, DualBlaster */
+/* global game, models, MissileLauncher, RocketLauncher, DualBlaster, Laser */
 
 "use strict";
 
@@ -84,7 +84,9 @@ inherit(Ship, Entity,
 					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10, RocketLauncher, models.lootRocket));
 				} else if ((rnd -= 0.01) < 0) {
 					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10, MissileLauncher, models.lootMissile));
-				} else if ((rnd -= 0.02) < 0) {
+				} else if ((rnd -= 0.01) < 0) {
+					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10, Laser, models.lootLaser));
+				} else if ((rnd -= 0.01) < 0) {
 					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10, DualBlaster, models.lootDualBlaster));
 				}
 			}
@@ -96,6 +98,12 @@ inherit(Ship, Entity,
 	{
 		var debrisCount = 3 + this.m / 5e3;
 		for (var i = 0; i < debrisCount; ++i) {
+			var color = new Float32Array([
+				0.3 + 0.5 * this.color[0],
+				0.3 + 0.5 * this.color[1],
+				0.3 + 0.5 * this.color[2],
+				1
+			]);
 			var angle = Math.random() * 2 * Math.PI;
 			var v = new V(Math.cos(angle), Math.sin(angle));
 			v.mul_(this.debrisSpeed * (0.1 + 0.9 * Math.random()));

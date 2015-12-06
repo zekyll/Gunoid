@@ -1,5 +1,5 @@
 
-/* global game */
+/* global game, Ship, models */
 
 "use strict";
 
@@ -9,6 +9,9 @@ function Weapon()
 
 Weapon.prototype =
 {
+	render: function(timestamp)
+	{
+	}
 };
 
 function Blaster(ship)
@@ -90,6 +93,55 @@ inherit(PlasmaSprinkler, Weapon,
 	}
 });
 
+function Laser(ship)
+{
+	this.ship = ship;
+	this.range = 200;
+}
+
+inherit(Laser, Weapon,
+{
+	slot: 1,
+	damage: 400,
+	color: new Float32Array([1, 0, 0.5, 1]),
+	sparkColor: new Float32Array([1, 0.9, 0, 1]),
+	sparkSpeed: 20,
+	sparkExpireTime: 0.7,
+	sparkSpawnRate: 20,
+
+	step: function(timestamp, dt)
+	{
+		var targetDir = this.ship.targetp.sub(this.ship.p);
+		if (targetDir.len() < 0.001)
+			targetDir = new V(0, 1);
+		var hitEntity = game.findClosestEntityInDirection(this.ship.p, targetDir, Ship, 2);
+		this.laserEndDistance = this.range;
+		if (hitEntity) {
+			var hitDistance = hitEntity.p.sub(this.ship.p).len() - hitEntity.radius + 1;
+			if (hitDistance <= this.range) {
+				hitEntity.takeDamage(timestamp, this.damage * dt);
+				this.laserEndDistance = hitDistance;
+				this.spawnSparks(this.ship.p.add(targetDir.setlen(hitDistance)), hitEntity.v, timestamp, dt);
+			}
+		}
+	},
+
+	render: function()
+	{
+		var targetDir = this.ship.targetp.sub(this.ship.p);
+		models.line.render(this.color, this.ship.p, targetDir, this.laserEndDistance);
+	},
+
+	spawnSparks: function(targetp, targetv, timestamp, dt)
+	{
+		if (Math.random() < this.sparkSpawnRate * dt) {
+			var angle = Math.random() * 2 * Math.PI;
+			var v = new V(Math.cos(angle), Math.sin(angle));
+			v.mul_(this.sparkSpeed * (0.1 + 0.9 * Math.random()));
+			game.addEntity(new Debris(targetp, v.add(targetv), timestamp + (0.2 + Math.random()) * this.sparkExpireTime, this.sparkColor));
+		}
+	}
+});
 
 function RocketLauncher(ship)
 {

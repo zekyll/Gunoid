@@ -192,7 +192,7 @@ function Debris(p, v, expire, color)
 	this.v = v;
 	this.hp = 1;
 	this.expire = expire;
-	this.color = new Float32Array([0.3 + 0.5 * color[0], 0.3 + 0.5 * color[1], 0.3 + 0.5 * color[2], 1]);
+	this.color = color;
 	this.brightness = 1;
 }
 
