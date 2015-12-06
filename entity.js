@@ -164,8 +164,13 @@ inherit(Explosion, Entity,
 		for (var i = 0; i < n; ++i) {
 			var r = (n - i) / n;
 			var q = this.radius / this.maxRadius - 0.2 * i;
-			var color = [s(q, 0.8, 1, 1, 0.4), s(q, 1/3, 0.8, 1, 0.1), s(q, 0.1, 0.4, 1, 0), 1.0];
-			models.circle16.render(color, this.p, new V(0, 1), r * this.radius);
+			var color = [
+				s(q, 0.8, 1, 1, 0.4),
+				s(q, 1/3, 0.8, 1, 0.1),
+				s(q, 0.1, 0.4, 1, 0),
+				1 - this.radius / this.maxRadius
+			];
+			models.point.render(color, this.p, new V(0, 1), r * this.radius * 1.2);
 		}
 	}
 });

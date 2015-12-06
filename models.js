@@ -244,6 +244,8 @@ var models =
 			-1, -1, 0, 0,
 			1, -1, 1, 0
 		], new Texture("textures/starfield.bpg"), false);
+
+		this.point = new TexturedPointModel([0, 0], new Texture("textures/point32.png"));
 	},
 
 	resetInstances: function()
