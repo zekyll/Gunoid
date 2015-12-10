@@ -278,8 +278,8 @@ var models =
 
 		game.useShaderProg(game.texturedPointShaderProg);
 		game.setProjViewMatrix();
-		var loc = game.currentShaderProg.uniformLocations.viewportWidth;
-		gl.uniform1f(loc, game.canvas.width);
+		var loc = game.currentShaderProg.uniformLocations.viewportSize;
+		gl.uniform2f(loc, game.canvas.width, game.canvas.height);
 		for (var modelName in this) {
 			if (this[modelName] instanceof TexturedPointModel)
 				this[modelName].renderInstances();

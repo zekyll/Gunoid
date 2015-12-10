@@ -38,7 +38,7 @@
 			attribute vec4 modelTransform;
 			attribute vec4 modelColor;
 			uniform mat3 projViewMatrix;
-			uniform float viewportWidth;
+			uniform vec2 viewportSize;
 			varying vec4 color;
 
 			void main(void) {
@@ -51,9 +51,9 @@
 				color = modelColor;
 
 				// Calculate point size based on how the length of unit vector (1, 0) is changed by
-				// model/view/proj transforms. Final point size is in pixels so we have to multiply
-				// it by viewport width.
-				gl_PointSize = length(projViewMatrix * vec3(vec2(modelTransform.x, modelTransform.y), 0.0)) * viewportWidth;
+				// model/view/proj transforms. gl_PointSize is in pixels so we multiply final
+				// device coordinates by viewport size, then calculate length.
+				gl_PointSize = length((projViewMatrix * vec3(vec2(modelTransform.y, -modelTransform.x), 0.0)).xy * viewportSize);
 			}
 		</script>
 		<script id="texturedPointFragmentShader" type="x-shader/x-fragment">
