@@ -1,5 +1,5 @@
 
-/* global models, Spawner, EnemyStar, input, textures */
+/* global models, Spawner, EnemyStar, input, textures, fonts */
 
 "use strict";
 
@@ -26,7 +26,6 @@ var game =
 	time: undefined,
 	dt: undefined,
 	paused: false,
-	textRenderer: undefined,
 	wireframeShaderProg: undefined,
 	texturedPointShaderProg: undefined,
 	texturedModelShaderProg: undefined,
@@ -60,6 +59,9 @@ var game =
 
 			if (gl)
 				gl.viewport(0, 0, self.canvas.width, self.canvas.height);
+
+			// Scale fonts.
+			fonts.updateTextureAll();
 		};
 
 		window.onresize = resizeCanvas;
@@ -72,7 +74,8 @@ var game =
 			gl.clear(gl.COLOR_BUFFER_BIT);
 			this.initShaders();
 			models.init();
-			this.textRenderer = new TextRenderer();
+			fonts.add("small", "Calibri", 10);
+			fonts.add("big", "Calibri", 25);
 			this.initInput();
 			this.initGameWorld();
 			this.requestFrame();
@@ -318,35 +321,28 @@ var game =
 	{
 		this.fps = 0.99 * this.fps + 0.01 / dt;
 
-		if (this.frameCounter % 100 === 0) {
-			var txt = this.textRenderer;
-			txt.reset();
-			txt.setSize(10);
-			txt.setColor(new Float32Array([1, 0.5, 0, 1]));
+		fonts.resetAll();
 
-			txt.addText("fps: " + this.fps.toFixed(1), 10, 10);
-			txt.addText("time: " + this.time.toFixed(1), 10, 30);
-			if (this.player)
-				txt.addText("hp: " + this.player.hp, 10, 50);
+		fonts.small.setColor(new Float32Array([1, 0.5, 0, 1]));
 
-			if (this.player && this.player.hp <= 0) {
-				txt.setSize(25);
-				txt.setColor(new Float32Array([1, 1, 0, 1]));
-				txt.addText("YOUR SHIP WAS DESTROYED!", 230, 200, 500, 50);
-				txt.addText("Press F2 to start a new game", 250, 250, 500, 50);
-			} else if (this.spawner.finished()) {
-				txt.setSize(25);
-				txt.setColor(new Float32Array([1, 1, 0, 1]));
-				txt.addText("FINISHED!", 400, 200, 200, 100);
-				txt.addText("Press F2 to start a new game", 250, 250, 500, 50);
-			} else if (this.paused) {
-				txt.setSize(25);
-				txt.setColor(new Float32Array([1, 1, 0, 1]));
-				txt.addText("PAUSED!", 400, 230, 200, 50);
-			}
+		fonts.small.addText("fps: " + this.fps.toFixed(1), 10, 10);
+		fonts.small.addText("time: " + this.time.toFixed(1), 10, 30);
+		if (this.player)
+			fonts.small.addText("hp: " + this.player.hp, 10, 50);
+
+		if (this.player && this.player.hp <= 0) {
+			fonts.big.setColor(new Float32Array([1, 1, 0, 1]));
+			fonts.big.addText("YOUR SHIP WAS DESTROYED!", 230, 200, 500, 50);
+			fonts.big.addText("Press F2 to start a new game", 250, 250, 500, 50);
+		} else if (this.spawner.finished()) {
+			fonts.big.setColor(new Float32Array([1, 1, 0, 1]));
+			fonts.big.addText("FINISHED!", 400, 200, 200, 100);
+			fonts.big.addText("Press F2 to start a new game", 250, 250, 500, 50);
+		} else if (this.paused) {
+			fonts.big.setColor(new Float32Array([1, 1, 0, 1]));
+			fonts.big.addText("PAUSED!", 400, 230, 200, 50);
 		}
-		this.useShaderProg(this.textShaderProg);
-		this.textRenderer.render();
+		fonts.renderAll();
 	},
 
 	requestFrame: function()

@@ -4,6 +4,7 @@
 		<link rel="stylesheet" type="text/css" href="gunoid.css">
 		<title>Gunoid</title>
 
+		<!-- Wireframe triangles. -->
 		<script id="wireframeVertexShader" type="x-shader/x-vertex">
 			attribute vec2 position;
 			// modelTransform.xy: [scaling * cos(angle), scaling * sin(angle)]
@@ -32,6 +33,7 @@
 			}
 		</script>
 
+		<!-- Textured point sprites. -->
 		<script id="texturedPointVertexShader" type="x-shader/x-vertex">
 			attribute vec2 position;
 			// modelTransform.xy: [scaling * cos(angle), scaling * sin(angle)]
@@ -67,6 +69,48 @@
 			}
 		</script>
 
+		<!-- Textured point sprites without model transform. Allows texture offset/scaling.
+		Uses texture luminance as alpha. -->
+		<script id="textVertexShader" type="x-shader/x-vertex">
+			attribute vec2 vertexPosition;
+			attribute vec2 vertexSize;
+			attribute vec4 vertexColor;
+			attribute vec2 vertexTextureOffset;
+			attribute vec2 vertexTextureSize;
+			attribute vec2 vertexTextureCutoff;
+			uniform mat3 projViewMatrix;
+			//uniform float viewportWidth;
+			varying vec4 fragColor;
+			varying vec2 fragTextureOffset;
+			varying vec2 fragTextureSize;
+			varying vec2 fragTextureCutoff;
+
+			void main(void) {
+				gl_Position = vec4(projViewMatrix * vec3(vertexPosition, 1.0), 1.0);
+				fragColor = vertexColor;
+				gl_PointSize = vertexSize.y;
+				fragTextureOffset = vertexTextureOffset;
+				fragTextureSize = vertexTextureSize;
+				fragTextureCutoff = vertexTextureCutoff;
+			}
+		</script>
+		<script id="textFragmentShader" type="x-shader/x-fragment">
+			precision mediump float;
+			varying vec4 fragColor;
+			varying vec2 fragTextureOffset;
+			varying vec2 fragTextureSize;
+			varying vec2 fragTextureCutoff;
+			uniform sampler2D sampler;
+
+			void main(void) {
+				if (gl_PointCoord.x >= fragTextureCutoff.x || gl_PointCoord.y >= fragTextureCutoff.y)
+					discard;
+				vec4 s = texture2D(sampler, fragTextureOffset + fragTextureSize * gl_PointCoord);
+				gl_FragColor = fragColor * vec4(s.rgb, s.r);
+			}
+		</script>
+
+		<!-- Textured triangles. -->
 		<script id="texturedModelVertexShader" type="x-shader/x-vertex">
 			attribute vec2 position;
 			attribute vec2 texCoords;
@@ -100,33 +144,6 @@
 			}
 		</script>
 
-		<script id="textVertexShader" type="x-shader/x-vertex">
-			attribute vec2 position;
-			attribute vec4 modelColor;
-			attribute vec2 texCoords;
-			uniform mat3 projViewMatrix;
-			varying vec4 color;
-			varying vec2 fragTexCoords;
-
-			void main(void) {
-				vec2 pos2 = position;
-				gl_Position = vec4(projViewMatrix * vec3(pos2, 1.0), 1.0);
-				color = modelColor;
-				fragTexCoords = texCoords;
-			}
-		</script>
-		<script id="textFragmentShader" type="x-shader/x-fragment">
-			precision mediump float;
-			varying vec4 color;
-			varying vec2 fragTexCoords;
-			uniform sampler2D sampler;
-
-			void main(void) {
-				vec4 s = texture2D(sampler, fragTexCoords);
-				gl_FragColor = color * vec4(s.rgb, s.r);
-			}
-		</script>
-
 		<script>
 			var Module = { TOTAL_MEMORY: 20 * (1 << 20) };
 		</script>
@@ -136,7 +153,7 @@
 		<script src="modeldata.js" type="text/javascript"></script>
 		<script src="models.js" type="text/javascript"></script>
 		<script src="input.js" type="text/javascript"></script>
-		<script src="textrenderer.js" type="text/javascript"></script>
+		<script src="fonts.js" type="text/javascript"></script>
 		<script src="entity.js" type="text/javascript"></script>
 		<script src="enemies.js" type="text/javascript"></script>
 		<script src="projectiles.js" type="text/javascript"></script>
