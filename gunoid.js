@@ -47,6 +47,11 @@ var game =
 			else
 				w = Math.round(h * self.aspectRatio);
 
+			// Chrome wants both width and height of the canvas to be even numbers. Otherwise we get
+			// blurry image.
+			h -= h % 2;
+			w -= w % 2;
+
 			var scaling = 1.0;
 			self.canvas.width = scaling * w;
 			self.canvas.height = scaling * h;
