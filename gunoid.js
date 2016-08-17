@@ -36,6 +36,7 @@ var game =
 	start: function()
 	{
 		this.canvas = document.getElementById("webglcanvas");
+		this.canvas.oncontextmenu = function(){ return false; };
 
 		var self = this;
 		var resizeCanvas = function () {
