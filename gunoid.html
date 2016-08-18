@@ -7,19 +7,17 @@
 		<!-- Wireframe triangles. -->
 		<script id="wireframeVertexShader" type="x-shader/x-vertex">
 			attribute vec2 position;
-			// modelTransform.xy: [scaling * cos(angle), scaling * sin(angle)]
-			// modelTransform.zw: translation
-			attribute vec4 modelTransform;
+			attribute vec2 modelScaling;
+			attribute vec2 modelRotation;
+			attribute vec2 modelTranslation;
 			attribute vec4 modelColor;
 			uniform mat3 projViewMatrix;
 			varying vec4 color;
 
 			void main(void) {
-				vec2 scaledAndRotated = vec2(
-					dot(modelTransform.xy, vec2(position.x, -position.y)),
-					dot(modelTransform.xy, position.yx)
-					);
-				vec3 translated = vec3(scaledAndRotated + modelTransform.zw, 1.0);
+				mat2 rotMat = mat2(vec2(modelRotation.y, -modelRotation.x), modelRotation);
+				vec2 scaledAndRotated = rotMat * (modelScaling * position);
+				vec3 translated = vec3(scaledAndRotated + modelTranslation, 1.0);
 				gl_Position = vec4(projViewMatrix * translated, 1.0);
 				color = modelColor;
 			}
@@ -36,27 +34,27 @@
 		<!-- Textured point sprites. -->
 		<script id="texturedPointVertexShader" type="x-shader/x-vertex">
 			attribute vec2 position;
-			// modelTransform.xy: [scaling * cos(angle), scaling * sin(angle)]
-			// modelTransform.zw: translation
-			attribute vec4 modelTransform;
+			attribute vec2 modelScaling;
+			attribute vec2 modelRotation;
+			attribute vec2 modelTranslation;
 			attribute vec4 modelColor;
 			uniform mat3 projViewMatrix;
 			uniform vec2 viewportSize;
 			varying vec4 color;
 
 			void main(void) {
-				vec2 scaledAndRotated = vec2(
-					dot(modelTransform.xy, vec2(position.x, -position.y)),
-					dot(modelTransform.xy, position.yx)
-					);
-				vec3 translated = vec3(scaledAndRotated + modelTransform.zw, 1.0);
+				// Model scaling/rotation doesn't matter if there's only one point at (0,0), but
+				// we could theoretically have a list of points.
+				mat2 rotMat = mat2(vec2(modelRotation.y, -modelRotation.x), modelRotation);
+				vec2 scaledAndRotated = rotMat * (modelScaling * position);
+				vec3 translated = vec3(scaledAndRotated + modelTranslation, 1.0);
 				gl_Position = vec4(projViewMatrix * translated, 1.0);
 				color = modelColor;
 
 				// Calculate point size based on how the length of unit vector (1, 0) is changed by
 				// model/view/proj transforms. gl_PointSize is in pixels so we multiply final
 				// device coordinates by viewport size, then calculate length.
-				gl_PointSize = length((projViewMatrix * vec3(vec2(modelTransform.y, -modelTransform.x), 0.0)).xy * viewportSize);
+				gl_PointSize = length((projViewMatrix * vec3(modelScaling.x, 0.0, 0.0)).xy * viewportSize);
 			}
 		</script>
 		<script id="texturedPointFragmentShader" type="x-shader/x-fragment">
@@ -114,20 +112,18 @@
 		<script id="texturedModelVertexShader" type="x-shader/x-vertex">
 			attribute vec2 position;
 			attribute vec2 texCoords;
-			// modelTransform.xy: [scaling * cos(angle), scaling * sin(angle)]
-			// modelTransform.zw: translation
-			attribute vec4 modelTransform;
+			attribute vec2 modelScaling;
+			attribute vec2 modelRotation;
+			attribute vec2 modelTranslation;
 			attribute vec4 modelColor;
 			uniform mat3 projViewMatrix;
 			varying vec4 color;
 			varying vec2 fragTexCoords;
 
 			void main(void) {
-				vec2 scaledAndRotated = vec2(
-					dot(modelTransform.xy, vec2(position.x, -position.y)),
-					dot(modelTransform.xy, position.yx)
-					);
-				vec3 translated = vec3(scaledAndRotated + modelTransform.zw, 1.0);
+				mat2 rotMat = mat2(vec2(modelRotation.y, -modelRotation.x), modelRotation);
+				vec2 scaledAndRotated = rotMat * (modelScaling * position);
+				vec3 translated = vec3(scaledAndRotated + modelTranslation, 1.0);
 				gl_Position = vec4(projViewMatrix * translated, 1.0);
 				color = modelColor;
 				fragTexCoords = texCoords;

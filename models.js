@@ -27,11 +27,11 @@ Model.prototype =
 {
 	vertexBuffer: null,
 	vertexArray: [],
-	instanceSize: 8,
+	instanceSize: 10,
 	vertexSize: 2,
 
 	// Writes instance specific data (model transform, color) to buffer.
-	render: function(color, translate, rotateDir, scale)
+	render: function(color, translate, rotateDir, scalex, scaley)
 	{
 		var offset = this.instanceSize * this.instanceCount;
 		if (offset + this.instanceSize > this.instanceData.length)
@@ -40,15 +40,21 @@ Model.prototype =
 		if (rotateDir.x === 0 && rotateDir.y === 0)
 			rotateDir = new V(0, 1);
 		rotateDir = rotateDir.setlen(1);
-		if (typeof scale === 'undefined')
-			scale = 1;
+		if (typeof scalex === 'undefined') {
+			scalex = 1;
+			scaley = 1;
+		} else if (typeof scaley === 'undefined') {
+			scaley = scalex;
+		}
 
-		this.instanceData[offset] = rotateDir.y * scale; // cos(angle) * scale
-		this.instanceData[offset + 1] = -rotateDir.x * scale; // sin(angle) * scale
-		this.instanceData[offset + 2] = translate.x;
-		this.instanceData[offset + 3] = translate.y;
+		this.instanceData[offset + 0] = scalex;
+		this.instanceData[offset + 1] = scaley;
+		this.instanceData[offset + 2] = rotateDir.x;
+		this.instanceData[offset + 3] = rotateDir.y;
+		this.instanceData[offset + 4] = translate.x;
+		this.instanceData[offset + 5] = translate.y;
 		for (var i = 0; i < 4; ++i)
-			this.instanceData[offset + 4 + i] = color[i];
+			this.instanceData[offset + 6 + i] = color[i];
 		++this.instanceCount;
 	},
 
@@ -78,9 +84,14 @@ Model.prototype =
 		var instanceDataView = new Float32Array(this.instanceData.buffer, 0, this.instanceSize * this.instanceCount);
 		gl.bufferData(gl.ARRAY_BUFFER, instanceDataView, gl.STREAM_DRAW);
 
-		gl.vertexAttribPointer(attribs.modelTransform, 4, gl.FLOAT, false, 8 * 4, 0);
-		glext.vertexAttribDivisorANGLE(attribs.modelTransform, 1);
-		gl.vertexAttribPointer(attribs.modelColor, 4, gl.FLOAT, false, 8 * 4, 4 * 4);
+		var bytesPerInstance = this.instanceSize * 4;
+		gl.vertexAttribPointer(attribs.modelScaling, 2, gl.FLOAT, false, bytesPerInstance, 0);
+		glext.vertexAttribDivisorANGLE(attribs.modelScaling, 1);
+		gl.vertexAttribPointer(attribs.modelRotation, 2, gl.FLOAT, false, bytesPerInstance, 2 * 4);
+		glext.vertexAttribDivisorANGLE(attribs.modelRotation, 1);
+		gl.vertexAttribPointer(attribs.modelTranslation, 2, gl.FLOAT, false, bytesPerInstance, 4 * 4);
+		glext.vertexAttribDivisorANGLE(attribs.modelTranslation, 1);
+		gl.vertexAttribPointer(attribs.modelColor, 4, gl.FLOAT, false, bytesPerInstance, 6 * 4);
 		glext.vertexAttribDivisorANGLE(attribs.modelColor, 1);
 
 		glext.drawArraysInstancedANGLE(this.primitiveType, this.vertexBufferOffset,
