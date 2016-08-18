@@ -31,6 +31,7 @@ var game =
 	texturedModelShaderProg: undefined,
 	textShaderProg: undefined,
 	currentShaderProg: null,
+	gui: undefined,
 
 	start: function()
 	{
@@ -75,8 +76,10 @@ var game =
 			this.initShaders();
 			models.init();
 			fonts.add("small", "Calibri", 10);
+			fonts.add("medium", "Calibri", 15);
 			fonts.add("big", "Calibri", 25);
 			this.initInput();
+			this.gui = new Gui(1000.0, 1000.0 / this.aspectRatio);
 			this.initGameWorld();
 			this.requestFrame();
 		}
@@ -139,7 +142,8 @@ var game =
 			"Accelerate right": 68,
 			"New game": 113,
 			"Benchmark": 115,
-			"Pause": 80
+			"Pause": 80,
+			"Main Menu": 27 // Esc
 		});
 
 		input.registerKeyPressHandler("New game", function() {
@@ -150,6 +154,10 @@ var game =
 		});
 		input.registerKeyPressHandler("Benchmark", function() {
 			self.initBenchmark();
+		});
+		input.registerKeyPressHandler("Main Menu", function() {
+			self.gui.mainMenu.visible = !self.gui.mainMenu.visible;
+			self.paused = !self.paused;
 		});
 	},
 
@@ -306,29 +314,32 @@ var game =
 
 		//gl.clear(gl.COLOR_BUFFER_BIT);
 
-		// Entities
+		// Game entities.
 		models.resetInstances();
 		models.background.render(new Float32Array([1, 1, 0.7, 1]), new V(0, 0), new V(0, 1), this.areaWidth / 2);
 		for (var i = 0; i < this.entities.length; ++i)
 			this.entities[i].render();
-		models.renderInstances();
+		var projViewMatrix = makeOrthoMatrix(this.areaMinX, this.areaMaxX, this.areaMinY, this.areaMaxY);
+		models.renderInstances(projViewMatrix);
 
-		// Text
-		this.renderText(timestamp, dt);
+		// GUI.
+		this.renderGui(timestamp, dt);
 	},
 
-	renderText: function(timestamp, dt)
+	renderGui: function(timestamp, dt)
 	{
-		this.fps = 0.99 * this.fps + 0.01 / dt;
+		if (this.player)
+			this.gui.hpBar.update(this.player.hp, 100);
 
 		fonts.resetAll();
+		models.resetInstances();
+		this.gui.render(new V(0, 0), timestamp, dt);
+		var projViewMatrix = makeOrthoMatrix(0, this.gui.area.width(), this.gui.area.height(), 0);
+		models.renderInstances(projViewMatrix);
 
-		fonts.small.setColor(new Float32Array([1, 0.5, 0, 1]));
-
-		fonts.small.addText("fps: " + this.fps.toFixed(1), 10, 10);
-		fonts.small.addText("time: " + this.time.toFixed(1), 10, 30);
-		if (this.player)
-			fonts.small.addText("hp: " + this.player.hp, 10, 50);
+		this.fps = 0.99 * this.fps + 0.01 / dt;
+		this.gui.stats.text = "fps: " + this.fps.toFixed(1) + "\n"
+				+ "time: " + this.time.toFixed(1);
 
 		if (this.player && this.player.hp <= 0) {
 			fonts.big.setColor(new Float32Array([1, 1, 0, 1]));
@@ -480,10 +491,8 @@ var game =
 		return shader;
 	},
 
-	setProjViewMatrix: function()
+	setProjViewMatrix: function(projViewMatrix)
 	{
-		var projViewMatrix = makeOrthoMatrix(this.areaMinX, this.areaMaxX,
-			this.areaMinY, this.areaMaxY);
 		var loc = this.currentShaderProg.uniformLocations.projViewMatrix;
 		gl.uniformMatrix3fv(loc, false, projViewMatrix);
 	}

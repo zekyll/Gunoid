@@ -256,6 +256,22 @@ var models =
 			1, -1, 1, 0
 		], new Texture("textures/starfield.bpg"), false);
 
+		this.guiRect = new SolidModel([
+			0, 0,
+			0, 1,
+			1, 0,
+			1, 0,
+			0, 1,
+			1, 1
+		]);
+
+		this.guiBorder = new Model([
+			0, 0, 0, 1,
+			0, 1, 1, 1,
+			1, 1, 1, 0,
+			1, 0, 0, 0
+		]);
+
 		this.point = new TexturedPointModel([0, 0], new Texture("textures/point32.png"));
 	},
 
@@ -267,17 +283,17 @@ var models =
 		}
 	},
 
-	renderInstances: function()
+	renderInstances: function(projViewMatrix)
 	{
 		game.useShaderProg(game.texturedModelShaderProg);
-		game.setProjViewMatrix();
+		game.setProjViewMatrix(projViewMatrix);
 		for (var modelName in this) {
 			if (this[modelName] instanceof TexturedModel)
 				this[modelName].renderInstances();
 		}
 
 		game.useShaderProg(game.wireframeShaderProg);
-		game.setProjViewMatrix();
+		game.setProjViewMatrix(projViewMatrix);
 		for (var modelName in this) {
 			if (this[modelName].constructor === Model)
 				this[modelName].renderInstances();
@@ -288,7 +304,7 @@ var models =
 		}
 
 		game.useShaderProg(game.texturedPointShaderProg);
-		game.setProjViewMatrix();
+		game.setProjViewMatrix(projViewMatrix);
 		var loc = game.currentShaderProg.uniformLocations.viewportSize;
 		gl.uniform2f(loc, game.canvas.width, game.canvas.height);
 		for (var modelName in this) {
