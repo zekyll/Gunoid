@@ -162,7 +162,7 @@ inherit(RocketLauncher, Weapon,
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			var v = targetDir.setlen(this.projectileSpeed);
-			game.addEntity(new Rocket(this.ship.p.clone(), v, timestamp + 10, this.ship.faction));
+			game.addEntity(new Rocket(this.ship.p.clone(), v, timestamp + 4, this.ship.faction));
 			this.lastShootTime = timestamp;
 		}
 	}
@@ -187,7 +187,7 @@ inherit(MissileLauncher, Weapon,
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			var v = targetDir.setlen(this.projectileSpeed);
-			game.addEntity(new Missile(this.ship.p.clone(), v, timestamp + 10, this.ship.faction));
+			game.addEntity(new Missile(this.ship.p.clone(), v, timestamp + 5, this.ship.faction));
 			this.lastShootTime = timestamp;
 		}
 	}
