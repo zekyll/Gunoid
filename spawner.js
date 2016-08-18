@@ -1,5 +1,5 @@
 
-/* global game, EnemyStar, EnemyKamikaze, EnemyDestroyer, EnemyStarYellow, EnemyStarOrange */
+/* global game, EnemyStar, EnemyKamikaze, EnemyDestroyer, EnemyStarYellow, EnemyStarOrange, EnemyGunnerGreen */
 
 "use strict";
 
@@ -120,34 +120,43 @@ Spawner.prototype =
 	initWaves: function()
 	{
 		this.addWave(
-			[0, 0.5, 10, 1, EnemyStar, this.standardSpawnParams, {remaining: 3}]
+			[0, 0.5, 10, 1, EnemyStar, this.standardSpawnParams, {remaining: 1}]
 		);
 
 		this.addWave(
 			[0, 1, 5, 1, EnemyStar, this.standardSpawnParams, {remaining: 2}],
-			[0, 0.4, 20, 1, EnemyKamikaze, this.standardSpawnParams, {remaining: 2}]
+			[0, 0.4, 15, 1, EnemyKamikaze, this.standardSpawnParams, {remaining: 2}]
 		);
 
 		this.addWave(
 			[0, 1, 1, 3, EnemyDestroyer, this.standardSpawnParams, {remaining: 0}],
-			[0, 1, 8, 1, EnemyStar, this.standardSpawnParams, {remaining: 3}]
+			[0, 1, 5, 1, EnemyStar, this.standardSpawnParams, {remaining: 2}]
 		);
 
 		this.addWave(
-			[0, 6, 3, 2, EnemyDestroyer, this.standardSpawnParams, {remaining: 0}],
-			[0, 1, 8, 1, EnemyKamikaze, this.standardSpawnParams, {remaining: 3}]
+			[0, 8, 3, 2, EnemyDestroyer, this.standardSpawnParams, {remaining: 0}],
+			[0, 1, 8, 1, EnemyKamikaze, this.standardSpawnParams, {remaining: 2}]
 		);
 
 		this.addWave(
-			[0, 5, 3, 10, EnemyStar, this.standardSpawnParams, {remaining: 3}]
+			[0, 5, 3, 10, EnemyStar, this.standardSpawnParams, {remaining: 0}]
 		);
 
 		this.addWave(
-			[0, 5, 3, 15, EnemyStar, this.standardSpawnParams, {remaining: 3}]
+			[0, 1.2, 4, 1, EnemyGunnerGreen, this.standardSpawnParams, {remaining: 0}]
+		);
+
+		this.addWave(
+			[0, 5, 3, 5, EnemyStar, this.standardSpawnParams, {remaining: 3}],
+			[0, 1.2, 4, 1, EnemyGunnerGreen, this.standardSpawnParams, {remaining: 0}]
 		);
 
 		this.addWave(
 			[0, 0.5, 2, 1, EnemyStarYellow, this.standardSpawnParams, {remaining: 0}]
+		);
+
+		this.addWave(
+			[0, 1.2, 7, 1, EnemyGunnerGreen, this.standardSpawnParams, {remaining: 0}]
 		);
 
 		this.addWave(

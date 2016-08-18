@@ -1,5 +1,5 @@
 
-/* global Ship, game, models, V */
+/* global Ship, game, models, V, colors */
 
 "use strict";
 
@@ -78,7 +78,7 @@ inherit(EnemyStarOrange, Ship,
 	radius: 6,
 	collisionDamage: 30,
 	dragCoefficient: 0,
-	childCount: 15,
+	childCount: 12,
 	color: new Float32Array([0.8, 0.5, 0.2, 1]),
 
 	step: function(timestamp, dt)
@@ -189,6 +189,86 @@ inherit(EnemyDestroyer, Ship,
 	render: function()
 	{
 		models.enemyDestroyer.render(this.color, this.p, this.v);
+	},
+
+	fireBullets: function(timestamp, targetp)
+	{
+		if (timestamp > this.lastShootTime + this.shootInterval) {
+			var v = targetp.sub(this.p);
+			if (v.len() < 0.001)
+				v = new V(0, 1);
+			v.setlen_(this.bulletSpeed);
+			game.addEntity(new BlasterShot(this.p.clone(), v, timestamp + 10, this.faction));
+			this.lastShootTime = timestamp;
+		}
+	}
+});
+
+
+// Fast enemy that gets in close range, stops, and shoots a burst with a blaster weapon.
+function EnemyGunnerGreen(p, dir)
+{
+	Ship.call(this, p, dir.mul(50), 100);
+	this.lastShootTime = -1;
+	this.attackMode = false;
+	this.attackModeStart = undefined;
+	this.targetPos = undefined;
+}
+
+inherit(EnemyGunnerGreen, Ship,
+{
+	m: 3e3,
+	faction: 2,
+	radius: 3,
+	acceleration: 1200,
+	breakAcceleration: 400,
+	dragCoefficient: 0.025,
+	shootInterval: 0.3,
+	bulletSpeed: 120,
+	minAttackLength: 2,
+	proximity: 50,
+	attackDelay: 0.4,
+	color: colors.enemyGreen1,
+
+	step: function(timestamp, dt)
+	{
+		var distSqr = this.p.distSqr(game.player.p);
+
+		if (this.attackMode) {
+			this.deaccelerate(dt, this.breakAcceleration);
+			var attackLength = timestamp - this.attackModeStart;
+			if (attackLength >= this.attackDelay) {
+				if (!this.targetPos)
+					this.targetPos = game.player.p.clone();
+				this.fireBullets(timestamp, this.targetPos);
+			}
+			if (attackLength >= this.minAttackLength) {
+				this.attackMode = false;
+				this.targetPos = undefined;
+			}
+		} else {
+			var targetDir = game.player.p.sub(this.p).setlen(1).add(this.v.setlen(1));
+			var a = targetDir.setlen(this.acceleration);
+			this.v.add_(a.mul(dt));
+			if (distSqr < this.proximity * this.proximity) {
+				this.attackMode = true;
+				this.attackModeStart = timestamp;
+			}
+		}
+
+		Ship.prototype.step.apply(this, arguments);
+	},
+
+	render: function()
+	{
+		models.enemyGunnerGreen.render(this.color, this.p, this.v);
+		if (this.targetPos)
+			var dir = this.targetPos.sub(this.p);
+		else
+			var dir = this.v;
+		models.turretSmall.render(colors.enemyGreen2, this.relativePos(0, 0.5), dir);
+		models.flame.render(colors.flameYellow, this.relativePos(-1, -1.5), this.v);
+		models.flame.render(colors.flameYellow, this.relativePos(1, -1.5), this.v);
 	},
 
 	fireBullets: function(timestamp, targetp)

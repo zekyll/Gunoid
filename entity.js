@@ -42,6 +42,15 @@ Entity.prototype =
 		var dragAccel = Math.min(this.dragCoefficient * vlen * vlen * dt, vlen);
 		if (vlen > 1e-10)
 			this.v.sub_(this.v.setlen(dragAccel));
+	},
+
+	deaccelerate: function(dt, deaccel)
+	{
+		var vlen = this.v.len();
+		if (vlen > deaccel * dt)
+			this.v.sub_(this.v.setlen(deaccel * dt));
+		else
+			this.v.setlen_(1e-9);
 	}
 };
 
@@ -117,6 +126,13 @@ inherit(Ship, Entity,
 			v.mul_(this.debrisSpeed * (0.1 + 0.9 * Math.random()));
 			game.addEntity(new Debris(this.p.clone(), v.add(this.v), timestamp + (0.2 + Math.random()) * this.debrisExpireTime, this.color));
 		}
+	},
+
+	relativePos: function(x, y)
+	{
+		var forward = this.v.setlenSafe(1);
+		var right = forward.rot90right();
+		return forward.mul_(y).add_(right.mul_(x)).add_(this.p);
 	}
 });
 
