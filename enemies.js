@@ -3,6 +3,7 @@
 
 "use strict";
 
+
 function EnemyStar(p, dir)
 {
 	Ship.call(this, p, dir.mul(80), 60);
@@ -31,6 +32,7 @@ inherit(EnemyStar, Ship,
 		models.enemyStar.render(this.color, this.p, this.v);
 	}
 });
+
 
 function EnemyStarYellow(p, dir)
 {
@@ -62,6 +64,7 @@ inherit(EnemyStarYellow, Ship,
 		models.enemyStar.render(this.color, this.p, this.v);
 	}
 });
+
 
 function EnemyStarOrange(p, dir)
 {
@@ -103,6 +106,7 @@ inherit(EnemyStarOrange, Ship,
 		models.enemyStar.render(this.color, this.p, this.v, 2);
 	}
 });
+
 
 function EnemyKamikaze(p, dir)
 {
@@ -152,6 +156,7 @@ inherit(EnemyKamikaze, Ship,
 	}
 });
 
+
 function EnemyDestroyer(p, dir)
 {
 	Ship.call(this, p, dir.mul(25), 600);
@@ -191,7 +196,7 @@ inherit(EnemyDestroyer, Ship,
 		if (timestamp > this.lastShootTime + this.shootInterval) {
 			var v = targetp.sub(this.p);
 			if (v.len() < 0.001)
-				v = V[0, 1];
+				v = new V(0, 1);
 			v.setlen_(this.bulletSpeed);
 			game.addEntity(new BlasterShot(this.p.clone(), v, timestamp + 10, this.faction));
 			this.lastShootTime = timestamp;

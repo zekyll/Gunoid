@@ -1,4 +1,6 @@
 
+"use strict";
+
 function V(x, y)
 {
 	this.x = x;

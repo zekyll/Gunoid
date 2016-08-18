@@ -3,6 +3,8 @@
 
 "use strict";
 
+
+// Base class for all game entities.
 function Entity(p)
 {
 	this.p = p;
@@ -43,6 +45,8 @@ Entity.prototype =
 	}
 };
 
+
+// Base class for ships.
 function Ship(p, v, hp)
 {
 	Entity.call(this, p);
@@ -81,13 +85,17 @@ inherit(Ship, Entity,
 				if ((rnd -= 0.06) < 0) {
 					game.addEntity(new RepairKit(this.p.clone(), timestamp + 10));
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10, RocketLauncher, models.lootRocket));
+					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10,
+							RocketLauncher, models.lootRocket));
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10, MissileLauncher, models.lootMissile));
+					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10,
+							MissileLauncher, models.lootMissile));
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10, Laser, models.lootLaser));
+					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10,
+							Laser, models.lootLaser));
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10, DualBlaster, models.lootDualBlaster));
+					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10,
+							DualBlaster, models.lootDualBlaster));
 				}
 			}
 			this.spreadDebris(timestamp);
@@ -111,6 +119,7 @@ inherit(Ship, Entity,
 		}
 	}
 });
+
 
 function Explosion(p, v, maxRadius, speed, damage, faction)
 {

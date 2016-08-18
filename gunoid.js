@@ -6,6 +6,7 @@
 var gl;
 var glext;
 
+// Main game class.
 var game =
 {
 	canvas: undefined,
@@ -41,7 +42,7 @@ var game =
 		var self = this;
 		var resizeCanvas = function () {
 			var w = window.innerWidth;
-			var h = window.innerHeight;
+			var h = window.innerHeight; // TODO Firefox fullscreen innerHeight is bugged (1 too small).
 			if (w < self.aspectRatio * h)
 				h = Math.round(w / self.aspectRatio);
 			else

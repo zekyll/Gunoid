@@ -3,6 +3,8 @@
 
 "use strict";
 
+
+// 2D wireframe model that is rendered using instancing. Vertex data consists of a list of lines.
 function Model(vertexData)
 {
 	this.primitiveType = gl.LINES;
@@ -107,6 +109,8 @@ Model.prototype =
 	constructor: Model
 };
 
+
+// 2D model based on a triangle list.
 function SolidModel(vertexData)
 {
 	Model.call(this, vertexData);
@@ -115,8 +119,6 @@ function SolidModel(vertexData)
 
 inherit(SolidModel, Model,
 {
-	vertexSize: 2,
-
 	renderInstances: function()
 	{
 		if (this.instanceCount === 0)
@@ -131,6 +133,8 @@ inherit(SolidModel, Model,
 	}
 });
 
+
+// Textured point sprite model.
 function TexturedPointModel(vertexData, texture)
 {
 	Model.call(this, vertexData);
@@ -140,8 +144,6 @@ function TexturedPointModel(vertexData, texture)
 
 inherit(TexturedPointModel, Model,
 {
-	vertexSize: 2,
-
 	renderInstances: function()
 	{
 		if (this.instanceCount === 0)
@@ -160,7 +162,9 @@ inherit(TexturedPointModel, Model,
 	}
 });
 
-// alphaBlend: 0 disabled, 1 normal, 2 additive
+
+// Textured 2D model. Vertex data is a triangle list where each vertex has texture coordinates.
+//  AlphaBlend: 0 disabled, 1 normal, 2 additive
 function TexturedModel(vertexData, texture, alphaBlend)
 {
 	Model.call(this, vertexData);
@@ -202,6 +206,7 @@ inherit(TexturedModel, Model,
 	}
 });
 
+
 function Texture(filename)
 {
 	++textures.unloadedCount;
@@ -214,7 +219,7 @@ function Texture(filename)
 		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, isBpg ? this.imageData : this);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); //TODO LINEAR_MIPMAP_NEAREST?
 		gl.generateMipmap(gl.TEXTURE_2D);
 		--textures.unloadedCount;
 		delete tex.img;
@@ -226,6 +231,7 @@ function Texture(filename)
 	return tex;
 }
 
+
 var textures =
 {
 	unloadedCount: 0,
@@ -235,6 +241,7 @@ var textures =
 		return this.unloadedCount === 0;
 	}
 };
+
 
 var models =
 {

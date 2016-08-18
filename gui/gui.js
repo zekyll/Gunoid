@@ -3,6 +3,7 @@
 
 "use strict";
 
+
 // Base class for all widgets.
 function Widget(area, text)
 {
@@ -85,6 +86,7 @@ inherit(MainMenu, Widget,
 {
 });
 
+
 // Displays player's hitpoints.
 function HpBar(area)
 {
@@ -116,6 +118,7 @@ inherit(HpBar, Widget,
 				percentage * this.area.width(), this.area.height());
 	}
 });
+
 
 // Root GUI widget hat contains all the other widgets.
 function Gui(width, height)
