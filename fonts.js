@@ -82,6 +82,7 @@ Font.prototype =
 		var scaleY = game.canvas.height / (this.logicalWidth / game.aspectRatio);
 		left = Math.round(left * scaleX);
 		top = Math.round(top * scaleY);
+		wrapWidth *= scaleX;
 		//width = Math.round(width * scaleX);
 		//height = Math.round(height * scaleY);
 
