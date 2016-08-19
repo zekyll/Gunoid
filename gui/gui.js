@@ -76,6 +76,22 @@ inherit(Button, Widget,
 	verticalMargin: 5
 });
 
+
+// Simple push button widget.
+function Text(area, text)
+{
+	Widget.call(this, area, text);
+}
+
+inherit(Text, Widget,
+{
+	horizontalMargin: 2,
+	verticalMargin: 2,
+	backgroundColor: colors.transparent,
+	borderColor: colors.transparent
+});
+
+
 // Main menu.
 function MainMenu(area)
 {
@@ -83,6 +99,21 @@ function MainMenu(area)
 	this.newGameBtn = new Button(new Rect(30, 30, 160, 70), "New Game");
 	this.newGameBtn.font = fonts.medium;
 	this.newGameBtn.horizontalTextAlign = 0.5;
+	this.instructionsTextLeft = new Text(new Rect(10, 90, 90, 200),
+		"[W,A,S,D]"
+		+ "\n[Mouse]"
+		+ "\n[P]"
+		+ "\n[ESC]"
+		+ "\n[F2]"
+		);
+	this.instructionsTextLeft.horizontalTextAlign = 0.5;
+	this.instructionsTextRight = new Text(new Rect(90, 90, 200, 200),
+		"Move ship"
+		+ "\nTarget"
+		+ "\nPause"
+		+ "\nMenu"
+		+ "\nRestart "
+		);
 }
 
 inherit(MainMenu, Widget,
