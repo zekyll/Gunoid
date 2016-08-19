@@ -136,6 +136,9 @@ Font.prototype =
 	// Render all added texts.
 	render: function()
 	{
+		if (this.vertexCount === 0)
+			return;
+
 		this._setProjViewMatrix();
 
 		var attribs = game.currentShaderProg.attribLocations;
