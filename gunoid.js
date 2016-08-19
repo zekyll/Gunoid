@@ -76,9 +76,10 @@ var game =
 			gl.clear(gl.COLOR_BUFFER_BIT);
 			this.initShaders();
 			models.init();
-			fonts.add("small", "Calibri", 10);
-			fonts.add("medium", "Calibri", 15);
-			fonts.add("big", "Calibri", 25);
+			var fontFamily = "Verdana, Trebuchet MS, Lucida Sans Unicode, Tahoma, Arial, sans-serif";
+			fonts.add("small", fontFamily, 10);
+			fonts.add("medium", fontFamily, 15);
+			fonts.add("big", fontFamily, 25);
 			this.initInput();
 			this.gui = new Gui(1000.0, 1000.0 / this.aspectRatio);
 			this.initGameWorld();
