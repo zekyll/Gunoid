@@ -302,11 +302,11 @@ var models =
 		game.useShaderProg(game.wireframeShaderProg);
 		game.setProjViewMatrix(projViewMatrix);
 		for (var modelName in this) {
-			if (this[modelName].constructor === Model)
+			if (this[modelName] instanceof SolidModel)
 				this[modelName].renderInstances();
 		}
 		for (var modelName in this) {
-			if (this[modelName] instanceof SolidModel)
+			if (this[modelName].constructor === Model)
 				this[modelName].renderInstances();
 		}
 
