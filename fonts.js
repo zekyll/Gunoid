@@ -72,49 +72,65 @@ Font.prototype =
 		this.vertexCount = 0;
 	},
 
-	// Add a new text.
-	addText: function(text, left, top, wrapWidth)
+	// Add a new text. Actual rendering doesn't happen until render() is called.
+	// horizontalAlign: 0=left, 0.5=center, 1.0=right.
+	addText: function(text, left, top, areaWidth, areaHeight, horizontalAlign)
 	{
-		if (!wrapWidth)
-			wrapWidth = 300;
+		if (!areaWidth)
+			areaWidth = 300;
+		if (!areaHeight)
+			areaHeight = 300;
+		if (typeof horizontalAlign === "undefined")
+			horizontalAlign = 0;
 
 		var scaleX = game.canvas.width / this.logicalWidth;
 		var scaleY = game.canvas.height / (this.logicalWidth / game.aspectRatio);
+		// Round text area dimensions to get perfect pixel alignment.
 		left = Math.round(left * scaleX);
 		top = Math.round(top * scaleY);
-		wrapWidth *= scaleX;
-		//width = Math.round(width * scaleX);
-		//height = Math.round(height * scaleY);
+		areaWidth = Math.round(areaWidth * scaleX);
+		var areaRight = left + areaWidth;
 
 		var x = left;
-		var wrapx = left + wrapWidth;
+		var y = top;
+		var lineLength = this._getNextLineLength(text, 0, areaWidth);
+		var lineEnd = lineLength;
 
 		for (var i = 0; i < text.length; ++i) {
-			var charCode = text.charCodeAt(i);
+			// Handle line change. Using a loop instead of "if" to handle empty lines.
+			while (i === lineEnd) {
+				// Skip line separator.
+				if (text.charCodeAt(i) === 32 || text.charCodeAt(i) === 10)
+					++i;
 
-			//var right = left + width;
-			//var bottom = top + height;
+				// Adjust aligment for previous line.
+				this._adjustLineAlignment(lineLength, horizontalAlign * (areaRight - x));
+
+				// Get next line.
+				x = left;
+				y += this.lineHeight;
+				lineLength = this._getNextLineLength(text, i, areaWidth);
+				lineEnd = i + lineLength;
+			}
+
+			// Get glyph dimensions.
+			var charCode = text.charCodeAt(i);
 			var texLeft = this.charData[4 * charCode + 0];
 			var texTop = this.charData[4 * charCode + 1];
 			var texWidth = this.charData[4 * charCode + 2];
 			var texHeight = this.charData[4 * charCode + 3];
 			var width = texWidth * this.canvas.width;
-			var height = texHeight * this.canvas.width;
+			var height = texHeight * this.canvas.height;
 			var cutoffx = width / height;
-			var cutoffy = height / height; //TODO find out actual height of the glyphs.
+			var cutoffy = 1.0; //TODO find out actual height of the glyphs.
 
-			// Start new line if wrap width reached or encountering a line change character.
-			if (x + width >= wrapx && width < wrapWidth || charCode === 10) {
-				top += this.lineHeight;
-				x = left;
-				if (charCode === 10)
-					continue;
-			}
-
-			this._addVertex(x + 0.5 * height, top + 0.5 * height, width, height,
+			this._addVertex(x + 0.5 * height, y + 0.5 * height, width, height,
 					texLeft, texTop, texWidth * height / width, texHeight, cutoffx, cutoffy);
 			x += width;
 		}
+
+		// Align last line.
+		this._adjustLineAlignment(lineLength, horizontalAlign * (areaRight - x));
 	},
 
 	// Render all added texts.
@@ -266,5 +282,42 @@ Font.prototype =
 		var projViewMatrix = makeOrthoMatrix(0, game.canvas.width, game.canvas.height, 0);
 		var loc = game.currentShaderProg.uniformLocations.projViewMatrix;
 		gl.uniformMatrix3fv(loc, false, projViewMatrix);
+	},
+
+	// Adds an offset to the x coordinates of all the glyphs in the previous line.
+	_adjustLineAlignment: function(lineLength, amount)
+	{
+		for (var i = this.vertexCount - lineLength; i < this.vertexCount; ++i)
+			this.vertexData[i * this.vertexSize] += amount;
+	},
+
+	// Returns length of the next line.
+	_getNextLineLength: function(text, startIdx, maxWidth)
+	{
+		var width = 0; // Line width in pixels.
+		var length = 0; // Length without last word.
+		var wordLength = 0;
+		for (var i = startIdx; i < text.length; ++i) {
+			var charCode = text.charCodeAt(i);
+			if (charCode === 10)
+				return length + wordLength;
+			if (charCode === 32) {
+				// Completed a word; add it to line length.
+				length += wordLength;
+				wordLength = 0;
+			}
+
+			var charWidth = this.charData[4 * charCode + 2] * this.canvas.width;
+			if (width + charWidth >= maxWidth) {
+				// Break line in the middle of a word if it doesn't fit on one line, and avoid
+				// infinite loop by having at least 1 character per line.
+				return length !== 0 ? length : Math.max(wordLength, 1);
+			}
+
+			width += charWidth;
+			++wordLength;
+		}
+
+		return length + wordLength;
 	}
 };

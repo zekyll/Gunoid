@@ -24,6 +24,7 @@ Widget.prototype =
 	visible: true,
 	selfVisible: true,
 	text: "",
+	horizontalTextAlign: 0.0, // Left.
 
 	// Renders the widget itself without children.
 	renderSelf: function(offset, timestamp, dt)
@@ -40,7 +41,8 @@ Widget.prototype =
 		if (this.text) {
 			this.font.setColor(this.textColor);
 			this.font.addText(this.text, absoluteTopLeft.x + this.horizontalMargin,
-					absoluteTopLeft.y + this.verticalMargin);
+					absoluteTopLeft.y + this.verticalMargin, this.area.width() - 2 * this.horizontalMargin,
+					this.area.height() - 2 * this.verticalMargin, this.horizontalTextAlign);
 		}
 	},
 
@@ -80,6 +82,7 @@ function MainMenu(area)
 	Widget.call(this, area);
 	this.newGameBtn = new Button(new Rect(30, 30, 160, 70), "New Game");
 	this.newGameBtn.font = fonts.medium;
+	this.newGameBtn.horizontalTextAlign = 0.5;
 }
 
 inherit(MainMenu, Widget,
@@ -99,7 +102,7 @@ function HpBar(area)
 inherit(HpBar, Widget,
 {
 	hpBarColor: new Float32Array([0.3, 0.7, 0.3, 0.9]),
-	textColor: new Float32Array([1, 0.0, 0.0, 1.0]),
+	textColor: colors.red,
 	horizontalMargin: 5,
 
 	update: function(currentHp, maxHp)
@@ -109,7 +112,7 @@ inherit(HpBar, Widget,
 		this.text = "" + this.currentHp + " / " + this.maxHp;
 	},
 
-	renderSelf: function(offset)
+	renderSelf: function(offset, timestamp, dt)
 	{
 		Widget.prototype.renderSelf.apply(this, arguments);
 		var absoluteTopLeft = this.area.topLeft.add(offset);
