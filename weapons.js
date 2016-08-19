@@ -1,5 +1,5 @@
 
-/* global game, Ship, models */
+/* global game, Ship, models, colors */
 
 "use strict";
 
@@ -103,8 +103,8 @@ inherit(Laser, Weapon,
 {
 	slot: 1,
 	damage: 400,
-	color: new Float32Array([1, 0, 0.5, 1]),
-	sparkColor: new Float32Array([1, 0.9, 0, 1]),
+	color: colors.laser,
+	sparkColor: colors.flameYellow,
 	sparkSpeed: 20,
 	sparkExpireTime: 0.7,
 	sparkSpawnRate: 20,

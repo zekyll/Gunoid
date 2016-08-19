@@ -1,5 +1,5 @@
 
-/* global models, Spawner, EnemyStar, input, textures, fonts */
+/* global models, Spawner, EnemyStar, input, textures, fonts, colors */
 
 "use strict";
 
@@ -343,13 +343,13 @@ var game =
 				+ "time: " + this.time.toFixed(1);
 
 		if (this.player && this.player.hp <= 0) {
-			fonts.big.setColor(new Float32Array([1, 1, 0, 1]));
+			fonts.big.setColor(colors.guiText);
 			fonts.big.addText("YOUR SHIP WAS DESTROYED!\nPress F2 to start a new game", 0, 250, 1000, 200, 0.5);
 		} else if (this.spawner.finished()) {
-			fonts.big.setColor(new Float32Array([1, 1, 0, 1]));
+			fonts.big.setColor(colors.guiText);
 			fonts.big.addText("FINISHED!\nPress F2 to start a new game", 0, 250, 1000, 200, 0.5);
 		} else if (this.paused) {
-			fonts.big.setColor(new Float32Array([1, 1, 0, 1]));
+			fonts.big.setColor(colors.guiText);
 			fonts.big.addText("PAUSED!", 400, 230, 200, 50, 0.5);
 		}
 		fonts.renderAll();

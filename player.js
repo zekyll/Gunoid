@@ -1,5 +1,5 @@
 
-/* global Ship, input, game, models */
+/* global Ship, input, game, models, colors */
 
 "use strict";
 
@@ -13,7 +13,7 @@ function Player(p)
 	this.acceleration = 2000;
 	this.dragCoefficient = 0.1;
 
-	this.color = [0.9, 0.9, 1.0, 1.0];
+	this.color = colors.player;
 	this.primaryWeapon = new Blaster(this);
 	this.secondaryWeapon = null;
 }

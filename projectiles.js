@@ -1,5 +1,5 @@
 
-/* global Entity, Ship, game, models */
+/* global Entity, Ship, game, models, colors */
 
 "use strict";
 
@@ -32,7 +32,7 @@ inherit(BlasterShot, Projectile,
 	radius: 2,
 	damage: 30,
 	m: 10,
-	color: [1.0, 1.0, 0.6, 1.0],
+	color: colors.projectile,
 
 	collide: function(timestamp, other)
 	{
@@ -61,7 +61,7 @@ inherit(PlasmaBall, Projectile,
 	radius: 3,
 	damage: 30,
 	m: 10,
-	color: [0.1, 1.0, 0.9, 1.0],
+	color: colors.plasmaBall,
 
 	collide: function(timestamp, other)
 	{
@@ -92,7 +92,7 @@ inherit(Missile, Projectile,
 	m: 30,
 	acceleration: 400,
 	dragCoefficient: 0.05,
-	color: [1.0, 1.0, 0.6, 1.0],
+	color: colors.projectile,
 
 	step: function(timestamp, dt)
 	{
@@ -149,7 +149,7 @@ inherit(Rocket, Projectile,
 	dragCoefficient: 0.01,
 	explosionRadius: 15,
 	explosionSpeed: 15,
-	color: [1.0, 1.0, 0.6, 1.0],
+	color: colors.projectile,
 
 	step: function(timestamp, dt)
 	{

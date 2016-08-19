@@ -17,7 +17,7 @@ inherit(Loot, Entity,
 {
 	radius: 5,
 	faction: 1,
-	color: [1.0, 1.0, 1.0, 1.0],
+	color: colors.loot,
 
 	step: function(timestamp, dt)
 	{

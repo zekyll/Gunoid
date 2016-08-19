@@ -16,9 +16,9 @@ function Widget(area, text)
 Widget.prototype =
 {
 	// Default values:
-	backgroundColor: new Float32Array([0.4, 0.55, 0.7, 0.6]),
-	textColor: new Float32Array([1, 0.5, 0, 1]),
-	borderColor: new Float32Array([0.5, 0.65, 0.9, 1.0]),
+	backgroundColor: colors.guiBackground,
+	textColor: colors.guiText,
+	borderColor: colors.guiBorder,
 	horizontalMargin: 1,
 	verticalMargin: 1,
 	visible: true,

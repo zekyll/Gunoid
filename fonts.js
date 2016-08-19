@@ -1,5 +1,5 @@
 
-/* global gl, game, glext */
+/* global gl, game, glext, colors */
 
 "use strict";
 
@@ -50,7 +50,7 @@ function Font(family, size)
 	this.canvas.height = 512;
 	this.family = family;
 	this.textSize = size;
-	this.textColor = new Float32Array([1, 1, 1, 1]);
+	this.textColor = colors.white;
 	this.lineHeight = 0;
 	this.vertexData = new Float32Array(this.vertexSize); // Initial capacity 1 vertex.
 	this.vertexCount = 0;
