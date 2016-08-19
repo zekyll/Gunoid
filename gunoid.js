@@ -81,7 +81,7 @@ var game =
 			fonts.add("medium", fontFamily, 15);
 			fonts.add("big", fontFamily, 25);
 			this.initInput();
-			this.gui = new Gui(1000.0, 1000.0 / this.aspectRatio);
+			this.initGui();
 			this.initGameWorld();
 			this.requestFrame();
 		}
@@ -150,16 +150,38 @@ var game =
 
 		input.registerKeyPressHandler("New game", function() {
 			self.initGameWorld();
+			self.gui.mainMenu.visible = false;
 		});
 		input.registerKeyPressHandler("Pause", function() {
-			self.paused = !self.paused;
+			if (!self.gui.mainMenu.visible)
+				self.paused = !self.paused;
 		});
 		input.registerKeyPressHandler("Benchmark", function() {
 			self.initBenchmark();
 		});
 		input.registerKeyPressHandler("Main Menu", function() {
 			self.gui.mainMenu.visible = !self.gui.mainMenu.visible;
-			self.paused = !self.paused;
+			self.paused = self.gui.mainMenu.visible;
+		});
+	},
+
+	initGui: function()
+	{
+		this.gui = new Gui(1000.0, 1000.0 / this.aspectRatio);
+
+		// Inject mouse input.
+		var self = this;
+		input.registerMouseMoveHandler(function(relx, rely) {
+			var p = new V(relx * self.gui.area.width(), rely * self.gui.area.height());
+			self.gui.mouseMove(p);
+		});
+		input.registerKeyPressHandler("Mouse Button", function(relx, rely) {
+			var p = new V(relx * self.gui.area.width(), rely * self.gui.area.height());
+			self.gui.mouseDown(p);
+		});
+		input.registerKeyUpHandler("Mouse Button", function(relx, rely) {
+			var p = new V(relx * self.gui.area.width(), rely * self.gui.area.height());
+			self.gui.mouseUp(p);
 		});
 	},
 
@@ -351,7 +373,7 @@ var game =
 			fonts.big.addText("FINISHED!\nPress F2 to start a new game", 0, 250, 1000, 200, 0.5);
 		} else if (this.paused) {
 			fonts.big.setColor(colors.guiText);
-			fonts.big.addText("PAUSED!", 400, 230, 200, 50, 0.5);
+			fonts.big.addText("PAUSED", 400, 230, 200, 50, 0.5);
 		}
 		fonts.renderAll();
 	},
