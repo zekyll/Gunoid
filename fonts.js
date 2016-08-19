@@ -104,7 +104,7 @@ Font.prototype =
 					++i;
 
 				// Adjust aligment for previous line.
-				this._adjustLineAlignment(lineLength, horizontalAlign * (areaRight - x));
+				this._adjustLineAlignment(lineLength, Math.round(horizontalAlign * (areaRight - x)));
 
 				// Get next line.
 				x = left;
@@ -130,7 +130,7 @@ Font.prototype =
 		}
 
 		// Align last line.
-		this._adjustLineAlignment(lineLength, horizontalAlign * (areaRight - x));
+		this._adjustLineAlignment(lineLength, Math.round(horizontalAlign * (areaRight - x)));
 	},
 
 	// Render all added texts.
@@ -209,7 +209,7 @@ Font.prototype =
 		this.charData = new Float32Array(this.maxCodePoint * 4);
 
 		// There's no easy way to get the font height and baseline, so we just approximate.
-		this.lineHeight = 2.2 * ctx.measureText("A").width;
+		this.lineHeight = Math.round(2.2 * ctx.measureText("A").width);
 		var baseline = Math.round(0.75 * this.lineHeight);
 
 		var y = 0;
