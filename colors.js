@@ -10,6 +10,7 @@ var colors =
 	red: new Float32Array([1, 0, 0, 1]),
 	green: new Float32Array([0, 1, 0, 1]),
 	blue: new Float32Array([0, 0, 1, 1]),
+	yellow: new Float32Array([1, 1, 0, 1]),
 
 	// Game objects:
 	player: new Float32Array([0.9, 0.9, 1.0, 1.0]),

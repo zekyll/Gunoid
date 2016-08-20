@@ -116,11 +116,11 @@ Widget.prototype =
 	}
 };
 
+
 // Simple push button widget.
 function Button(area, text)
 {
 	Widget.call(this, area, text);
-	//this._pressed = true;
 }
 
 inherit(Button, Widget,
@@ -166,7 +166,7 @@ inherit(Button, Widget,
 });
 
 
-// Simple push button widget.
+// Text without background/borders.
 function Text(area, text)
 {
 	Widget.call(this, area, text);
