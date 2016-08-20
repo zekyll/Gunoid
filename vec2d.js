@@ -9,6 +9,13 @@ function V(x, y)
 
 V.prototype =
 {
+	set_: function(x, y)
+	{
+		this.x = x;
+		this.y = y;
+		return this;
+	},
+
 	add: function(rhs)
 	{
 		return new V(rhs.x + this.x, rhs.y + this.y);
@@ -77,6 +84,11 @@ V.prototype =
 		return Math.sqrt(this.x * this.x + this.y * this.y);
 	},
 
+	dist: function(v2)
+	{
+		return Math.sqrt(this.distSqr(v2));
+	},
+
 	distSqr: function(v2)
 	{
 		var dx = v2.x - this.x;
@@ -129,6 +141,12 @@ V.prototype =
 		var newy = sina * this.x + cosa * this.y;
 		this.x = newx;
 		this.y = newy;
+		return this;
+	},
+
+	rotToward_: function(v2, angle)
+	{
+		this.rot_(this.cross(v2) > 0 ? angle : -angle);
 		return this;
 	},
 

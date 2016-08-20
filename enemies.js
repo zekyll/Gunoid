@@ -280,3 +280,95 @@ inherit(EnemyGunnerGreen, Ship,
 		}
 	}
 });
+
+
+// Launcher small ships and shoots 3 grenade launchers at regular intervals.
+function EnemyCarrierYellow(p, dir)
+{
+	Ship.call(this, p, dir.mul(25), 5000);
+	this.lastShootTime = -1;
+	this.lastSpawnTime = -1;
+	this.frontTurretTargetP = game.randomPosition();
+	this.frontTurretDir = this.v.setlenSafe(1);
+}
+
+inherit(EnemyCarrierYellow, Ship,
+{
+	m: 500e3,
+	faction: 2,
+	radius: 35,
+	collisionDamage: 15,
+	acceleration: 14,
+	dragCoefficient: 0.1,
+	shootInterval: 2,
+	bulletSpeed: 80,
+	color: colors.enemyYellow,
+	spawnInterval: 2,
+
+	step: function(timestamp, dt)
+	{
+		var targetDir = game.player.p.sub(this.p).setlen(1).add(this.v.setlen(5));
+		var a = targetDir.setlen(this.acceleration);
+		this.v.add_(a.mul(dt));
+
+		this.frontTurretDir.rotToward_(this.frontTurretTargetP.sub(this.relativePos(0, 37.5)), 2 * dt);
+
+		this.fireBullets(timestamp, game.player.p);
+		this.spawnShips(timestamp);
+
+		Ship.prototype.step.apply(this, arguments);
+	},
+
+	render: function()
+	{
+		models.enemyCarrierYellow.render(this.color, this.p, this.v);
+		for (var i = -1; i <= 1; i += 2) {
+			var turretp = this.relativePos(21.5 * i, 7.5);
+			var turretDir = game.player.p.sub(turretp);
+			models.turretMedium.render(colors.enemyYellow2, turretp, turretDir);
+			models.flame.render(colors.flameYellow, this.relativePos(8 * i, -25), this.v, 3);
+		}
+
+		models.turretMedium.render(colors.enemyYellow2, this.relativePos(0, 37.5), this.frontTurretDir);
+	},
+
+	fireBullets: function(timestamp, targetp)
+	{
+		if (timestamp > this.lastShootTime + this.shootInterval) {
+			// Side turrets.
+			for (var i = -1; i <= 1; i += 2) {
+				var turretp = this.relativePos(21.5 * i, 7.5);
+				var v = targetp.sub(this.p);
+				if (v.len() < 0.001)
+					v = new V(0, 1);
+				v.setlen_(this.bulletSpeed);
+				var expire = this.p.dist(targetp) / this.bulletSpeed;
+				game.addEntity(new Grenade(turretp, v, timestamp + expire, this.faction));
+			}
+
+			// Front turret. Random direction.
+			var turretp = this.relativePos(0, 37.5);
+			var v = this.frontTurretTargetP.sub(turretp);
+			if (v.len() < 0.001)
+				v = new V(0, 1);
+			v.setlen_(this.bulletSpeed);
+			var expire = turretp.dist(this.frontTurretTargetP) / this.bulletSpeed;
+			console.log(this.frontTurretTargetP, turretp, v);
+			game.addEntity(new Grenade(turretp, v, timestamp + expire, this.faction));
+			this.frontTurretTargetP = game.randomPosition();
+
+			this.lastShootTime = timestamp;
+		}
+	},
+
+	spawnShips: function(timestamp)
+	{
+		if (timestamp > this.lastSpawnTime + this.spawnInterval) {
+			for (var i = -1; i <= 1; i += 2) {
+				var spawnpos = this.relativePos(20 * i, 30);
+				game.addEntity(new EnemyKamikaze(spawnpos, this.v.setlenSafe(1)));
+			}
+			this.lastSpawnTime = timestamp;
+		}
+	},
+});

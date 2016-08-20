@@ -1,5 +1,5 @@
 
-/* global game, EnemyStar, EnemyKamikaze, EnemyDestroyer, EnemyStarYellow, EnemyStarOrange, EnemyGunnerGreen */
+/* global game, EnemyStar, EnemyKamikaze, EnemyDestroyer, EnemyStarYellow, EnemyStarOrange, EnemyGunnerGreen, EnemyCarrierYellow */
 
 "use strict";
 
@@ -164,7 +164,15 @@ Spawner.prototype =
 		);
 
 		this.addWave(
-			[0, 5, 3, 20, EnemyStar, this.standardSpawnParams, {remaining: 3}]
+			[0, 6, 3, 15, EnemyStar, this.standardSpawnParams, {remaining: 0}]
+		);
+
+		this.addWave(
+			[2, 1, 1, 1, EnemyCarrierYellow, this.standardSpawnParams, {remaining: 0}]
+		);
+
+		this.addWave(
+			[2, 5, 3, 20, EnemyStar, this.standardSpawnParams, {remaining: 3}]
 		);
 
 		this.addWave(

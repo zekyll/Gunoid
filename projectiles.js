@@ -223,3 +223,56 @@ inherit(Debris, Projectile,
 		models.debris.render(color, this.p, this.dir);
 	}
 });
+
+
+// Flies in straight line and explodes after a delay.
+function Grenade(p, v, expire, faction)
+{
+	Projectile.call(this, p, v, 1, expire + this.activationDelay, faction);
+}
+
+inherit(Grenade, Projectile,
+{
+	growSpeed: 4,
+	radius: 1,
+	damage: 30,
+	activationDelay: 1.0,
+	m: 10,
+	color: colors.explosiveProjectile,
+	explosionRadius: 50,
+	explosionSpeed: 20,
+	explosionForce: 6e6,
+
+	step: function(timestamp, dt)
+	{
+		Projectile.prototype.step.apply(this, arguments);
+		if (this.expire - timestamp <= this.activationDelay) {
+			this.v.set_(0, 0);
+			this.radius += dt * this.growSpeed;
+		}
+
+		if (this.hp <= 0)
+			this.detonate(this.v);
+	},
+
+	collide: function(timestamp, dt, other)
+	{
+		if (other instanceof Ship && other.faction !== this.faction) {
+			this.hp -= 1;
+			this.detonate(other.v);
+			return true;
+		}
+		return false;
+	},
+
+	detonate: function(v)
+	{
+		game.addEntity(new Explosion(this.p, v, this.explosionRadius, this.explosionSpeed,
+				this.damage, this.explosionForce, this.faction));
+	},
+
+	render: function()
+	{
+		models.circle8.render(this.color, this.p, this.v, this.radius);
+	}
+});
