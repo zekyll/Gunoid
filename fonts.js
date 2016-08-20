@@ -166,7 +166,7 @@ Font.prototype =
 
 		gl.uniform1i(uniforms.sampler, 0);
 
-		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+		gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
 		gl.enable(gl.BLEND);
 
 		gl.drawArrays(gl.POINTS, 0, this.vertexCount);
