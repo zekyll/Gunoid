@@ -7,7 +7,7 @@
 // Base class for all game entities.
 function Entity(p)
 {
-	this.p = p;
+	this.p = p.clone();
 	this.id = this.staticVars.idCounter++;
 }
 
@@ -64,7 +64,7 @@ Entity.prototype =
 function Ship(p, v, hp)
 {
 	Entity.call(this, p);
-	this.v = v;
+	this.v = v.clone();
 	this.hp = hp;
 }
 
@@ -97,19 +97,15 @@ inherit(Ship, Entity,
 			if (this.faction === 2) {
 				var rnd = Math.random();
 				if ((rnd -= 0.06) < 0) {
-					game.addEntity(new RepairKit(this.p.clone(), timestamp + 10));
+					game.addEntity(new RepairKit(this.p, timestamp + 10));
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10,
-							RocketLauncher, models.lootRocket));
+					game.addEntity(new LootWeapon(this.p, timestamp + 10, RocketLauncher, models.lootRocket));
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10,
-							MissileLauncher, models.lootMissile));
+					game.addEntity(new LootWeapon(this.p, timestamp + 10, MissileLauncher, models.lootMissile));
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10,
-							Laser, models.lootLaser));
+					game.addEntity(new LootWeapon(this.p, timestamp + 10, Laser, models.lootLaser));
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootWeapon(this.p.clone(), timestamp + 10,
-							DualBlaster, models.lootDualBlaster));
+					game.addEntity(new LootWeapon(this.p, timestamp + 10, DualBlaster, models.lootDualBlaster));
 				}
 			}
 			this.spreadDebris(timestamp);
@@ -119,17 +115,19 @@ inherit(Ship, Entity,
 	spreadDebris: function(timestamp)
 	{
 		var debrisCount = 3 + this.m / 5e3;
+		var color = new Float32Array([
+			0.3 + 0.5 * this.color[0],
+			0.3 + 0.5 * this.color[1],
+			0.3 + 0.5 * this.color[2],
+			1
+		]);
 		for (var i = 0; i < debrisCount; ++i) {
-			var color = new Float32Array([
-				0.3 + 0.5 * this.color[0],
-				0.3 + 0.5 * this.color[1],
-				0.3 + 0.5 * this.color[2],
-				1
-			]);
 			var angle = Math.random() * 2 * Math.PI;
 			var v = new V(Math.cos(angle), Math.sin(angle));
 			v.mul_(this.debrisSpeed * (0.1 + 0.9 * Math.random()));
-			game.addEntity(new Debris(this.p.clone(), v.add(this.v), timestamp + (0.2 + Math.random()) * this.debrisExpireTime, this.color));
+			v.add_(this.v);
+			var expire = timestamp + (0.2 + Math.random()) * this.debrisExpireTime;
+			game.addEntity(new Debris(this.p, v, expire, this.color));
 		}
 	},
 
@@ -146,7 +144,7 @@ inherit(Ship, Entity,
 function Explosion(p, v, maxRadius, speed, damage, force, faction)
 {
 	Entity.call(this, p);
-	this.v = v;
+	this.v = v.clone();
 	this.maxRadius = maxRadius;
 	if (!damage)
 		this.startRadius = 0;

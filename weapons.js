@@ -33,7 +33,7 @@ inherit(Blaster, Weapon,
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			var v = targetDir.setlen(this.bulletSpeed);
-			game.addEntity(new BlasterShot(this.ship.p.clone(), v, timestamp + 2, this.ship.faction));
+			game.addEntity(new BlasterShot(this.ship.p, v, timestamp + 2, this.ship.faction));
 			this.lastShootTime = timestamp;
 		}
 	}
@@ -60,8 +60,8 @@ inherit(DualBlaster, Weapon,
 				targetDir = new V(0, 1);
 			var sideDir = targetDir.rot90left().setlen(0.5 * this.spread);
 			var v = targetDir.setlen(this.bulletSpeed);
-			game.addEntity(new BlasterShot(this.ship.p.add(sideDir), v.clone(), timestamp + 2, this.ship.faction));
-			game.addEntity(new BlasterShot(this.ship.p.sub(sideDir), v.clone(), timestamp + 2, this.ship.faction));
+			game.addEntity(new BlasterShot(this.ship.p.add(sideDir), v, timestamp + 2, this.ship.faction));
+			game.addEntity(new BlasterShot(this.ship.p.sub(sideDir), v, timestamp + 2, this.ship.faction));
 			this.lastShootTime = timestamp;
 		}
 	}
@@ -87,7 +87,7 @@ inherit(PlasmaSprinkler, Weapon,
 		if (timestamp > this.lastShootTime + this.shootInterval) {
 			this.targetDir.rot_((timestamp - this.lastShootTime) * this.rotateSpeed * this.rotateDir);
 			var v = this.targetDir.setlen(this.projectileSpeed);
-			game.addEntity(new PlasmaBall(this.ship.p.clone(), v, timestamp + 10, this.ship.faction));
+			game.addEntity(new PlasmaBall(this.ship.p, v, timestamp + 10, this.ship.faction));
 			this.lastShootTime = timestamp;
 		}
 	}
@@ -162,7 +162,7 @@ inherit(RocketLauncher, Weapon,
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			var v = targetDir.setlen(this.projectileSpeed);
-			game.addEntity(new Rocket(this.ship.p.clone(), v, timestamp + 4, this.ship.faction));
+			game.addEntity(new Rocket(this.ship.p, v, timestamp + 4, this.ship.faction));
 			this.lastShootTime = timestamp;
 		}
 	}
@@ -187,7 +187,7 @@ inherit(MissileLauncher, Weapon,
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			var v = targetDir.setlen(this.projectileSpeed);
-			game.addEntity(new Missile(this.ship.p.clone(), v, timestamp + 5, this.ship.faction));
+			game.addEntity(new Missile(this.ship.p, v, timestamp + 5, this.ship.faction));
 			this.lastShootTime = timestamp;
 		}
 	}

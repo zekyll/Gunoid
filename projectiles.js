@@ -7,7 +7,7 @@
 function Projectile(p, v, hp, expire, faction)
 {
 	Entity.call(this, p);
-	this.v = v;
+	this.v = v.clone();
 	this.hp = hp;
 	this.expire = expire;
 	this.faction = faction;
@@ -41,7 +41,7 @@ inherit(BlasterShot, Projectile,
 		if (other instanceof Ship && other.faction !== this.faction) {
 			other.takeDamage(timestamp, this.damage);
 			this.hp -= 1;
-			game.addEntity(new Explosion(this.p, other.v.clone(), 2.5, 30, 0, 0, this.faction));
+			game.addEntity(new Explosion(this.p, other.v, 2.5, 30, 0, 0, this.faction));
 			return true;
 		}
 		return false;
@@ -71,7 +71,7 @@ inherit(PlasmaBall, Projectile,
 		if (other instanceof Ship && other.faction !== this.faction) {
 			other.takeDamage(timestamp, this.damage);
 			this.hp -= 1;
-			game.addEntity(new Explosion(this.p, other.v.clone(), 4, 20, 0, 0, this.faction));
+			game.addEntity(new Explosion(this.p, other.v, 4, 20, 0, 0, this.faction));
 			return true;
 		}
 		return false;
@@ -129,7 +129,7 @@ inherit(Missile, Projectile,
 	{
 		if (other instanceof Ship && other.faction !== this.faction) {
 			this.hp -= 1;
-			game.addEntity(new Explosion(this.p, other.v.clone(), this.explosionRadius,
+			game.addEntity(new Explosion(this.p, other.v, this.explosionRadius,
 					this.explosionSpeed, this.damage, this.explosionForce, this.faction));
 			return true;
 		}
@@ -176,7 +176,7 @@ inherit(Rocket, Projectile,
 	{
 		if (other instanceof Ship && other.faction !== this.faction) {
 			this.hp -= 1;
-			game.addEntity(new Explosion(this.p, other.v.clone(), this.explosionRadius,
+			game.addEntity(new Explosion(this.p, other.v, this.explosionRadius,
 					this.explosionSpeed, this.damage, this.explosionForce, this.faction));
 			return true;
 		}
@@ -192,11 +192,8 @@ inherit(Rocket, Projectile,
 
 function Debris(p, v, expire, color)
 {
-	this.p = p;
-	this.v = v;
-	this.hp = 1;
-	this.expire = expire;
-	this.color = color;
+	Projectile.call(this, p, v, 1, expire, undefined);
+	this.color = color.slice(0);
 	this.brightness = 1;
 	var angle = Math.random() * 2 * Math.PI;
 	this.dir = new V(Math.cos(angle), Math.sin(angle));

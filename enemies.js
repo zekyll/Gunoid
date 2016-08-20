@@ -95,8 +95,8 @@ inherit(EnemyStarOrange, Ship,
 		Ship.prototype.takeDamage.apply(this, arguments);
 		if (this.hp <= 0) {
 			for (var i = 0; i < this.childCount; ++i) {
-				var dir = (new V(0, 1)).rot(2 * Math.PI * Math.random()).mul(0.7 + 0.3 * Math.random());
-				game.addEntity(new EnemyStar(this.p.clone(), dir));
+				var dir = (new V(0, 1)).rot_(2 * Math.PI * Math.random()).mul_(0.7 + 0.3 * Math.random());
+				game.addEntity(new EnemyStar(this.p, dir));
 			}
 		}
 	},
@@ -125,7 +125,7 @@ inherit(EnemyKamikaze, Ship,
 
 	step: function(timestamp, dt)
 	{
-		var targetDir = game.player.p.sub(this.p).setlen(1).add(this.v.setlen(4));
+		var targetDir = game.player.p.sub(this.p).setlenSafe(1).add(this.v.setlenSafe(4));
 		var a = targetDir.setlen(this.acceleration);
 		this.v.add_(a.mul(dt));
 
@@ -136,7 +136,7 @@ inherit(EnemyKamikaze, Ship,
 	{
 		Ship.prototype.takeDamage.apply(this, arguments);
 		if (this.hp <= 0)
-			game.addEntity(new Explosion(this.p.clone(), this.v.clone(), 25, 15, 30, 4e6, this.faction));
+			game.addEntity(new Explosion(this.p, this.v, 25, 15, 30, 4e6, this.faction));
 	},
 
 	collide: function(timestamp, dt, other)
@@ -194,7 +194,7 @@ inherit(EnemyDestroyer, Ship,
 			if (v.len() < 0.001)
 				v = new V(0, 1);
 			v.setlen_(this.bulletSpeed);
-			game.addEntity(new BlasterShot(this.p.clone(), v, timestamp + 10, this.faction));
+			game.addEntity(new BlasterShot(this.p, v, timestamp + 10, this.faction));
 			this.lastShootTime = timestamp;
 		}
 	}
@@ -243,9 +243,9 @@ inherit(EnemyGunnerGreen, Ship,
 				this.targetPos = undefined;
 			}
 		} else {
-			var targetDir = game.player.p.sub(this.p).setlen(1).add(this.v.setlen(1));
-			var a = targetDir.setlen(this.acceleration);
-			this.v.add_(a.mul(dt));
+			var a = game.player.p.sub(this.p).setlen_(1).add_(this.v.setlen(1));
+			a.setlen_(this.acceleration).mul_(dt);
+			this.v.add_(a);
 			if (distSqr < this.proximity * this.proximity) {
 				this.attackMode = true;
 				this.attackModeStart = timestamp;
@@ -274,7 +274,7 @@ inherit(EnemyGunnerGreen, Ship,
 			if (v.len() < 0.001)
 				v = new V(0, 1);
 			v.setlen_(this.bulletSpeed);
-			game.addEntity(new BlasterShot(this.p.clone(), v, timestamp + 10, this.faction));
+			game.addEntity(new BlasterShot(this.p, v, timestamp + 10, this.faction));
 			this.lastShootTime = timestamp;
 		}
 	}

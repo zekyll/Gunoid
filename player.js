@@ -43,10 +43,10 @@ inherit(Player, Ship,
 		Ship.prototype.takeDamage.apply(this, arguments);
 		if (this.hp <= 0) {
 			for (var i = 0; i < 5; ++i) {
-				var p = this.p.clone().add(new V(-20 + Math.random() * 40, -20 + Math.random() * 40));
+				var p = this.p.add(new V(-20 + Math.random() * 40, -20 + Math.random() * 40));
 				var radius = 80 + Math.random() * 40;
 				var speed = 30 + Math.random() * 30;
-				game.addEntity(new Explosion(p, this.v.clone(), radius, speed, 2000, 3e6, this.faction));
+				game.addEntity(new Explosion(p, this.v, radius, speed, 2000, 3e6, this.faction));
 			}
 		}
 	},
