@@ -191,7 +191,7 @@ var game =
 			this.entities[i].step(timestamp, dt);
 
 		this.spawner.step(timestamp);
-		this.checkCollisions(timestamp);
+		this.checkCollisions(timestamp, dt);
 		this._addNewEntities();
 		this.removeDeadEntities();
 	},
@@ -225,7 +225,7 @@ var game =
 		return new V(x, y);
 	},
 
-	checkCollisions: function(timestamp)
+	checkCollisions: function(timestamp, dt)
 	{
 		for (var i = 0; i < this.entities.length; ++i) {
 			if (!this.entities[i].canCollide)
@@ -238,8 +238,8 @@ var game =
 				var collisionDistance = this.entities[i].radius + this.entities[j].radius;
 
 				if (distSqr < collisionDistance * collisionDistance) {
-					var doPhysics = this.entities[i].collide(timestamp, this.entities[j]);
-					doPhysics |= this.entities[j].collide(timestamp, this.entities[i]);
+					var doPhysics = this.entities[i].collide(timestamp, dt, this.entities[j]);
+					doPhysics |= this.entities[j].collide(timestamp, dt, this.entities[i]);
 					if (doPhysics)
 						this.collide(this.entities[i], this.entities[j]);
 				}

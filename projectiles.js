@@ -3,6 +3,7 @@
 
 "use strict";
 
+
 function Projectile(p, v, hp, expire, faction)
 {
 	Entity.call(this, p);
@@ -22,6 +23,7 @@ inherit(Projectile, Entity,
 	}
 });
 
+
 function BlasterShot(p, v, expire, faction)
 {
 	Projectile.call(this, p, v, 1, expire, faction);
@@ -34,12 +36,12 @@ inherit(BlasterShot, Projectile,
 	m: 10,
 	color: colors.projectile,
 
-	collide: function(timestamp, other)
+	collide: function(timestamp, dt, other)
 	{
 		if (other instanceof Ship && other.faction !== this.faction) {
 			other.takeDamage(timestamp, this.damage);
 			this.hp -= 1;
-			game.addEntity(new Explosion(this.p, other.v.clone(), 4, 10, 0, this.faction));
+			game.addEntity(new Explosion(this.p, other.v.clone(), 2.5, 30, 0, 0, this.faction));
 			return true;
 		}
 		return false;
@@ -50,6 +52,7 @@ inherit(BlasterShot, Projectile,
 		models.blasterShot.render(this.color, this.p, this.v);
 	}
 });
+
 
 function PlasmaBall(p, v, expire, faction)
 {
@@ -63,12 +66,12 @@ inherit(PlasmaBall, Projectile,
 	m: 10,
 	color: colors.plasmaBall,
 
-	collide: function(timestamp, other)
+	collide: function(timestamp, dt, other)
 	{
 		if (other instanceof Ship && other.faction !== this.faction) {
 			other.takeDamage(timestamp, this.damage);
 			this.hp -= 1;
-			game.addEntity(new Explosion(this.p, other.v.clone(), 4, 10, 0, this.faction));
+			game.addEntity(new Explosion(this.p, other.v.clone(), 4, 20, 0, 0, this.faction));
 			return true;
 		}
 		return false;
@@ -80,6 +83,7 @@ inherit(PlasmaBall, Projectile,
 	}
 });
 
+
 function Missile(p, v, expire, faction)
 {
 	Projectile.call(this, p, v, 1, expire, faction);
@@ -89,6 +93,9 @@ inherit(Missile, Projectile,
 {
 	radius: 2,
 	damage: 60,
+	explosionRadius: 8,
+	explosionSpeed: 20,
+	explosionForce: 0.4e6,
 	m: 30,
 	acceleration: 400,
 	dragCoefficient: 0.05,
@@ -118,12 +125,12 @@ inherit(Missile, Projectile,
 			this.hp = 0;
 	},
 
-	collide: function(timestamp, other)
+	collide: function(timestamp, dt, other)
 	{
 		if (other instanceof Ship && other.faction !== this.faction) {
-			other.takeDamage(timestamp, this.damage);
 			this.hp -= 1;
-			game.addEntity(new Explosion(this.p, other.v.clone(), 8, 20, 0, this.faction));
+			game.addEntity(new Explosion(this.p, other.v.clone(), this.explosionRadius,
+					this.explosionSpeed, this.damage, this.explosionForce, this.faction));
 			return true;
 		}
 		return false;
@@ -134,6 +141,7 @@ inherit(Missile, Projectile,
 		models.missile.render(this.color, this.p, this.v);
 	}
 });
+
 
 function Rocket(p, v, expire, faction)
 {
@@ -148,7 +156,8 @@ inherit(Rocket, Projectile,
 	acceleration: 200,
 	dragCoefficient: 0.01,
 	explosionRadius: 15,
-	explosionSpeed: 15,
+	explosionSpeed: 20,
+	explosionForce: 0.6e6,
 	color: colors.projectile,
 
 	step: function(timestamp, dt)
@@ -163,18 +172,12 @@ inherit(Rocket, Projectile,
 			this.hp = 0;
 	},
 
-	collide: function(timestamp, other)
+	collide: function(timestamp, dt, other)
 	{
 		if (other instanceof Ship && other.faction !== this.faction) {
 			this.hp -= 1;
 			game.addEntity(new Explosion(this.p, other.v.clone(), this.explosionRadius,
-					this.explosionSpeed, this.damage, this.faction));
-			for (var i = 0; i < 5; ++i) {
-				var delta = new V((Math.random() - 0.5) * 0.5 * this.explosionRadius,
-						(Math.random() - 0.5) * 0.5 * this.explosionRadius);
-				var p = this.p.clone().add(delta);
-				game.addEntity(new Explosion(p, other.v.clone(), 0.7 * this.explosionRadius, this.explosionSpeed, 0, this.faction));
-			}
+					this.explosionSpeed, this.damage, this.explosionForce, this.faction));
 			return true;
 		}
 		return false;
@@ -185,6 +188,7 @@ inherit(Rocket, Projectile,
 		models.rocket.render(this.color, this.p, this.v);
 	}
 });
+
 
 function Debris(p, v, expire, color)
 {

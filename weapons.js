@@ -9,7 +9,7 @@ function Weapon()
 
 Weapon.prototype =
 {
-	render: function(timestamp)
+	render: function()
 	{
 	}
 };

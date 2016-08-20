@@ -42,20 +42,22 @@ inherit(Player, Ship,
 	{
 		Ship.prototype.takeDamage.apply(this, arguments);
 		if (this.hp <= 0) {
-			for (var i = 0; i < 10; ++i) {
-				var p = this.p.clone().add(new V(-15 + Math.random() * 30, -15 + Math.random() * 30));
-				game.addEntity(new Explosion(p, this.v.clone(), 100, 30, 100, this.faction));
+			for (var i = 0; i < 5; ++i) {
+				var p = this.p.clone().add(new V(-20 + Math.random() * 40, -20 + Math.random() * 40));
+				var radius = 80 + Math.random() * 40;
+				var speed = 30 + Math.random() * 30;
+				game.addEntity(new Explosion(p, this.v.clone(), radius, speed, 2000, 3e6, this.faction));
 			}
 		}
 	},
 
-	render: function(timestamp)
+	render: function()
 	{
 		var targetDir = this.targetp.sub(this.p);
 		models.ship.render(this.color, this.p, targetDir);
 
-		this.primaryWeapon.render(timestamp);
+		this.primaryWeapon.render();
 		if (this.secondaryWeapon)
-			this.secondaryWeapon.step(timestamp);
+			this.secondaryWeapon.render();
 	}
 });

@@ -31,6 +31,7 @@ Model.prototype =
 	vertexArray: [],
 	instanceSize: 10,
 	vertexSize: 2,
+	alphaBlend: 1,
 
 	// Writes instance specific data (model transform, color) to buffer.
 	render: function(color, translate, rotateDir, scalex, scaley)
@@ -96,8 +97,17 @@ Model.prototype =
 		gl.vertexAttribPointer(attribs.modelColor, 4, gl.FLOAT, false, bytesPerInstance, 6 * 4);
 		glext.vertexAttribDivisorANGLE(attribs.modelColor, 1);
 
+		if (this.alphaBlend) {
+			var dstFactor = this.alphaBlend === 1 ? gl.ONE_MINUS_SRC_ALPHA : gl.ONE;
+			gl.blendFuncSeparate(gl.SRC_ALPHA, dstFactor, gl.ZERO, gl.ONE);
+			gl.enable(gl.BLEND);
+		}
+
 		glext.drawArraysInstancedANGLE(this.primitiveType, this.vertexBufferOffset,
 				this.vertexCount, this.instanceCount);
+
+		if (this.alphaBlend)
+			gl.disable(gl.BLEND);
 	},
 
 	defineVertexAttribs: function(attribs)
@@ -119,18 +129,6 @@ function SolidModel(vertexData)
 
 inherit(SolidModel, Model,
 {
-	renderInstances: function()
-	{
-		if (this.instanceCount === 0)
-			return;
-
-		gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
-		gl.enable(gl.BLEND);
-
-		Model.prototype.renderInstances.apply(this, arguments);
-
-		gl.disable(gl.BLEND);
-	}
 });
 
 
@@ -153,24 +151,17 @@ inherit(TexturedPointModel, Model,
 		gl.bindTexture(gl.TEXTURE_2D, this.texture);
 		gl.uniform1i(game.currentShaderProg.uniformLocations.sampler, 0);
 
-		gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE);
-		gl.enable(gl.BLEND);
-
 		Model.prototype.renderInstances.apply(this, arguments);
-
-		gl.disable(gl.BLEND);
 	}
 });
 
 
 // Textured 2D model. Vertex data is a triangle list where each vertex has texture coordinates.
-//  AlphaBlend: 0 disabled, 1 normal, 2 additive
-function TexturedModel(vertexData, texture, alphaBlend)
+function TexturedModel(vertexData, texture)
 {
 	Model.call(this, vertexData);
 	this.primitiveType = gl.TRIANGLES;
 	this.texture = texture;
-	this.alphaBlend = alphaBlend;
 }
 
 inherit(TexturedModel, Model,
@@ -186,16 +177,7 @@ inherit(TexturedModel, Model,
 		gl.bindTexture(gl.TEXTURE_2D, this.texture);
 		gl.uniform1i(game.currentShaderProg.uniformLocations.sampler, 0);
 
-		if (this.alphaBlend) {
-			var dstFactor = this.alphaBlend === 1 ? gl.ONE_MINUS_SRC_ALPHA : gl.ONE;
-			gl.blendFuncSeparate(gl.SRC_ALPHA, dstFactor, gl.ZERO, gl.ONE);
-			gl.enable(gl.BLEND);
-		}
-
 		Model.prototype.renderInstances.apply(this, arguments);
-
-		if (this.alphaBlend)
-			gl.disable(gl.BLEND);
 	},
 
 	defineVertexAttribs: function(attribs)
@@ -261,7 +243,8 @@ var models =
 			1, 1, 1, 1,
 			-1, -1, 0, 0,
 			1, -1, 1, 0
-		], new Texture("textures/starfield.bpg"), false);
+		], new Texture("textures/starfield.bpg"));
+		this.background.alphaBlend = false;
 
 		this.guiRect = new SolidModel([
 			0, 0,
@@ -280,6 +263,10 @@ var models =
 		]);
 
 		this.point = new TexturedPointModel([0, 0], new Texture("textures/point32.png"));
+
+		// Additive blending.
+		this.point.alphaBlend = 2;
+		this.circle16.alphaBlend = 2;
 	},
 
 	resetInstances: function()
