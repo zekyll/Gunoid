@@ -6,9 +6,9 @@
 
 var Blaster = extend(Module,
 {
-	ctor: function(ship)
+	ctor: function()
 	{
-		this.ship = ship;
+		Module.call(this);
 		this.shootInterval = 0.2;
 		this.lastShootTime = -1;
 		this.bulletSpeed = 300;
@@ -32,9 +32,9 @@ var Blaster = extend(Module,
 
 var DualBlaster = extend(Module,
 {
-	ctor: function(ship)
+	ctor: function()
 	{
-		this.ship = ship;
+		Module.call(this);
 		this.shootInterval = 0.2;
 		this.lastShootTime = -1;
 		this.bulletSpeed = 300;
@@ -61,9 +61,9 @@ var DualBlaster = extend(Module,
 
 var PlasmaSprinkler = extend(Module,
 {
-	ctor: function(ship)
+	ctor: function()
 	{
-		this.ship = ship;
+		Module.call(this);
 		this.lastShootTime = -1;
 		this.targetDir = (new V(0, 1)).rot(2 * Math.PI * Math.random());
 		this.rotateDir = Math.random() < 0.5 ? 1 : -1;
@@ -88,9 +88,9 @@ var PlasmaSprinkler = extend(Module,
 
 var Laser = extend(Module,
 {
-	ctor: function(ship)
+	ctor: function()
 	{
-		this.ship = ship;
+		Module.call(this);
 		this.range = 200;
 	},
 
@@ -146,9 +146,9 @@ var Laser = extend(Module,
 
 var RocketLauncher = extend(Module,
 {
-	ctor: function(ship)
+	ctor: function()
 	{
-		this.ship = ship;
+		Module.call(this);
 		this.shootInterval = 1;
 		this.lastShootTime = -1;
 		this.projectileSpeed = 5;
@@ -172,9 +172,9 @@ var RocketLauncher = extend(Module,
 
 var MissileLauncher = extend(Module,
 {
-	ctor: function(ship)
+	ctor: function()
 	{
-		this.ship = ship;
+		Module.call(this);
 		this.shootInterval = 1;
 		this.lastShootTime = -1;
 		this.projectileSpeed = 50;

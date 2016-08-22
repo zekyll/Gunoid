@@ -77,7 +77,7 @@ var LootModule = extend(Loot,
 
 	pickup: function(ship)
 	{
-		var w = new this.moduleClass(ship);
-		ship.modules[w.slot] = w;
+		var module = new this.moduleClass();
+		ship.pickupItem(module);
 	}
 });

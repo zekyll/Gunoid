@@ -39,7 +39,7 @@ var EnemyStarYellow = extend(Ship,
 	ctor: function(p, dir)
 	{
 		Ship.call(this, p, dir.mul(40), 300);
-		this.weapon = new PlasmaSprinkler(this);
+		this.equipModule(0, new PlasmaSprinkler(this));
 	},
 
 	m: 10e3,
@@ -55,7 +55,6 @@ var EnemyStarYellow = extend(Ship,
 			this.v.x *= -1.0;
 		if (this.p.y < game.areaMinY || this.p.y > game.areaMaxY)
 			this.v.y *= -1.0;
-		this.weapon.step(timestamp, dt);
 		Ship.prototype.step.apply(this, arguments);
 	},
 

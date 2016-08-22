@@ -7,12 +7,16 @@
 // Base class for modules.
 var Module = extend(Object,
 {
-	ctor: function(ship)
+	ctor: function()
 	{
-		this.ship = ship;
+		this.ship = null;
 	},
 
-	die: function()
+	equip: function()
+	{
+	},
+
+	unequip: function()
 	{
 	},
 

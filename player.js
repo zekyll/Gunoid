@@ -17,7 +17,7 @@ var Player = extend(Ship,
 
 		this.color = colors.player;
 		this.modules = [];
-		this.modules[0] = new Blaster(this);
+		this.pickupItem(new Blaster());
 	},
 
 	step: function(timestamp, dt)
@@ -43,6 +43,12 @@ var Player = extend(Ship,
 			game.addEntity(new Explosion(p, this.v, radius, speed, 2000, 3e6, this.faction));
 		}
 		Ship.prototype.die.apply(this, arguments);
+	},
+
+	// Picks up an item to inventory. Automatically equip modules if there's a free slot.
+	pickupItem: function(module)
+	{
+		this.equipModule(module.slot, module);
 	},
 
 	render: function()

@@ -151,8 +151,22 @@ var Ship = extend(Entity,
 	{
 		for (var i = 0; i < this.modules.length; ++i) {
 			if (this.modules[i])
-				this.modules[i].die();
+				this.modules[i].unequip();
 		}
+	},
+
+	equipModule: function(slot, module)
+	{
+		var oldModule = null;
+		if (this.modules[slot]) {
+			oldModule = this.modules[slot];
+			oldModule.unequip();
+			oldModule.ship = null;
+		}
+		this.modules[slot] = module;
+		this.modules[slot].ship = this;
+		this.modules[slot].equip();
+		return oldModule;
 	},
 
 	render: function()
