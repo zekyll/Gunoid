@@ -1,5 +1,5 @@
 
-/* global game, models, MissileLauncher, RocketLauncher, DualBlaster, Laser, Projectile */
+/* global game, models, MissileLauncher, RocketLauncher, DualBlaster, Laser, Projectile, modules, colors */
 
 "use strict";
 
@@ -114,6 +114,8 @@ var Ship = extend(Entity,
 					game.addEntity(new LootModule(this.p, timestamp + 10, Laser, models.lootLaser));
 				} else if ((rnd -= 0.01) < 0) {
 					game.addEntity(new LootModule(this.p, timestamp + 10, DualBlaster, models.lootDualBlaster));
+				} else if ((rnd -= 0.01) < 0) {
+					game.addEntity(new LootModule(this.p, timestamp + 10, modules.Shield, models.lootShield));
 				}
 			}
 			this.die();
@@ -153,6 +155,7 @@ var Ship = extend(Entity,
 			if (this.modules[i])
 				this.modules[i].unequip();
 		}
+		this.modules = [];
 	},
 
 	equipModule: function(slot, module)
@@ -297,4 +300,73 @@ var Explosion = extend(Entity,
 			game.addEntity(new Explosion(p, v, radius, speed, 0, 0, this.faction));
 		}
 	}
+});
+
+
+// Shield that blocks incoming enemy projectiles. The shield takes damage and regenerates hitpoints over time.
+// If it reaches 0 hp, it doesn't die but becomes inactive. It can activate again by regenerating.
+var ShieldEntity = extend(Entity,
+{
+	ctor: function(p, radius, maxHp, regen, regenDelay, inactiveRegenDelay, faction)
+	{
+		Entity.call(this, p);
+		this.radius = radius;
+		// Make the shield hollow so that enemies inside the shield range can still shoot.
+		this.innerRadius = Math.max(radius - 5, 0);
+		this.faction = faction;
+		this.hp = maxHp;
+		this.v = new V(0,0);
+		this.maxHp = maxHp;
+		this.m = 1e9;
+		this.regen = regen;
+		this.regenDelay = regenDelay;
+		this.inactiveRegenDelay = inactiveRegenDelay;
+		this._active = true;
+		this._lastDamageTime = 0;
+	},
+
+	maxBlockRadius: 3,
+	collisionDamage: 10,
+
+	step: function(timestamp, dt)
+	{
+		var delay = this._active ? this.regenDelay : this.inactiveRegenDelay;
+		if (timestamp - this._lastDamageTime >= delay) {
+			this.hp = Math.min(this.maxHp, this.hp + this.regen * dt);
+			this._active = true;
+		}
+	},
+
+	canCollide: function(other)
+	{
+		// Block small incoming objects.
+		return this._active && other.radius <= this.maxBlockRadius && this.p.sub(other.p).dot(other.v) >= 0;
+	},
+
+	collide: function(timestamp, dt, other)
+	{
+		other.takeDamage(timestamp, this.collisionDamage);
+	},
+
+	takeDamage: function(timestamp, damage)
+	{
+		// Prevent the shield from taking lethal damage. Instead we just deactivate it.
+		this._lastDamageTime = timestamp;
+		if (this.hp - damage < 1e-3) {
+			arguments[1] = this.hp - 1e-3;
+			this._active = false;
+		}
+		Ship.prototype.takeDamage.apply(this, arguments);
+	},
+
+	render: function()
+	{
+		if (this._active) {
+			var alpha = 0.5 + 0.5 * this.hp / this.maxHp;
+			var color = colors.shield.slice(0);
+			color[3] *= alpha;
+			models.solidCircle16.render(color, this.p, new V(0, 1), this.radius);
+			models.circle16.render([0.2, 0.2, 0.4, 1.0 * alpha], this.p, new V(0, 1), this.radius);
+		}
+	},
 });

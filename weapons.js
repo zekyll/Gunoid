@@ -110,7 +110,7 @@ var Laser = extend(Module,
 
 		var self = this;
 		//TODO create proper entity class for laser beam.
-		var laserBeamEntity = {faction: this.ship.faction, v: targetDir};
+		var laserBeamEntity = {faction: this.ship.faction, v: targetDir, p: this.ship.p, radius: 1};
 		var hit = game.findClosestEntityInDirection(this.ship.p, targetDir, function(e) {
 			return e.canCollide && e.canCollide(laserBeamEntity) && e.faction !== self.ship.faction;
 		});

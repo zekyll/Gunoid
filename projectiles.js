@@ -26,7 +26,7 @@ var Projectile = extend(Entity,
 
 	canCollide: function(other)
 	{
-		return other.radius > this.radius && other.faction !== this.faction;
+		return !(other instanceof Projectile) && other.faction !== this.faction;
 	},
 });
 

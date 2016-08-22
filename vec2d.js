@@ -16,6 +16,13 @@ V.prototype =
 		return this;
 	},
 
+	set_: function(v2)
+	{
+		this.x = v2.x;
+		this.y = v2.y;
+		return this;
+	},
+
 	add: function(rhs)
 	{
 		return new V(rhs.x + this.x, rhs.y + this.y);

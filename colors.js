@@ -26,6 +26,7 @@ var colors =
 	enemyProjectile: new Float32Array([1.0, 0.0, 0.0, 1.0]),
 	explosiveProjectile: new Float32Array([1, 0, 0, 1]),
 	plasmaBall: new Float32Array([0.1, 1.0, 0.9, 1.0]),
+	shield: new Float32Array([0.6, 0.6, 1.0, 0.2]),
 
 	// GUI:
 	guiText: new Float32Array([1.0, 0.7, 0.0, 1.0]),
