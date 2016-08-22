@@ -93,7 +93,7 @@ inherit(EnemyStarOrange, Ship,
 	takeDamage: function(timestamp, damage)
 	{
 		Ship.prototype.takeDamage.apply(this, arguments);
-		if (this.hp <= 0) {
+		if (this.hp <= 0) { //TODO make sure that on death events don't trigger multiple times.
 			for (var i = 0; i < this.childCount; ++i) {
 				var dir = (new V(0, 1)).rot_(2 * Math.PI * Math.random()).mul_(0.7 + 0.3 * Math.random());
 				game.addEntity(new EnemyStar(this.p, dir));

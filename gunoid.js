@@ -233,6 +233,10 @@ var game =
 			for (var j = i + 1; j < this.entities.length; ++j) {
 				if (!this.entities[j].canCollide)
 					continue;
+				if (!this.entities[i].canCollide(this.entities[j]))
+					continue;
+				if (!this.entities[j].canCollide(this.entities[i]))
+					continue;
 
 				var distSqr = this.entities[j].p.distSqr(this.entities[i].p);
 				var collisionDistance = this.entities[i].radius + this.entities[j].radius;
@@ -242,6 +246,9 @@ var game =
 					doPhysics |= this.entities[j].collide(timestamp, dt, this.entities[i]);
 					if (doPhysics)
 						this.collide(this.entities[i], this.entities[j]);
+					this.entities[i].collide(timestamp, dt, this.entities[j]);
+					this.entities[j].collide(timestamp, dt, this.entities[i]);
+					this.collide(this.entities[i], this.entities[j]);
 				}
 			}
 		}
@@ -249,6 +256,8 @@ var game =
 
 	collide: function(a, b)
 	{
+		if (!a.m || !b.m)
+			return;
 		// Simulating a perfectly elastic collision between 2 objects
 		var m = a.m + b.m;
 		var dp = a.p.sub(b.p);

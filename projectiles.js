@@ -20,7 +20,12 @@ inherit(Projectile, Entity,
 		this.p.add_(this.v.mul(dt));
 		if (timestamp > this.expire)
 			this.hp = 0;
-	}
+	},
+
+	canCollide: function(other)
+	{
+		return other.radius > this.radius && other.faction !== this.faction;
+	},
 });
 
 
@@ -38,13 +43,9 @@ inherit(BlasterShot, Projectile,
 
 	collide: function(timestamp, dt, other)
 	{
-		if (other instanceof Ship && other.faction !== this.faction) {
-			other.takeDamage(timestamp, this.damage);
-			this.hp -= 1;
-			game.addEntity(new Explosion(this.p, other.v, 2.5, 30, 0, 0, this.faction));
-			return true;
-		}
-		return false;
+		other.takeDamage(timestamp, this.damage);
+		this.hp -= 1;
+		game.addEntity(new Explosion(this.p, other.v, 2.5, 30, 0, 0, this.faction));
 	},
 
 	render: function()
@@ -68,13 +69,9 @@ inherit(PlasmaBall, Projectile,
 
 	collide: function(timestamp, dt, other)
 	{
-		if (other instanceof Ship && other.faction !== this.faction) {
-			other.takeDamage(timestamp, this.damage);
-			this.hp -= 1;
-			game.addEntity(new Explosion(this.p, other.v, 4, 20, 0, 0, this.faction));
-			return true;
-		}
-		return false;
+		other.takeDamage(timestamp, this.damage);
+		this.hp -= 1;
+		game.addEntity(new Explosion(this.p, other.v, 4, 20, 0, 0, this.faction));
 	},
 
 	render: function()
@@ -127,13 +124,9 @@ inherit(Missile, Projectile,
 
 	collide: function(timestamp, dt, other)
 	{
-		if (other instanceof Ship && other.faction !== this.faction) {
-			this.hp -= 1;
-			game.addEntity(new Explosion(this.p, other.v, this.explosionRadius,
-					this.explosionSpeed, this.damage, this.explosionForce, this.faction));
-			return true;
-		}
-		return false;
+		this.hp -= 1;
+		game.addEntity(new Explosion(this.p, other.v, this.explosionRadius,
+				this.explosionSpeed, this.damage, this.explosionForce, this.faction));
 	},
 
 	render: function()
@@ -174,13 +167,9 @@ inherit(Rocket, Projectile,
 
 	collide: function(timestamp, dt, other)
 	{
-		if (other instanceof Ship && other.faction !== this.faction) {
-			this.hp -= 1;
-			game.addEntity(new Explosion(this.p, other.v, this.explosionRadius,
+		this.hp -= 1;
+		game.addEntity(new Explosion(this.p, other.v, this.explosionRadius,
 					this.explosionSpeed, this.damage, this.explosionForce, this.faction));
-			return true;
-		}
-		return false;
 	},
 
 	render: function()
@@ -201,7 +190,6 @@ function Debris(p, v, expire, color)
 
 inherit(Debris, Projectile,
 {
-	canCollide: false,
 	dragCoefficient: 0.05,
 	fadeSpeed: 0.7,
 
@@ -257,12 +245,8 @@ inherit(Grenade, Projectile,
 
 	collide: function(timestamp, dt, other)
 	{
-		if (other instanceof Ship && other.faction !== this.faction) {
-			this.hp -= 1;
-			this.detonate(other.v);
-			return true;
-		}
-		return false;
+		this.hp -= 1;
+		this.detonate(other.v);
 	},
 
 	detonate: function(v)

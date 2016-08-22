@@ -13,11 +13,13 @@ function Entity(p)
 
 Entity.prototype =
 {
-	canCollide: true,
-	faction: 0,
+	mass: 0, // No physics.
+	faction: 0, // Neutral faction.
 	staticVars: {
 		idCounter: 0
 	},
+
+	canCollide: null,
 
 	step: function(timestamp, dt)
 	{
@@ -25,7 +27,6 @@ Entity.prototype =
 
 	collide: function(timestamp, dt, other)
 	{
-		return false;
 	},
 
 	takeDamage: function(timestamp, damage)
@@ -81,13 +82,14 @@ inherit(Ship, Entity,
 		this.calculateDrag(dt);
 	},
 
+	canCollide: function(other)
+	{
+		return !(other instanceof Ship && other.faction === this.faction);
+	},
+
 	collide: function(timestamp, dt, other)
 	{
-		if (other instanceof Ship && other.faction !== this.faction) {
-			other.takeDamage(timestamp, this.collisionDamage);
-			return true;
-		}
-		return false;
+		other.takeDamage(timestamp, this.collisionDamage);
 	},
 
 	takeDamage: function(timestamp, damage)
@@ -108,6 +110,7 @@ inherit(Ship, Entity,
 					game.addEntity(new LootWeapon(this.p, timestamp + 10, DualBlaster, models.lootDualBlaster));
 				}
 			}
+			this.die(timestamp);
 			this.spreadDebris(timestamp);
 		}
 	},
@@ -136,7 +139,11 @@ inherit(Ship, Entity,
 		var forward = this.v.setlenSafe(1);
 		var right = forward.rot90right();
 		return forward.mul_(y).add_(right.mul_(x)).add_(this.p);
-	}
+	},
+
+	die: function(timestamp)
+	{
+	},
 });
 
 
@@ -157,7 +164,6 @@ function Explosion(p, v, maxRadius, speed, damage, force, faction)
 	this.c = speed / maxRadius;
 	this.speed = speed;
 	this.hitEntities = {}; // Keep track of entities hit by explosion
-	this.canCollide = damage > 0;
 	if (damage)
 		this._addSecondaryExplosions(3);
 }
@@ -183,16 +189,19 @@ inherit(Explosion, Entity,
 		}
 	},
 
+	canCollide: function(other)
+	{
+		return this.damage > 0 && other.m && !(other instanceof Projectile)
+				&& other.faction !== this.faction && this.phase < 1;
+	},
+
 	collide: function(timestamp, dt, other)
 	{
-		if (other instanceof Ship && other.faction !== this.faction && this.phase < 1) {
-			other.v.add_(other.p.sub(this.p).setlen_(dt * this.force / other.m));
-			if (!this.hitEntities[other.id]) {
-				other.takeDamage(timestamp, this.damage);
-				this.hitEntities[other.id] = true;
-			}
+		other.v.add_(other.p.sub(this.p).setlen_(dt * this.force / other.m));
+		if (!this.hitEntities[other.id]) {
+			other.takeDamage(timestamp, this.damage);
+			this.hitEntities[other.id] = true;
 		}
-		return false;
 	},
 
 	render: function()

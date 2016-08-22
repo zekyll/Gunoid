@@ -27,13 +27,15 @@ inherit(Loot, Entity,
 		this.blinkState = timeLeft > 3 ? 1 : Math.floor(timeLeft * 5) % 2;
 	},
 
+	canCollide: function(other)
+	{
+		return other.faction === this.faction && other instanceof Ship;
+	},
+
 	collide: function(timestamp, dt, other)
 	{
-		if (other.faction === this.faction && other instanceof Ship) {
-			this.pickup(timestamp, other);
-			this.hp = 0;
-		}
-		return false;
+		this.pickup(timestamp, other);
+		this.hp = 0;
 	},
 
 	render: function()
