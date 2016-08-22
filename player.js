@@ -3,23 +3,23 @@
 
 "use strict";
 
-function Player(p)
+var Player = extend(Ship,
 {
-	Ship.call(this, p, new V(0, 0), 100);
-	this.m = 10e3;
-	this.faction = 1;
-	this.radius = 7;
-	this.targetp = new V(0, 1);
-	this.acceleration = 2000;
-	this.dragCoefficient = 0.1;
+	ctor: function(p)
+	{
+		Ship.call(this, p, new V(0, 0), 100);
+		this.m = 10e3;
+		this.faction = 1;
+		this.radius = 7;
+		this.targetp = new V(0, 1);
+		this.acceleration = 2000;
+		this.dragCoefficient = 0.1;
 
-	this.color = colors.player;
-	this.modules = [];
-	this.modules[0] = new Blaster(this);
-}
+		this.color = colors.player;
+		this.modules = [];
+		this.modules[0] = new Blaster(this);
+	},
 
-inherit(Player, Ship,
-{
 	step: function(timestamp, dt)
 	{
 		this.targetp.x = game.areaMinX + game.areaWidth * input.relativeCursorX;

@@ -115,10 +115,17 @@ var game =
 		this.entities = [];
 		this.newEntities = [];
 
-		function BmSpawner() { Spawner.call(this); }
-		inherit(BmSpawner, Spawner, {
-			initWaves: function() {
-				function prm() {
+		var BmSpawner = extend(Spawner,
+		{
+			ctor: function()
+			{
+				Spawner.call(this);
+			},
+
+			initWaves: function()
+			{
+				function prm()
+				{
 					return {p: game.randomPosition(), dir: new V(0, Math.random() - 0.5)};
 				}
 				this.addWave(

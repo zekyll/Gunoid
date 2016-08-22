@@ -3,18 +3,20 @@
 
 "use strict";
 
-function Loot(p, expire, model)
-{
-	Entity.call(this, p);
-	this.v = new V(0, 0);
-	this.hp = 1;
-	this.expire = expire;
-	this.blinkState = undefined;
-	this.model = model;
-}
 
-inherit(Loot, Entity,
+// Baseclass for collectable objects.
+var Loot = extend(Entity,
 {
+	ctor: function(p, expire, model)
+	{
+		Entity.call(this, p);
+		this.v = new V(0, 0);
+		this.hp = 1;
+		this.expire = expire;
+		this.blinkState = undefined;
+		this.model = model;
+	},
+
 	radius: 5,
 	faction: 1,
 	color: colors.loot,
@@ -46,13 +48,15 @@ inherit(Loot, Entity,
 	}
 });
 
-function RepairKit(p, expire)
-{
-	Loot.call(this, p, expire, models.repairKit);
-}
 
-inherit(RepairKit, Loot,
+// Restores hitpoints.
+var RepairKit = extend(Loot,
 {
+	ctor: function(p, expire)
+	{
+		Loot.call(this, p, expire, models.repairKit);
+	},
+
 	repairAmount: 20,
 
 	pickup: function(timestamp, ship)
@@ -63,14 +67,14 @@ inherit(RepairKit, Loot,
 
 
 // Contains a module that can be equipped by player's ship.
-function LootModule(p, expire, moduleClass, model)
+var LootModule = extend(Loot,
 {
-	Loot.call(this, p, expire, model);
-	this.moduleClass = moduleClass;
-}
+	ctor: function(p, expire, moduleClass, model)
+	{
+		Loot.call(this, p, expire, model);
+		this.moduleClass = moduleClass;
+	},
 
-inherit(LootModule, Loot,
-{
 	pickup: function(timestamp, ship)
 	{
 		var w = new this.moduleClass(ship);

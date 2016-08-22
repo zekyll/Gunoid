@@ -5,28 +5,28 @@
 
 
 // 2D wireframe model that is rendered using instancing. Vertex data consists of a list of lines.
-function Model(vertexData)
+var  Model = extend(Object,
 {
-	this.primitiveType = gl.LINES;
-	this.instanceData = new Float32Array(this.instanceSize);
-	this.instanceDataBuffer = gl.createBuffer();
-	this.instanceCount = 0;
-	this.vertexCount = vertexData.length / this.vertexSize;
-	this.vertexBufferOffset = Math.floor((this.vertexArray.length + this.vertexSize - 1) / this.vertexSize);
-	while (this.vertexArray.length < this.vertexBufferOffset * this.vertexSize)
-		this.vertexArray.push(0);
-	for (var i = 0; i < vertexData.length; ++i)
-		this.vertexArray.push(vertexData[i]);
+	ctor:function(vertexData)
+	{
+		this.primitiveType = gl.LINES;
+		this.instanceData = new Float32Array(this.instanceSize);
+		this.instanceDataBuffer = gl.createBuffer();
+		this.instanceCount = 0;
+		this.vertexCount = vertexData.length / this.vertexSize;
+		this.vertexBufferOffset = Math.floor((this.vertexArray.length + this.vertexSize - 1) / this.vertexSize);
+		while (this.vertexArray.length < this.vertexBufferOffset * this.vertexSize)
+			this.vertexArray.push(0);
+		for (var i = 0; i < vertexData.length; ++i)
+			this.vertexArray.push(vertexData[i]);
 
-	if (this.vertexBuffer === null)
-		this.__proto__.vertexBuffer = gl.createBuffer();
+		if (this.vertexBuffer === null)
+			this.vertexBuffer = gl.createBuffer();
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertexArray), gl.STATIC_DRAW);
-}
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertexArray), gl.STATIC_DRAW);
+	},
 
-Model.prototype =
-{
 	vertexBuffer: null,
 	vertexArray: [],
 	instanceSize: 10,
@@ -114,34 +114,31 @@ Model.prototype =
 	{
 		gl.vertexAttribPointer(attribs.position, 2, gl.FLOAT, false, this.vertexSize * 4, 0);
 		glext.vertexAttribDivisorANGLE(attribs.position, 0);
-	},
-
-	constructor: Model
-};
+	}
+});
 
 
 // 2D model based on a triangle list.
-function SolidModel(vertexData)
+var SolidModel = extend(Model,
 {
-	Model.call(this, vertexData);
-	this.primitiveType = gl.TRIANGLES;
-}
-
-inherit(SolidModel, Model,
-{
+	ctor: function(vertexData)
+	{
+		Model.call(this, vertexData);
+		this.primitiveType = gl.TRIANGLES;
+	},
 });
 
 
 // Textured point sprite model.
-function TexturedPointModel(vertexData, texture)
+var TexturedPointModel = extend(Model,
 {
-	Model.call(this, vertexData);
-	this.primitiveType = gl.POINTS;
-	this.texture = texture;
-}
+	ctor: function(vertexData, texture)
+	{
+		Model.call(this, vertexData);
+		this.primitiveType = gl.POINTS;
+		this.texture = texture;
+	},
 
-inherit(TexturedPointModel, Model,
-{
 	renderInstances: function()
 	{
 		if (this.instanceCount === 0)
@@ -157,15 +154,15 @@ inherit(TexturedPointModel, Model,
 
 
 // Textured 2D model. Vertex data is a triangle list where each vertex has texture coordinates.
-function TexturedModel(vertexData, texture)
+var TexturedModel = extend(Model,
 {
-	Model.call(this, vertexData);
-	this.primitiveType = gl.TRIANGLES;
-	this.texture = texture;
-}
+	ctor: function(vertexData, texture)
+	{
+		Model.call(this, vertexData);
+		this.primitiveType = gl.TRIANGLES;
+		this.texture = texture;
+	},
 
-inherit(TexturedModel, Model,
-{
 	vertexSize: 4,
 
 	renderInstances: function()

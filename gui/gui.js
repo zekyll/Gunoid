@@ -5,19 +5,19 @@
 
 
 // Base class for all widgets.
-function Widget(area, text)
+var Widget = extend(Object,
 {
-	if (typeof(text) !== "undefined")
-		this.text = text;
-	this.area = area.clone();
-	this.font = fonts.small;
-	this.children = [];
-	this.isUnderCursor = false;
-	this.isDragSource = false;
-}
+	ctor: function(area, text)
+	{
+		if (typeof(text) !== "undefined")
+			this.text = text;
+		this.area = area.clone();
+		this.font = fonts.small;
+		this.children = [];
+		this.isUnderCursor = false;
+		this.isDragSource = false;
+	},
 
-Widget.prototype =
-{
 	// Default values:
 	backgroundColor: colors.guiBackground,
 	textColor: colors.guiText,
@@ -114,17 +114,17 @@ Widget.prototype =
 		}
 		return this;
 	}
-};
+});
 
 
 // Simple push button widget.
-function Button(area, text)
+var Button = extend(Widget,
 {
-	Widget.call(this, area, text);
-}
+	ctor: function(area, text)
+	{
+		Widget.call(this, area, text);
+	},
 
-inherit(Button, Widget,
-{
 	horizontalMargin: 5,
 	verticalMargin: 5,
 	hoverBackgroundColor: new Float32Array([0.2, 0.4, 0.1, 0.6]),
@@ -167,13 +167,13 @@ inherit(Button, Widget,
 
 
 // Text without background/borders.
-function Text(area, text)
+var Text = extend(Widget,
 {
-	Widget.call(this, area, text);
-}
+	ctor: function(area, text)
+	{
+		Widget.call(this, area, text);
+	},
 
-inherit(Text, Widget,
-{
 	horizontalMargin: 2,
 	verticalMargin: 2,
 	backgroundColor: colors.transparent,
@@ -182,63 +182,62 @@ inherit(Text, Widget,
 
 
 // Main menu.
-function MainMenu(area)
+var MainMenu = extend(Widget,
 {
-	Widget.call(this, area);
+	ctor: function(area)
+	{
+		Widget.call(this, area);
 
-	var self = this;
+		var self = this;
 
-	// New game.
-	this.addChild("newGameBtn", new Button(new Rect(30, 30, 200, 70), "New Game"));
-	this.newGameBtn.font = fonts.medium;
-	this.newGameBtn.horizontalTextAlign = 0.5;
-	this.newGameBtn.onMouseClick = function() {
-		game.initGameWorld();
-		self.visible = false;
-	};
+		// New game.
+		this.addChild("newGameBtn", new Button(new Rect(30, 30, 200, 70), "New Game"));
+		this.newGameBtn.font = fonts.medium;
+		this.newGameBtn.horizontalTextAlign = 0.5;
+		this.newGameBtn.onMouseClick = function() {
+			game.initGameWorld();
+			self.visible = false;
+		};
 
-	// Continue.
-	this.addChild("continueBtn", new Button(new Rect(30, 80, 200, 120), "Continue"));
-	this.continueBtn.font = fonts.medium;
-	this.continueBtn.horizontalTextAlign = 0.5;
-	this.continueBtn.onMouseClick = function() {
-		game.paused = !game.paused;
-		self.visible = false;
-	};
+		// Continue.
+		this.addChild("continueBtn", new Button(new Rect(30, 80, 200, 120), "Continue"));
+		this.continueBtn.font = fonts.medium;
+		this.continueBtn.horizontalTextAlign = 0.5;
+		this.continueBtn.onMouseClick = function() {
+			game.paused = !game.paused;
+			self.visible = false;
+		};
 
-	this.addChild("instructionsTextLeft", new Text(new Rect(10, 150, 120, 300),
-		"[W,A,S,D]"
-		+ "\n[Mouse]"
-		+ "\n[P]"
-		+ "\n[ESC]"
-		+ "\n[F2]"
-		));
-	this.instructionsTextLeft.horizontalTextAlign = 0.5;
-	this.addChild("instructionsTextRight", new Text(new Rect(120, 150, 280, 300),
-		"Move ship"
-		+ "\nTarget"
-		+ "\nPause"
-		+ "\nMenu"
-		+ "\nRestart "
-		));
-}
-
-inherit(MainMenu, Widget,
-{
+		this.addChild("instructionsTextLeft", new Text(new Rect(10, 150, 120, 300),
+			"[W,A,S,D]"
+			+ "\n[Mouse]"
+			+ "\n[P]"
+			+ "\n[ESC]"
+			+ "\n[F2]"
+			));
+		this.instructionsTextLeft.horizontalTextAlign = 0.5;
+		this.addChild("instructionsTextRight", new Text(new Rect(120, 150, 280, 300),
+			"Move ship"
+			+ "\nTarget"
+			+ "\nPause"
+			+ "\nMenu"
+			+ "\nRestart "
+			));
+	},
 });
 
 
 // Displays player's hitpoints.
-function HpBar(area)
+var HpBar = extend(Widget,
 {
-	Widget.call(this, area);
-	this.currentHp = 100;
-	this.displayValue = 0;
-	this.maxHp = 100;
-}
+	ctor: function(area)
+	{
+		Widget.call(this, area);
+		this.currentHp = 100;
+		this.displayValue = 0;
+		this.maxHp = 100;
+	},
 
-inherit(HpBar, Widget,
-{
 	hpBarColor: new Float32Array([0.3, 0.7, 0.3, 0.9]),
 	textColor: colors.red,
 	horizontalMargin: 5,
@@ -262,25 +261,25 @@ inherit(HpBar, Widget,
 
 
 // Root GUI widget hat contains all the other widgets.
-function Gui(width, height)
+var Gui = extend(Widget,
 {
-	Widget.call(this, new Rect(0, 0, width, height));
-	this.pointedWidget = null; // widget that is under cursor.
-	this.mouseDownWidget = null;
+	ctor: function(width, height)
+	{
+		Widget.call(this, new Rect(0, 0, width, height));
+		this.pointedWidget = null; // widget that is under cursor.
+		this.mouseDownWidget = null;
 
-	// Stats.
-	this.addChild("stats", new Text(new Rect(10, 10, 300, 300)));
+		// Stats.
+		this.addChild("stats", new Text(new Rect(10, 10, 300, 300)));
 
-	// Main menu.
-	this.addChild("mainMenu", new MainMenu(new Rect(50, 100, 280, 500)));
-	this.mainMenu.visible = false;
+		// Main menu.
+		this.addChild("mainMenu", new MainMenu(new Rect(50, 100, 280, 500)));
+		this.mainMenu.visible = false;
 
-	// HP bar.
-	this.addChild("hpBar", new HpBar(new Rect(20, 580, 220, 600)));
-}
+		// HP bar.
+		this.addChild("hpBar", new HpBar(new Rect(20, 580, 220, 600)));
+	},
 
-inherit(Gui, Widget,
-{
 	selfVisible: false,
 
 	mouseDown: function(p)

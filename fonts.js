@@ -43,25 +43,25 @@ var fonts =
 
 // Font class that renders text using a specific font family and size. Render glyphs using point
 // sprites and a texture atlas that is generated from a 2d canvas.
-function Font(family, size)
+var Font = extend(Object,
 {
-	this.canvas = document.createElement("canvas");
-	this.canvas.width = 512;
-	this.canvas.height = 512;
-	this.family = family;
-	this.textSize = size;
-	this.textColor = colors.white;
-	this.lineHeight = 0;
-	this.vertexData = new Float32Array(this.vertexSize); // Initial capacity 1 vertex.
-	this.vertexCount = 0;
-	this.buffer = gl.createBuffer();
-	this.tex = null;
-	this.charData = undefined;
-	this.updateTexture();
-}
+	ctor: function(family, size)
+	{
+		this.canvas = document.createElement("canvas");
+		this.canvas.width = 512;
+		this.canvas.height = 512;
+		this.family = family;
+		this.textSize = size;
+		this.textColor = colors.white;
+		this.lineHeight = 0;
+		this.vertexData = new Float32Array(this.vertexSize); // Initial capacity 1 vertex.
+		this.vertexCount = 0;
+		this.buffer = gl.createBuffer();
+		this.tex = null;
+		this.charData = undefined;
+		this.updateTexture();
+	},
 
-Font.prototype =
-{
 	vertexSize: 14,
 	logicalWidth: 1000,
 	maxCodePoint: 127, // Only support Ascii for now.
@@ -323,4 +323,4 @@ Font.prototype =
 
 		return length + wordLength;
 	}
-};
+});

@@ -4,13 +4,13 @@
 "use strict";
 
 
-function EnemyStar(p, dir)
+var EnemyStar = extend(Ship,
 {
-	Ship.call(this, p, dir.mul(80), 60);
-}
+	ctor: function(p, dir)
+	{
+		Ship.call(this, p, dir.mul(80), 60);
+	},
 
-inherit(EnemyStar, Ship,
-{
 	m: 5e3,
 	faction: 2,
 	radius: 3,
@@ -34,14 +34,14 @@ inherit(EnemyStar, Ship,
 });
 
 
-function EnemyStarYellow(p, dir)
+var EnemyStarYellow = extend(Ship,
 {
-	Ship.call(this, p, dir.mul(40), 300);
-	this.weapon = new PlasmaSprinkler(this);
-}
+	ctor: function(p, dir)
+	{
+		Ship.call(this, p, dir.mul(40), 300);
+		this.weapon = new PlasmaSprinkler(this);
+	},
 
-inherit(EnemyStarYellow, Ship,
-{
 	m: 10e3,
 	faction: 2,
 	radius: 3,
@@ -66,13 +66,13 @@ inherit(EnemyStarYellow, Ship,
 });
 
 
-function EnemyStarOrange(p, dir)
+var EnemyStarOrange = extend(Ship,
 {
-	Ship.call(this, p, dir.mul(120), 200);
-}
+	ctor: function(p, dir)
+	{
+		Ship.call(this, p, dir.mul(120), 200);
+	},
 
-inherit(EnemyStarOrange, Ship,
-{
 	m: 20e3,
 	faction: 2,
 	radius: 6,
@@ -109,13 +109,13 @@ inherit(EnemyStarOrange, Ship,
 
 
 // Flies towards player and explodes on contact.
-function EnemyKamikaze(p, dir)
+var EnemyKamikaze = extend(Ship,
 {
-	Ship.call(this, p, dir.mul(50), 80);
-}
+	ctor: function(p, dir)
+	{
+		Ship.call(this, p, dir.mul(50), 80);
+	},
 
-inherit(EnemyKamikaze, Ship,
-{
 	m: 5e3,
 	faction: 2,
 	radius: 3,
@@ -154,14 +154,14 @@ inherit(EnemyKamikaze, Ship,
 });
 
 
-function EnemyDestroyer(p, dir)
+var EnemyDestroyer = extend(Ship,
 {
-	Ship.call(this, p, dir.mul(25), 600);
-	this.lastShootTime = -1;
-}
+	ctor: function(p, dir)
+	{
+		Ship.call(this, p, dir.mul(25), 600);
+		this.lastShootTime = -1;
+	},
 
-inherit(EnemyDestroyer, Ship,
-{
 	m: 100e3,
 	faction: 2,
 	radius: 15,
@@ -203,17 +203,17 @@ inherit(EnemyDestroyer, Ship,
 
 
 // Fast enemy that gets in close range, stops, and shoots a burst with a blaster weapon.
-function EnemyGunnerGreen(p, dir)
+var EnemyGunnerGreen = extend(Ship,
 {
-	Ship.call(this, p, dir.mul(50), 100);
-	this.lastShootTime = -1;
-	this.attackMode = false;
-	this.attackModeStart = undefined;
-	this.targetPos = undefined;
-}
+	ctor: function(p, dir)
+	{
+		Ship.call(this, p, dir.mul(50), 100);
+		this.lastShootTime = -1;
+		this.attackMode = false;
+		this.attackModeStart = undefined;
+		this.targetPos = undefined;
+	},
 
-inherit(EnemyGunnerGreen, Ship,
-{
 	m: 3e3,
 	faction: 2,
 	radius: 3,
@@ -283,17 +283,17 @@ inherit(EnemyGunnerGreen, Ship,
 
 
 // Launcher small ships and shoots 3 grenade launchers at regular intervals.
-function EnemyCarrierYellow(p, dir)
+var EnemyCarrierYellow = extend(Ship,
 {
-	Ship.call(this, p, dir.mul(25), 5000);
-	this.lastShootTime = -1;
-	this.lastSpawnTime = -1;
-	this.frontTurretTargetP = game.randomPosition();
-	this.frontTurretDir = this.v.setlenSafe(1);
-}
+	ctor: function(p, dir)
+	{
+		Ship.call(this, p, dir.mul(25), 5000);
+		this.lastShootTime = -1;
+		this.lastSpawnTime = -1;
+		this.frontTurretTargetP = game.randomPosition();
+		this.frontTurretDir = this.v.setlenSafe(1);
+	},
 
-inherit(EnemyCarrierYellow, Ship,
-{
 	m: 500e3,
 	faction: 2,
 	radius: 35,

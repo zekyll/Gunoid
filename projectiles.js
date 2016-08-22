@@ -4,18 +4,19 @@
 "use strict";
 
 
-function Projectile(p, v, hp, expire, faction)
+// Base class for projectiles.
+var Projectile = extend(Entity,
 {
-	Entity.call(this, p);
-	this.v = v.clone();
-	this.hp = hp;
-	this.expire = expire;
-	this.faction = faction;
-	this.color = faction === 1 ? colors.projectile : colors.enemyProjectile;
-}
+	ctor: function(p, v, hp, expire, faction)
+	{
+		Entity.call(this, p);
+		this.v = v.clone();
+		this.hp = hp;
+		this.expire = expire;
+		this.faction = faction;
+		this.color = faction === 1 ? colors.projectile : colors.enemyProjectile;
+	},
 
-inherit(Projectile, Entity,
-{
 	step: function(timestamp, dt)
 	{
 		this.p.add_(this.v.mul(dt));
@@ -30,13 +31,13 @@ inherit(Projectile, Entity,
 });
 
 
-function BlasterShot(p, v, expire, faction)
+var BlasterShot = extend(Projectile,
 {
-	Projectile.call(this, p, v, 1, expire, faction);
-}
+	ctor: function(p, v, expire, faction)
+	{
+		Projectile.call(this, p, v, 1, expire, faction);
+	},
 
-inherit(BlasterShot, Projectile,
-{
 	radius: 2,
 	damage: 30,
 	m: 10,
@@ -55,13 +56,13 @@ inherit(BlasterShot, Projectile,
 });
 
 
-function PlasmaBall(p, v, expire, faction)
+var PlasmaBall = extend(Projectile,
 {
-	Projectile.call(this, p, v, 1, expire, faction);
-}
+	ctor: function(p, v, expire, faction)
+	{
+		Projectile.call(this, p, v, 1, expire, faction);
+	},
 
-inherit(PlasmaBall, Projectile,
-{
 	radius: 3,
 	damage: 30,
 	m: 10,
@@ -81,13 +82,13 @@ inherit(PlasmaBall, Projectile,
 });
 
 
-function Missile(p, v, expire, faction)
+var Missile = extend(Projectile,
 {
-	Projectile.call(this, p, v, 1, expire, faction);
-}
+	ctor: function(p, v, expire, faction)
+	{
+		Projectile.call(this, p, v, 1, expire, faction);
+	},
 
-inherit(Missile, Projectile,
-{
 	radius: 2,
 	damage: 80,
 	explosionRadius: 8,
@@ -135,13 +136,13 @@ inherit(Missile, Projectile,
 });
 
 
-function Rocket(p, v, expire, faction)
+var Rocket = extend(Projectile,
 {
-	Projectile.call(this, p, v, 1, expire, faction);
-}
+	ctor: function(p, v, expire, faction)
+	{
+		Projectile.call(this, p, v, 1, expire, faction);
+	},
 
-inherit(Rocket, Projectile,
-{
 	radius: 2,
 	damage: 180,
 	m: 30,
@@ -177,17 +178,17 @@ inherit(Rocket, Projectile,
 });
 
 
-function Debris(p, v, expire, color)
+var Debris = extend(Projectile,
 {
-	Projectile.call(this, p, v, 1, expire, undefined);
-	this.color = color.slice(0);
-	this.brightness = 1;
-	var angle = Math.random() * 2 * Math.PI;
-	this.dir = new V(Math.cos(angle), Math.sin(angle));
-}
+	ctor: function(p, v, expire, color)
+	{
+		Projectile.call(this, p, v, 1, expire, undefined);
+		this.color = color.slice(0);
+		this.brightness = 1;
+		var angle = Math.random() * 2 * Math.PI;
+		this.dir = new V(Math.cos(angle), Math.sin(angle));
+	},
 
-inherit(Debris, Projectile,
-{
 	dragCoefficient: 0.05,
 	fadeSpeed: 0.7,
 
@@ -212,13 +213,13 @@ inherit(Debris, Projectile,
 
 
 // Flies in straight line and explodes after a delay.
-function Grenade(p, v, expire, faction)
+var Grenade = extend(Projectile,
 {
-	Projectile.call(this, p, v, 1, expire + this.activationDelay, faction);
-}
+	ctor: function(p, v, expire, faction)
+	{
+		Projectile.call(this, p, v, 1, expire + this.activationDelay, faction);
+	},
 
-inherit(Grenade, Projectile,
-{
 	growSpeed: 4,
 	radius: 1,
 	damage: 30,

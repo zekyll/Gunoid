@@ -3,13 +3,13 @@
 
 "use strict";
 
-function Wave(subwaves)
+var Wave = extend(Object,
 {
-	this.subwaves = subwaves;
-};
+	ctor: function(subwaves)
+	{
+		this.subwaves = subwaves;
+	},
 
-Wave.prototype =
-{
 	start: function(timestamp)
 	{
 		for (var i = 0; i < this.subwaves.length; ++i)
@@ -30,25 +30,26 @@ Wave.prototype =
 		}
 		return true;
 	}
-};
+});
 
-function Subwave(startingDelay, iterationInterval, spawnIterations,
-	spawnsPerIteration, spawnClass, spawnParamFunc, completionCondition)
-{
-	this.startingDelay = startingDelay;
-	this.iterationInterval = iterationInterval;
-	this.iterationsRemaining = spawnIterations;
-	this.spawnsPerIteration = spawnsPerIteration;
-	this.spawnClass = spawnClass;
-	this.spawnParamFunc = spawnParamFunc;
-	this.completionCondition = completionCondition;
-	this.lastIterationTime = undefined;
-	this.aliveSpawns = [];
-	this.startTime = undefined;
-};
 
-Subwave.prototype =
+var Subwave = extend(Object,
 {
+	ctor: function(startingDelay, iterationInterval, spawnIterations,
+		spawnsPerIteration, spawnClass, spawnParamFunc, completionCondition)
+	{
+		this.startingDelay = startingDelay;
+		this.iterationInterval = iterationInterval;
+		this.iterationsRemaining = spawnIterations;
+		this.spawnsPerIteration = spawnsPerIteration;
+		this.spawnClass = spawnClass;
+		this.spawnParamFunc = spawnParamFunc;
+		this.completionCondition = completionCondition;
+		this.lastIterationTime = undefined;
+		this.aliveSpawns = [];
+		this.startTime = undefined;
+	},
+
 	start: function(timestamp)
 	{
 		this.startTime = timestamp;
@@ -98,17 +99,18 @@ Subwave.prototype =
 		}
 		return this.aliveSpawns.length;
 	}
-};
+});
 
-function Spawner()
-{
-	this.waves = [];
-	this.currentWaveIndex = -1;
-	this.initWaves();
-}
 
-Spawner.prototype =
+var Spawner = extend(Object,
 {
+	ctor: function()
+	{
+		this.waves = [];
+		this.currentWaveIndex = -1;
+		this.initWaves();
+	},
+
 	standardSpawnParams: function()
 	{
 		var p = game.randomEdgePosition();
@@ -210,4 +212,4 @@ Spawner.prototype =
 	{
 		return this.currentWaveIndex >= this.waves.length;
 	}
-};
+});

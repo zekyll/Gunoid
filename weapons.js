@@ -4,16 +4,16 @@
 "use strict";
 
 
-function Blaster(ship)
+var Blaster = extend(Module,
 {
-	this.ship = ship;
-	this.shootInterval = 0.2;
-	this.lastShootTime = -1;
-	this.bulletSpeed = 300;
-}
+	ctor: function(ship)
+	{
+		this.ship = ship;
+		this.shootInterval = 0.2;
+		this.lastShootTime = -1;
+		this.bulletSpeed = 300;
+	},
 
-inherit(Blaster, Module,
-{
 	slot: 0,
 
 	step: function(timestamp, dt)
@@ -29,16 +29,17 @@ inherit(Blaster, Module,
 	}
 });
 
-function DualBlaster(ship)
-{
-	this.ship = ship;
-	this.shootInterval = 0.2;
-	this.lastShootTime = -1;
-	this.bulletSpeed = 300;
-}
 
-inherit(DualBlaster, Module,
+var DualBlaster = extend(Module,
 {
+	ctor: function(ship)
+	{
+		this.ship = ship;
+		this.shootInterval = 0.2;
+		this.lastShootTime = -1;
+		this.bulletSpeed = 300;
+	},
+
 	slot: 0,
 	spread: 6,
 
@@ -57,16 +58,17 @@ inherit(DualBlaster, Module,
 	}
 });
 
-function PlasmaSprinkler(ship)
-{
-	this.ship = ship;
-	this.lastShootTime = -1;
-	this.targetDir = (new V(0, 1)).rot(2 * Math.PI * Math.random());
-	this.rotateDir = Math.random() < 0.5 ? 1 : -1;
-}
 
-inherit(PlasmaSprinkler, Module,
+var PlasmaSprinkler = extend(Module,
 {
+	ctor: function(ship)
+	{
+		this.ship = ship;
+		this.lastShootTime = -1;
+		this.targetDir = (new V(0, 1)).rot(2 * Math.PI * Math.random());
+		this.rotateDir = Math.random() < 0.5 ? 1 : -1;
+	},
+
 	slot: 0,
 	rotateSpeed: 1.8,
 	projectileSpeed: 150,
@@ -84,14 +86,14 @@ inherit(PlasmaSprinkler, Module,
 });
 
 
-function Laser(ship)
+var Laser = extend(Module,
 {
-	this.ship = ship;
-	this.range = 200;
-}
+	ctor: function(ship)
+	{
+		this.ship = ship;
+		this.range = 200;
+	},
 
-inherit(Laser, Module,
-{
 	slot: 0,
 	damage: 300, // Per second.
 	color: colors.laser,
@@ -141,16 +143,17 @@ inherit(Laser, Module,
 	}
 });
 
-function RocketLauncher(ship)
-{
-	this.ship = ship;
-	this.shootInterval = 1;
-	this.lastShootTime = -1;
-	this.projectileSpeed = 5;
-}
 
-inherit(RocketLauncher, Module,
+var RocketLauncher = extend(Module,
 {
+	ctor: function(ship)
+	{
+		this.ship = ship;
+		this.shootInterval = 1;
+		this.lastShootTime = -1;
+		this.projectileSpeed = 5;
+	},
+
 	slot: 1,
 
 	step: function(timestamp, dt)
@@ -166,16 +169,17 @@ inherit(RocketLauncher, Module,
 	}
 });
 
-function MissileLauncher(ship)
-{
-	this.ship = ship;
-	this.shootInterval = 1;
-	this.lastShootTime = -1;
-	this.projectileSpeed = 50;
-}
 
-inherit(MissileLauncher, Module,
+var MissileLauncher = extend(Module,
 {
+	ctor: function(ship)
+	{
+		this.ship = ship;
+		this.shootInterval = 1;
+		this.lastShootTime = -1;
+		this.projectileSpeed = 50;
+	},
+
 	slot: 1,
 
 	step: function(timestamp, dt)

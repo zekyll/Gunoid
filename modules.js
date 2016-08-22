@@ -5,13 +5,13 @@
 
 
 // Base class for modules.
-function Module(ship)
+var Module = extend(Object,
 {
-	this.ship = ship;
-}
+	ctor: function(ship)
+	{
+		this.ship = ship;
+	},
 
-Module.prototype =
-{
 	die: function(timestamp)
 	{
 	},
@@ -19,4 +19,4 @@ Module.prototype =
 	render: function()
 	{
 	},
-};
+});

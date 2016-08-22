@@ -12,6 +12,20 @@ function makeOrthoMatrix(left, right, bottom, top)
 		]);
 }
 
+// Creates a new prototype by extending base object with new properties. Method named "ctor" is used
+// as a constructor function and extend returns a reference to it.
+function extend(base, derived)
+{
+	derived.ctor.prototype = Object.create(base.prototype);
+	derived.ctor.prototype.constructor = derived.ctor;
+	for (var k in derived) {
+		if (derived.hasOwnProperty(k))
+			derived.ctor.prototype[k] = derived[k];
+	}
+	return derived.ctor;
+}
+
+// Adds properties to the prototype of an existing constructor function.
 function inherit(derived, base, newProperties)
 {
 	derived.prototype = Object.create(base.prototype);

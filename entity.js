@@ -5,14 +5,14 @@
 
 
 // Base class for all game entities.
-function Entity(p)
+var Entity = extend(Object,
 {
-	this.p = p.clone();
-	this.id = this.staticVars.idCounter++;
-}
+	ctor: function(p)
+	{
+		this.p = p.clone();
+		this.id = this.staticVars.idCounter++;
+	},
 
-Entity.prototype =
-{
 	mass: 0, // No physics.
 	faction: 0, // Neutral faction.
 	staticVars: {
@@ -58,20 +58,20 @@ Entity.prototype =
 		else
 			this.v.setlen_(1e-9);
 	}
-};
+});
 
 
 // Base class for ships.
-function Ship(p, v, hp)
+var Ship = extend(Entity,
 {
-	Entity.call(this, p);
-	this.v = v.clone();
-	this.hp = hp;
-	this.modules = [];
-}
+	ctor: function(p, v, hp)
+	{
+		Entity.call(this, p);
+		this.v = v.clone();
+		this.hp = hp;
+		this.modules = [];
+	},
 
-inherit(Ship, Entity,
-{
 	dragCoefficient: 0,
 	debrisSpeed: 50,
 	debrisExpireTime: 3,
@@ -166,28 +166,28 @@ inherit(Ship, Entity,
 
 
 // Expanding circular explosion that deals damage to ships and pushes them back.
-function Explosion(p, v, maxRadius, speed, damage, force, faction)
+var Explosion = extend(Entity,
 {
-	Entity.call(this, p);
-	this.v = v.clone();
-	this.maxRadius = maxRadius;
-	if (!damage)
-		this.startRadius = 0;
-	this.radius = this.startRadius; // Ensure that explosive projectiles deal damage on collision.
-	this.damage = damage;
-	this.force = force;
-	this.faction = faction;
-	this.hp = 1;
-	this.phase = 0;
-	this.c = speed / maxRadius;
-	this.speed = speed;
-	this.hitEntities = {}; // Keep track of entities hit by explosion
-	if (damage)
-		this._addSecondaryExplosions(3);
-}
+	ctor: function(p, v, maxRadius, speed, damage, force, faction)
+	{
+		Entity.call(this, p);
+		this.v = v.clone();
+		this.maxRadius = maxRadius;
+		if (!damage)
+			this.startRadius = 0;
+		this.radius = this.startRadius; // Ensure that explosive projectiles deal damage on collision.
+		this.damage = damage;
+		this.force = force;
+		this.faction = faction;
+		this.hp = 1;
+		this.phase = 0;
+		this.c = speed / maxRadius;
+		this.speed = speed;
+		this.hitEntities = {}; // Keep track of entities hit by explosion
+		if (damage)
+			this._addSecondaryExplosions(3);
+	},
 
-inherit(Explosion, Entity,
-{
 	dragCoefficient: 0.05,
 	startRadius: 2,
 	fadeTime: 0.3,
