@@ -77,7 +77,7 @@ var PlasmaBall = extend(Projectile,
 
 	render: function()
 	{
-		models.circle8.render(this.color, this.p, this.v, 3);
+		models.circle8.render(this.color, this.p, this.v, this.radius);
 	}
 });
 
@@ -233,7 +233,7 @@ var Grenade = extend(Projectile,
 	{
 		Projectile.prototype.step.apply(this, arguments);
 		if (this.expire - timestamp <= this.activationDelay) {
-			this.v.set_(0, 0);
+			this.v.setxy_(0, 0);
 			this.radius += dt * this.growSpeed;
 		}
 

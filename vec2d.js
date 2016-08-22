@@ -9,7 +9,7 @@ function V(x, y)
 
 V.prototype =
 {
-	set_: function(x, y)
+	setxy_: function(x, y)
 	{
 		this.x = x;
 		this.y = y;

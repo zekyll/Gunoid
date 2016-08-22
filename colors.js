@@ -27,7 +27,7 @@ var colors =
 	explosiveProjectile: new Float32Array([1, 0, 0, 1]),
 	plasmaBall: new Float32Array([0.1, 1.0, 0.9, 1.0]),
 
-	// UI:
+	// GUI:
 	guiText: new Float32Array([1.0, 0.7, 0.0, 1.0]),
 	guiBackground: new Float32Array([0.05, 0.15, 0.05, 0.6]),
 	guiBorder: new Float32Array([0.3, 0.7, 0.2, 1.0]),

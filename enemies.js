@@ -1,5 +1,5 @@
 
-/* global Ship, game, models, V, colors */
+/* global Ship, game, models, V, colors, modules */
 
 "use strict";
 
@@ -353,7 +353,6 @@ var EnemyCarrierYellow = extend(Ship,
 				v = new V(0, 1);
 			v.setlen_(this.bulletSpeed);
 			var expire = turretp.dist(this.frontTurretTargetP) / this.bulletSpeed;
-			console.log(this.frontTurretTargetP, turretp, v);
 			game.addEntity(new Grenade(turretp, v, timestamp + expire, this.faction));
 			this.frontTurretTargetP = game.randomPosition();
 

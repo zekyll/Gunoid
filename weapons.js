@@ -1,5 +1,5 @@
 
-/* global game, Ship, models, colors */
+/* global game, Ship, models, colors, Module */
 
 "use strict";
 

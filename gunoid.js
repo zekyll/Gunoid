@@ -375,7 +375,7 @@ var game =
 	{
 		++this.frameCounter;
 
-		//gl.clear(gl.COLOR_BUFFER_BIT);
+		//gl.clear(gl.COLOR_BUFFER_BIT); // No need with a background texture.
 
 		// Game entities.
 		models.resetInstances();

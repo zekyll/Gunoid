@@ -1,5 +1,5 @@
 
-/* global game, models, MissileLauncher, RocketLauncher, DualBlaster, Laser */
+/* global game, models, MissileLauncher, RocketLauncher, DualBlaster, Laser, Projectile */
 
 "use strict";
 

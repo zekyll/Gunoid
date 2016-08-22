@@ -1,5 +1,5 @@
 
-/* global Entity, Ship, models */
+/* global Entity, Ship, models, colors */
 
 "use strict";
 
