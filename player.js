@@ -34,7 +34,7 @@ var Player = extend(Ship,
 		Ship.prototype.step.apply(this, arguments);
 	},
 
-	die: function(timestamp)
+	die: function()
 	{
 		for (var i = 0; i < 5; ++i) {
 			var p = this.p.add(new V(-20 + Math.random() * 40, -20 + Math.random() * 40));

@@ -12,7 +12,7 @@ var Module = extend(Object,
 		this.ship = ship;
 	},
 
-	die: function(timestamp)
+	die: function()
 	{
 	},
 

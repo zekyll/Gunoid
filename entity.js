@@ -33,7 +33,7 @@ var Entity = extend(Object,
 	{
 	},
 
-	render: function(timestamp)
+	render: function()
 	{
 	},
 
@@ -116,7 +116,7 @@ var Ship = extend(Entity,
 					game.addEntity(new LootModule(this.p, timestamp + 10, DualBlaster, models.lootDualBlaster));
 				}
 			}
-			this.die(timestamp);
+			this.die();
 			this.spreadDebris(timestamp);
 		}
 	},
@@ -147,15 +147,15 @@ var Ship = extend(Entity,
 		return forward.mul_(y).add_(right.mul_(x)).add_(this.p);
 	},
 
-	die: function(timestamp)
+	die: function()
 	{
 		for (var i = 0; i < this.modules.length; ++i) {
 			if (this.modules[i])
-				this.modules[i].die(timestamp);
+				this.modules[i].die();
 		}
 	},
 
-	render: function(timestamp)
+	render: function()
 	{
 		for (var i = 0; i < this.modules.length; ++i) {
 			if (this.modules[i])

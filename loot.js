@@ -36,7 +36,7 @@ var Loot = extend(Entity,
 
 	collide: function(timestamp, dt, other)
 	{
-		this.pickup(timestamp, other);
+		this.pickup(other);
 		this.hp = 0;
 	},
 
@@ -59,7 +59,7 @@ var RepairKit = extend(Loot,
 
 	repairAmount: 20,
 
-	pickup: function(timestamp, ship)
+	pickup: function(ship)
 	{
 		ship.hp += this.repairAmount;
 	}
@@ -75,7 +75,7 @@ var LootModule = extend(Loot,
 		this.moduleClass = moduleClass;
 	},
 
-	pickup: function(timestamp, ship)
+	pickup: function(ship)
 	{
 		var w = new this.moduleClass(ship);
 		ship.modules[w.slot] = w;
