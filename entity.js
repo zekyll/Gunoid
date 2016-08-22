@@ -244,7 +244,7 @@ inherit(Explosion, Entity,
 			// Biggest sprite is red, medium is green and smallest is blue. This will
 			// make the explosion center white, middle parts yellow and edges red.
 			if (i === 0)
-				var color = [0.7 - this.phase * 0.3, 0.5 - this.phase * 0.4, 0.2 - this.phase * 0.2, alpha];
+				var color = [0.7 - this.phase * 0.2, 0.5 - this.phase * 0.3, 0.2 - this.phase * 0.2, alpha];
 			else if (i === 1)
 				var color = [0.5 - this.phase * 0.1, 0.8 - this.phase * 0.4, 0.2 - this.phase * 0.2, alpha];
 			else
