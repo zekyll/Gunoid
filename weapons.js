@@ -104,14 +104,21 @@ inherit(Laser, Module,
 		var targetDir = this.ship.targetp.sub(this.ship.p);
 		if (targetDir.len() < 0.001)
 			targetDir = new V(0, 1);
-		var hitEntity = game.findClosestEntityInDirection(this.ship.p, targetDir, Ship, 2);
+
+		var self = this;
+		//TODO create proper entity class for laser beam.
+		var laserBeamEntity = {faction: this.ship.faction, v: targetDir};
+		var hit = game.findClosestEntityInDirection(this.ship.p, targetDir, function(e) {
+			return e.canCollide && e.canCollide(laserBeamEntity) && e.faction !== self.ship.faction;
+		});
+
+		// Calculate laser beam end point. Use max range if din't hit anything.
 		this.laserEndDistance = this.range;
-		if (hitEntity) {
-			var hitDistance = hitEntity.p.sub(this.ship.p).len() - hitEntity.radius + 1;
-			if (hitDistance <= this.range) {
-				hitEntity.takeDamage(timestamp, this.damage * dt);
-				this.laserEndDistance = hitDistance;
-				this.spawnSparks(this.ship.p.add(targetDir.setlen(hitDistance)), hitEntity.v, timestamp, dt);
+		if (hit) {
+			if (hit.dist <= this.range) {
+				hit.entity.takeDamage(timestamp, this.damage * dt);
+				this.laserEndDistance = hit.dist + 1;
+				this.spawnSparks(this.ship.p.add(targetDir.setlen(hit.dist)), hit.entity.v, timestamp, dt);
 			}
 		}
 	},

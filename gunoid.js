@@ -242,16 +242,21 @@ var game =
 				var collisionDistance = this.entities[i].radius + this.entities[j].radius;
 
 				if (distSqr < collisionDistance * collisionDistance) {
-					var doPhysics = this.entities[i].collide(timestamp, dt, this.entities[j]);
-					doPhysics |= this.entities[j].collide(timestamp, dt, this.entities[i]);
-					if (doPhysics)
+					if (!this._isInside(this.entities[i], this.entities[j])) {
+						this.entities[i].collide(timestamp, dt, this.entities[j]);
+						this.entities[j].collide(timestamp, dt, this.entities[i]);
 						this.collide(this.entities[i], this.entities[j]);
-					this.entities[i].collide(timestamp, dt, this.entities[j]);
-					this.entities[j].collide(timestamp, dt, this.entities[i]);
-					this.collide(this.entities[i], this.entities[j]);
+					}
 				}
 			}
 		}
+	},
+
+	// Check if one entity is inside another.
+	_isInside: function(e1, e2)
+	{
+		return (e1.innerRadius && e1.p.dist(e2.p) < e1.innerRadius - e2.radius)
+				|| (e2.innerRadius && e1.p.dist(e2.p) < e2.innerRadius - e1.radius);
 	},
 
 	collide: function(a, b)
@@ -270,7 +275,7 @@ var game =
 	findClosestEntity: function(p, type, faction)
 	{
 		var closestDistSqr = 1e99;
-		var closestEntity = undefined;
+		var closestEntity = null;
 		for (var i = 0; i < this.entities.length; ++i) {
 			if (this.entities[i] instanceof type && this.entities[i].faction === faction) {
 				var distSqr = p.distSqr(this.entities[i].p);
@@ -283,26 +288,44 @@ var game =
 		return closestEntity;
 	},
 
-	findClosestEntityInDirection: function(p, dir, type, faction)
+	findClosestEntityInDirection: function(p, dir, filter)
 	{
 		var closestDist = 1e99;
-		var closestEntity = undefined;
+		var closestEntity = null;
 		dir = dir.setlen(1);
-		var normal = dir.rot90left();
 		for (var i = 0; i < this.entities.length; ++i) {
-			if (this.entities[i] instanceof type && this.entities[i].faction === faction) {
-				var r = this.entities[i].p.sub(p);
-				var distanceFromLine = Math.abs(normal.dot(r));
+			if (filter(this.entities[i])) {
+				var relativePos = this.entities[i].p.sub(p);
+
+				// Check whether the line intersects the hitbox circle.
+				var distanceFromLine = Math.abs(dir.cross(relativePos));
 				if (distanceFromLine > this.entities[i].radius)
 					continue;
-				var distanceAlongLine = dir.dot(r);
-				if (distanceAlongLine > 0 && distanceAlongLine < closestDist) {
+
+				// Calculate intersection distance.
+				if (this.entities[i].innerRadius && p.distSqr(this.entities[i].p)
+						< this.entities[i].innerRadius * this.entities[i].innerRadius) {
+					// Case 1: inside a hollow object. (Not used atm.)
+					continue;
+					//var distanceAlongLine = dir.dot(relativePos) + Math.sqrt(this.entities[i].innerRadius
+					//		* this.entities[i].innerRadius - distanceFromLine * distanceFromLine);
+				} else if (p.distSqr(this.entities[i].p) < this.entities[i].radius * this.entities[i].radius) {
+					// Case 2: inside a solid object.
+					var distanceAlongLine = 0;
+				} else {
+					// Case 3: outside.
+					var distanceAlongLine = dir.dot(relativePos) - Math.sqrt(this.entities[i].radius
+							* this.entities[i].radius - distanceFromLine * distanceFromLine);
+				}
+
+				if (distanceAlongLine >= 0 && distanceAlongLine < closestDist) {
 					closestDist = distanceAlongLine;
 					closestEntity = this.entities[i];
 				}
 			}
 		}
-		return closestEntity;
+
+		return closestEntity ? { entity: closestEntity, dist: closestDist} : null;
 	},
 
 	addEntity: function(newEntity)
