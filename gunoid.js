@@ -287,7 +287,7 @@ var game =
 				if (distanceFromLine > this.entities[i].radius)
 					continue;
 				var distanceAlongLine = dir.dot(r);
-				if (distanceAlongLine < closestDist) {
+				if (distanceAlongLine > 0 && distanceAlongLine < closestDist) {
 					closestDist = distanceAlongLine;
 					closestEntity = this.entities[i];
 				}
