@@ -14,8 +14,8 @@ function Player(p)
 	this.dragCoefficient = 0.1;
 
 	this.color = colors.player;
-	this.primaryWeapon = new Blaster(this);
-	this.secondaryWeapon = null;
+	this.modules = [];
+	this.modules[0] = new Blaster(this);
 }
 
 inherit(Player, Ship,
@@ -30,10 +30,6 @@ inherit(Player, Ship,
 		if (a.len() > 0)
 			a.setlen_(this.acceleration * dt);
 		this.v.add_(a);
-
-		this.primaryWeapon.step(timestamp, dt);
-		if (this.secondaryWeapon)
-			this.secondaryWeapon.step(timestamp, dt);
 
 		Ship.prototype.step.apply(this, arguments);
 	},
@@ -53,9 +49,6 @@ inherit(Player, Ship,
 	{
 		var targetDir = this.targetp.sub(this.p);
 		models.ship.render(this.color, this.p, targetDir);
-
-		this.primaryWeapon.render();
-		if (this.secondaryWeapon)
-			this.secondaryWeapon.render();
+		Ship.prototype.render.apply(this, arguments);
 	}
 });

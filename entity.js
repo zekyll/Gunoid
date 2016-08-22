@@ -67,6 +67,7 @@ function Ship(p, v, hp)
 	Entity.call(this, p);
 	this.v = v.clone();
 	this.hp = hp;
+	this.modules = [];
 }
 
 inherit(Ship, Entity,
@@ -80,6 +81,11 @@ inherit(Ship, Entity,
 	{
 		this.p.add_(this.v.mul(dt));
 		this.calculateDrag(dt);
+
+		for (var i = 0; i < this.modules.length; ++i) {
+			if (this.modules[i])
+				this.modules[i].step(timestamp, dt);
+		}
 	},
 
 	canCollide: function(other)
@@ -101,13 +107,13 @@ inherit(Ship, Entity,
 				if ((rnd -= 0.06) < 0) {
 					game.addEntity(new RepairKit(this.p, timestamp + 10));
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootWeapon(this.p, timestamp + 10, RocketLauncher, models.lootRocket));
+					game.addEntity(new LootModule(this.p, timestamp + 10, RocketLauncher, models.lootRocket));
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootWeapon(this.p, timestamp + 10, MissileLauncher, models.lootMissile));
+					game.addEntity(new LootModule(this.p, timestamp + 10, MissileLauncher, models.lootMissile));
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootWeapon(this.p, timestamp + 10, Laser, models.lootLaser));
+					game.addEntity(new LootModule(this.p, timestamp + 10, Laser, models.lootLaser));
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootWeapon(this.p, timestamp + 10, DualBlaster, models.lootDualBlaster));
+					game.addEntity(new LootModule(this.p, timestamp + 10, DualBlaster, models.lootDualBlaster));
 				}
 			}
 			this.die(timestamp);
@@ -143,6 +149,18 @@ inherit(Ship, Entity,
 
 	die: function(timestamp)
 	{
+		for (var i = 0; i < this.modules.length; ++i) {
+			if (this.modules[i])
+				this.modules[i].die(timestamp);
+		}
+	},
+
+	render: function(timestamp)
+	{
+		for (var i = 0; i < this.modules.length; ++i) {
+			if (this.modules[i])
+				this.modules[i].render();
+		}
 	},
 });
 

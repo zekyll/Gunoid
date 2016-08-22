@@ -3,16 +3,6 @@
 
 "use strict";
 
-function Weapon()
-{
-}
-
-Weapon.prototype =
-{
-	render: function()
-	{
-	}
-};
 
 function Blaster(ship)
 {
@@ -22,9 +12,9 @@ function Blaster(ship)
 	this.bulletSpeed = 300;
 }
 
-inherit(Blaster, Weapon,
+inherit(Blaster, Module,
 {
-	slot: 1,
+	slot: 0,
 
 	step: function(timestamp, dt)
 	{
@@ -47,9 +37,9 @@ function DualBlaster(ship)
 	this.bulletSpeed = 300;
 }
 
-inherit(DualBlaster, Weapon,
+inherit(DualBlaster, Module,
 {
-	slot: 1,
+	slot: 0,
 	spread: 6,
 
 	step: function(timestamp, dt)
@@ -75,9 +65,9 @@ function PlasmaSprinkler(ship)
 	this.rotateDir = Math.random() < 0.5 ? 1 : -1;
 }
 
-inherit(PlasmaSprinkler, Weapon,
+inherit(PlasmaSprinkler, Module,
 {
-	slot: 1,
+	slot: 0,
 	rotateSpeed: 1.8,
 	projectileSpeed: 150,
 	shootInterval: 0.09,
@@ -99,9 +89,9 @@ function Laser(ship)
 	this.range = 200;
 }
 
-inherit(Laser, Weapon,
+inherit(Laser, Module,
 {
-	slot: 1,
+	slot: 0,
 	damage: 400,
 	color: colors.laser,
 	sparkColor: colors.flameYellow,
@@ -151,9 +141,9 @@ function RocketLauncher(ship)
 	this.projectileSpeed = 5;
 }
 
-inherit(RocketLauncher, Weapon,
+inherit(RocketLauncher, Module,
 {
-	slot: 2,
+	slot: 1,
 
 	step: function(timestamp, dt)
 	{
@@ -176,9 +166,9 @@ function MissileLauncher(ship)
 	this.projectileSpeed = 50;
 }
 
-inherit(MissileLauncher, Weapon,
+inherit(MissileLauncher, Module,
 {
-	slot: 2,
+	slot: 1,
 
 	step: function(timestamp, dt)
 	{

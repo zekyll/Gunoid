@@ -61,19 +61,19 @@ inherit(RepairKit, Loot,
 	}
 });
 
-function LootWeapon(p, expire, weaponClass, model, weaponSlot)
+
+// Contains a module that can be equipped by player's ship.
+function LootModule(p, expire, moduleClass, model)
 {
 	Loot.call(this, p, expire, model);
-	this.weaponClass = weaponClass;
+	this.moduleClass = moduleClass;
 }
 
-inherit(LootWeapon, Loot,
+inherit(LootModule, Loot,
 {
 	pickup: function(timestamp, ship)
-	{	var w = new this.weaponClass(ship);
-		if (w.slot === 1)
-			ship.primaryWeapon = w;
-		else if (w.slot === 2)
-			ship.secondaryWeapon = w;
+	{
+		var w = new this.moduleClass(ship);
+		ship.modules[w.slot] = w;
 	}
 });
