@@ -11,6 +11,7 @@ function Projectile(p, v, hp, expire, faction)
 	this.hp = hp;
 	this.expire = expire;
 	this.faction = faction;
+	this.color = faction === 1 ? colors.projectile : colors.enemyProjectile;
 }
 
 inherit(Projectile, Entity,
@@ -39,7 +40,6 @@ inherit(BlasterShot, Projectile,
 	radius: 2,
 	damage: 30,
 	m: 10,
-	color: colors.projectile,
 
 	collide: function(timestamp, dt, other)
 	{
@@ -96,7 +96,6 @@ inherit(Missile, Projectile,
 	m: 30,
 	acceleration: 400,
 	dragCoefficient: 0.05,
-	color: colors.projectile,
 
 	step: function(timestamp, dt)
 	{
@@ -151,7 +150,6 @@ inherit(Rocket, Projectile,
 	explosionRadius: 15,
 	explosionSpeed: 20,
 	explosionForce: 0.6e6,
-	color: colors.projectile,
 
 	step: function(timestamp, dt)
 	{
@@ -226,7 +224,6 @@ inherit(Grenade, Projectile,
 	damage: 30,
 	activationDelay: 1.0,
 	m: 10,
-	color: colors.explosiveProjectile,
 	explosionRadius: 50,
 	explosionSpeed: 20,
 	explosionForce: 6e6,

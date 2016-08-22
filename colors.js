@@ -23,6 +23,7 @@ var colors =
 	laser: new Float32Array([1, 0, 0.5, 1]),
 	loot: new Float32Array([1.0, 1.0, 1.0, 1.0]),
 	projectile: new Float32Array([1.0, 1.0, 0.6, 1.0]),
+	enemyProjectile: new Float32Array([1.0, 0.0, 0.0, 1.0]),
 	explosiveProjectile: new Float32Array([1, 0, 0, 1]),
 	plasmaBall: new Float32Array([0.1, 1.0, 0.9, 1.0]),
 
