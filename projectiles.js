@@ -89,7 +89,7 @@ function Missile(p, v, expire, faction)
 inherit(Missile, Projectile,
 {
 	radius: 2,
-	damage: 60,
+	damage: 80,
 	explosionRadius: 8,
 	explosionSpeed: 20,
 	explosionForce: 0.4e6,
@@ -143,7 +143,7 @@ function Rocket(p, v, expire, faction)
 inherit(Rocket, Projectile,
 {
 	radius: 2,
-	damage: 150,
+	damage: 180,
 	m: 30,
 	acceleration: 200,
 	dragCoefficient: 0.01,

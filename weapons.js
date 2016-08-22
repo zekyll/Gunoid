@@ -7,7 +7,7 @@
 function Blaster(ship)
 {
 	this.ship = ship;
-	this.shootInterval = 0.15;
+	this.shootInterval = 0.2;
 	this.lastShootTime = -1;
 	this.bulletSpeed = 300;
 }
@@ -32,7 +32,7 @@ inherit(Blaster, Module,
 function DualBlaster(ship)
 {
 	this.ship = ship;
-	this.shootInterval = 0.15;
+	this.shootInterval = 0.2;
 	this.lastShootTime = -1;
 	this.bulletSpeed = 300;
 }
@@ -83,6 +83,7 @@ inherit(PlasmaSprinkler, Module,
 	}
 });
 
+
 function Laser(ship)
 {
 	this.ship = ship;
@@ -92,7 +93,7 @@ function Laser(ship)
 inherit(Laser, Module,
 {
 	slot: 0,
-	damage: 400,
+	damage: 300, // Per second.
 	color: colors.laser,
 	sparkColor: colors.flameYellow,
 	sparkSpeed: 20,
@@ -143,7 +144,7 @@ inherit(Laser, Module,
 function RocketLauncher(ship)
 {
 	this.ship = ship;
-	this.shootInterval = 0.5;
+	this.shootInterval = 1;
 	this.lastShootTime = -1;
 	this.projectileSpeed = 5;
 }
@@ -168,7 +169,7 @@ inherit(RocketLauncher, Module,
 function MissileLauncher(ship)
 {
 	this.ship = ship;
-	this.shootInterval = 0.5;
+	this.shootInterval = 1;
 	this.lastShootTime = -1;
 	this.projectileSpeed = 50;
 }
