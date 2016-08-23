@@ -246,7 +246,7 @@ var HpBar = extend(Widget,
 	{
 		this.currentHp = currentHp;
 		this.maxHp = maxHp;
-		this.text = "" + this.currentHp + " / " + this.maxHp;
+		this.text = "" + Math.round(this.currentHp) + " / " + Math.round(this.maxHp);
 	},
 
 	renderSelf: function(offset, timestamp, dt)
@@ -278,6 +278,13 @@ var Gui = extend(Widget,
 
 		// HP bar.
 		this.addChild("hpBar", new HpBar(new Rect(20, 580, 220, 600)));
+
+		// Shield bar.
+		this.addChild("shieldBar", new HpBar(new Rect(20, 555, 220, 575)));
+		this.shieldBar.hpBarColor = colors.shield.slice(0);
+		this.shieldBar.hpBarColor[3] *= 3;
+		this.shieldBar.backgroundColor = colors.transparent;
+		this.shieldBar.borderColor = colors.shield;
 	},
 
 	selfVisible: false,

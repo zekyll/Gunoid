@@ -391,8 +391,12 @@ var game =
 
 	renderGui: function(timestamp, dt)
 	{
-		if (this.player)
+		if (this.player) {
 			this.gui.hpBar.update(this.player.hp, 100);
+			this.gui.shieldBar.visible = !!this.player.shield;
+			if (this.player.shield)
+				this.gui.shieldBar.update(this.player.shield.hp, this.player.shield.maxHp);
+		}
 
 		fonts.resetAll();
 		models.resetInstances();
