@@ -153,6 +153,52 @@ var EnemyKamikaze = extend(Ship,
 });
 
 
+// Flies towards target and explodes on contact. Has a proximity shield.
+var EnemyKamikazeYellow = extend(Ship,
+{
+	ctor: function(p, dir)
+	{
+		Ship.call(this, p, dir.mul(50), 120);
+		this.equipModule(0, new modules.Shield(70, 1000, 1000, 0, 2));
+	},
+
+	m: 6e3,
+	faction: 2,
+	radius: 4,
+	acceleration: 350,
+	dragCoefficient: 0.1,
+	color: colors.enemyYellow,
+
+	step: function(timestamp, dt)
+	{
+		var targetDir = game.player.p.sub(this.p).setlenSafe(1).add(this.v.setlenSafe(4));
+		var a = targetDir.setlen(this.acceleration);
+		this.v.add_(a.mul(dt));
+
+		Ship.prototype.step.apply(this, arguments);
+	},
+
+	die: function()
+	{
+		game.addEntity(new Explosion(this.p, this.v, 25, 15, 30, 4e6, this.faction));
+		Ship.prototype.die.apply(this, arguments);
+	},
+
+	collide: function(timestamp, dt, other)
+	{
+		if (other instanceof Ship && other.faction !== this.faction)
+			this.takeDamage(timestamp, this.hp); // Suicide!
+		return Ship.prototype.collide.apply(this, arguments);
+	},
+
+	render: function()
+	{
+		models.enemyKamikaze.render(this.color, this.p, this.v);
+		models.circle8.render(colors.red, this.relativePos(0, 2.5), new V(0, 1), 0.6);
+	},
+});
+
+
 var EnemyDestroyer = extend(Ship,
 {
 	ctor: function(p, dir)
