@@ -74,7 +74,7 @@ StarOrange: extend(Ship,
 		if (this.hp <= 0) { //TODO make sure that on death events don't trigger multiple times.
 			for (var i = 0; i < this.childCount; ++i) {
 				var dir = (new V(0, 1)).rot_(2 * Math.PI * Math.random()).mul_(0.7 + 0.3 * Math.random());
-				game.addEntity(new Star(this.p, dir));
+				game.addEntity(new enemies.Star(this.p, dir));
 			}
 		}
 	},
@@ -389,7 +389,7 @@ CarrierYellow: extend(Ship,
 		if (timestamp > this.lastSpawnTime + this.spawnInterval) {
 			for (var i = -1; i <= 1; i += 2) {
 				var spawnpos = this.relativePos(20 * i, 30);
-				game.addEntity(new Kamikaze(spawnpos, this.v.setlenSafe(1)));
+				game.addEntity(new enemies.Kamikaze(spawnpos, this.v.setlenSafe(1)));
 			}
 			this.lastSpawnTime = timestamp;
 		}
