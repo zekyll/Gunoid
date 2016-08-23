@@ -4,7 +4,10 @@
 "use strict";
 
 
-var EnemyStar = extend(Ship,
+var enemies = {
+
+
+Star: extend(Ship,
 {
 	ctor: function(p, dir)
 	{
@@ -31,10 +34,10 @@ var EnemyStar = extend(Ship,
 	{
 		models.enemyStar.render(this.color, this.p, this.v);
 	}
-});
+}),
 
 
-var EnemyStarYellow = extend(Ship,
+StarYellow: extend(Ship,
 {
 	ctor: function(p, dir)
 	{
@@ -62,10 +65,10 @@ var EnemyStarYellow = extend(Ship,
 	{
 		models.enemyStar.render(this.color, this.p, this.v);
 	}
-});
+}),
 
 
-var EnemyStarOrange = extend(Ship,
+StarOrange: extend(Ship,
 {
 	ctor: function(p, dir)
 	{
@@ -95,7 +98,7 @@ var EnemyStarOrange = extend(Ship,
 		if (this.hp <= 0) { //TODO make sure that on death events don't trigger multiple times.
 			for (var i = 0; i < this.childCount; ++i) {
 				var dir = (new V(0, 1)).rot_(2 * Math.PI * Math.random()).mul_(0.7 + 0.3 * Math.random());
-				game.addEntity(new EnemyStar(this.p, dir));
+				game.addEntity(new Star(this.p, dir));
 			}
 		}
 	},
@@ -104,11 +107,11 @@ var EnemyStarOrange = extend(Ship,
 	{
 		models.enemyStar.render(this.color, this.p, this.v, 2);
 	}
-});
+}),
 
 
 // Flies towards player and explodes on contact.
-var EnemyKamikaze = extend(Ship,
+Kamikaze: extend(Ship,
 {
 	ctor: function(p, dir)
 	{
@@ -150,11 +153,11 @@ var EnemyKamikaze = extend(Ship,
 		models.enemyKamikaze.render(this.color, this.p, this.v);
 		models.circle8.render(colors.red, this.relativePos(0, 2.5), new V(0, 1), 0.6);
 	}
-});
+}),
 
 
 // Flies towards target and explodes on contact. Has a proximity shield.
-var EnemyKamikazeYellow = extend(Ship,
+KamikazeYellow: extend(Ship,
 {
 	ctor: function(p, dir)
 	{
@@ -196,10 +199,10 @@ var EnemyKamikazeYellow = extend(Ship,
 		models.enemyKamikaze.render(this.color, this.p, this.v);
 		models.circle8.render(colors.red, this.relativePos(0, 2.5), new V(0, 1), 0.6);
 	},
-});
+}),
 
 
-var EnemyDestroyer = extend(Ship,
+Destroyer: extend(Ship,
 {
 	ctor: function(p, dir)
 	{
@@ -244,11 +247,11 @@ var EnemyDestroyer = extend(Ship,
 			this.lastShootTime = timestamp;
 		}
 	}
-});
+}),
 
 
 // Fast enemy that gets in close range, stops, and shoots a burst with a blaster weapon.
-var EnemyGunnerGreen = extend(Ship,
+GunnerGreen: extend(Ship,
 {
 	ctor: function(p, dir)
 	{
@@ -324,11 +327,11 @@ var EnemyGunnerGreen = extend(Ship,
 			this.lastShootTime = timestamp;
 		}
 	}
-});
+}),
 
 
 // Launcher small ships and shoots 3 grenade launchers at regular intervals.
-var EnemyCarrierYellow = extend(Ship,
+CarrierYellow: extend(Ship,
 {
 	ctor: function(p, dir)
 	{
@@ -410,9 +413,12 @@ var EnemyCarrierYellow = extend(Ship,
 		if (timestamp > this.lastSpawnTime + this.spawnInterval) {
 			for (var i = -1; i <= 1; i += 2) {
 				var spawnpos = this.relativePos(20 * i, 30);
-				game.addEntity(new EnemyKamikaze(spawnpos, this.v.setlenSafe(1)));
+				game.addEntity(new Kamikaze(spawnpos, this.v.setlenSafe(1)));
 			}
 			this.lastSpawnTime = timestamp;
 		}
 	},
-});
+}),
+
+
+};

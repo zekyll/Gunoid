@@ -1,5 +1,5 @@
 
-/* global game, EnemyStar, EnemyKamikaze, EnemyDestroyer, EnemyStarYellow, EnemyStarOrange, EnemyGunnerGreen, EnemyCarrierYellow */
+/* global game, enemies */
 
 "use strict";
 
@@ -122,80 +122,80 @@ var Spawner = extend(Object,
 	initWaves: function()
 	{
 		this.addWave(
-			[0, 0.5, 10, 1, EnemyStar, this.standardSpawnParams, {remaining: 1}]
+			[0, 0.5, 10, 1, enemies.Star, this.standardSpawnParams, {remaining: 1}]
 		);
 
 		this.addWave(
-			[0, 1, 5, 1, EnemyStar, this.standardSpawnParams, {remaining: 2}],
-			[0, 0.4, 15, 1, EnemyKamikaze, this.standardSpawnParams, {remaining: 2}]
+			[0, 1, 5, 1, enemies.Star, this.standardSpawnParams, {remaining: 2}],
+			[0, 0.4, 15, 1, enemies.Kamikaze, this.standardSpawnParams, {remaining: 2}]
 		);
 
 		this.addWave(
-			[0, 1, 1, 3, EnemyDestroyer, this.standardSpawnParams, {remaining: 0}],
-			[0, 1, 5, 1, EnemyStar, this.standardSpawnParams, {remaining: 2}]
+			[0, 1, 1, 3, enemies.Destroyer, this.standardSpawnParams, {remaining: 0}],
+			[0, 1, 5, 1, enemies.Star, this.standardSpawnParams, {remaining: 2}]
 		);
 
 		this.addWave(
-			[0, 8, 3, 2, EnemyDestroyer, this.standardSpawnParams, {remaining: 0}],
-			[0, 1, 8, 1, EnemyKamikaze, this.standardSpawnParams, {remaining: 2}]
+			[0, 8, 3, 2, enemies.Destroyer, this.standardSpawnParams, {remaining: 0}],
+			[0, 1, 8, 1, enemies.Kamikaze, this.standardSpawnParams, {remaining: 2}]
 		);
 
 		this.addWave(
-			[0, 5, 3, 10, EnemyStar, this.standardSpawnParams, {remaining: 0}]
+			[0, 5, 3, 10, enemies.Star, this.standardSpawnParams, {remaining: 0}]
 		);
 
 		this.addWave(
-			[0, 0.5, 1, 2, EnemyKamikazeYellow, this.standardSpawnParams, {remaining: 0}]
+			[0, 0.5, 1, 2, enemies.KamikazeYellow, this.standardSpawnParams, {remaining: 0}]
 		);
 
 		this.addWave(
-			[0, 0.5, 1, 1, EnemyStarYellow, this.standardSpawnParams, {remaining: 0}]
+			[0, 0.5, 1, 1, enemies.StarYellow, this.standardSpawnParams, {remaining: 0}]
 		);
 
 		this.addWave(
-			[0, 8, 2, 2, EnemyDestroyer, this.standardSpawnParams, {remaining: 0}],
-			[0, 2.5, 6, 1, EnemyKamikazeYellow, this.standardSpawnParams, {remaining: 0}]
+			[0, 8, 2, 2, enemies.Destroyer, this.standardSpawnParams, {remaining: 0}],
+			[0, 2.5, 6, 1, enemies.KamikazeYellow, this.standardSpawnParams, {remaining: 0}]
 		);
 
 		this.addWave(
-			[0, 1.2, 4, 1, EnemyGunnerGreen, this.standardSpawnParams, {remaining: 0}]
+			[0, 1.2, 4, 1, enemies.GunnerGreen, this.standardSpawnParams, {remaining: 0}]
 		);
 
 		this.addWave(
-			[0, 5, 3, 5, EnemyStar, this.standardSpawnParams, {remaining: 3}],
-			[0, 1.2, 4, 1, EnemyGunnerGreen, this.standardSpawnParams, {remaining: 0}]
+			[0, 5, 3, 5, enemies.Star, this.standardSpawnParams, {remaining: 3}],
+			[0, 1.2, 4, 1, enemies.GunnerGreen, this.standardSpawnParams, {remaining: 0}]
 		);
 
 		this.addWave(
-			[0, 0.5, 2, 1, EnemyStarYellow, this.standardSpawnParams, {remaining: 0}]
+			[0, 0.5, 2, 1, enemies.StarYellow, this.standardSpawnParams, {remaining: 0}]
 		);
 
 		this.addWave(
-			[0, 1.2, 7, 1, EnemyGunnerGreen, this.standardSpawnParams, {remaining: 0}]
+			[0, 1.2, 7, 1, enemies.GunnerGreen, this.standardSpawnParams, {remaining: 0}]
 		);
 
 		this.addWave(
-			[0, 0.5, 5, 1, EnemyStarOrange, this.standardSpawnParams, {remaining: 0}]
+			[0, 0.5, 5, 1, enemies.StarOrange, this.standardSpawnParams, {remaining: 0}]
 		);
 
 		this.addWave(
-			[0, 6, 3, 15, EnemyStar, this.standardSpawnParams, {remaining: 0}]
+			[0, 6, 3, 15, enemies.Star, this.standardSpawnParams, {remaining: 0}]
 		);
 
 		this.addWave(
-			[2, 1, 1, 1, EnemyCarrierYellow, this.standardSpawnParams, {remaining: 0}]
+			[2, 1, 1, 1, enemies.CarrierYellow, this.standardSpawnParams, {remaining: 0}]
 		);
 
 		this.addWave(
-			[2, 5, 3, 20, EnemyStar, this.standardSpawnParams, {remaining: 3}]
+			[2, 5, 3, 20, enemies.Star, this.standardSpawnParams, {remaining: 3}]
 		);
 
 		this.addWave(
-			[0, 5, 3, 25, EnemyStar, this.standardSpawnParams, {remaining: 3}]
+			[0, 5, 3, 25, enemies.Star, this.standardSpawnParams, {remaining: 3}]
 		);
 
 		this.addWave(
-			[0, 5, 3, 30, EnemyStar, this.standardSpawnParams, {remaining: 0}]
+			[0, 5, 3, 30, enemies.Star, this.standardSpawnParams, {remaining: 0}]
 		);
 	},
 

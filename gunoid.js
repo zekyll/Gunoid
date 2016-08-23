@@ -1,5 +1,5 @@
 
-/* global models, Spawner, EnemyStar, input, textures, fonts, colors */
+/* global models, Spawner, enemies, input, textures, fonts, colors */
 
 "use strict";
 
@@ -129,7 +129,7 @@ var game =
 					return {p: game.randomPosition(), dir: new V(0, Math.random() - 0.5)};
 				}
 				this.addWave(
-					[0, 1, 1, 500, EnemyStar, prm, {remaining: 0}]
+					[0, 1, 1, 500, enemies.Star, prm, {remaining: 0}]
 				);
 			}
 		});
