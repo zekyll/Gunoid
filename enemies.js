@@ -92,6 +92,7 @@ Kamikaze: extend(Ship,
 	ctor: function(p, dir)
 	{
 		Ship.call(this, p, dir.mul(50), 80);
+		this.equipModule(0, new modules.ClosestEnemyTargeter());
 	},
 
 	m: 5e3,
@@ -103,11 +104,11 @@ Kamikaze: extend(Ship,
 
 	step: function(timestamp, dt)
 	{
-		var targetDir = game.player.p.sub(this.p).setlenSafe(1).add(this.v.setlenSafe(4));
+		Ship.prototype.step.apply(this, arguments);
+
+		var targetDir = this.targetp.sub(this.p).setlenSafe(1).add(this.v.setlenSafe(4));
 		var a = targetDir.setlen(this.acceleration);
 		this.v.add_(a.mul(dt));
-
-		Ship.prototype.step.apply(this, arguments);
 	},
 
 	takeDamage: function(timestamp, damage)
@@ -138,7 +139,8 @@ KamikazeYellow: extend(Ship,
 	ctor: function(p, dir)
 	{
 		Ship.call(this, p, dir.mul(50), 120);
-		this.equipModule(0, new modules.Shield(70, 1000, 1000, 0, 2));
+		this.equipModule(0, new modules.ClosestEnemyTargeter());
+		this.equipModule(1, new modules.Shield(70, 1000, 1000, 0, 2));
 	},
 
 	m: 6e3,
@@ -150,7 +152,7 @@ KamikazeYellow: extend(Ship,
 
 	step: function(timestamp, dt)
 	{
-		var targetDir = game.player.p.sub(this.p).setlenSafe(1).add(this.v.setlenSafe(4));
+		var targetDir = this.targetp.sub(this.p).setlenSafe(1).add(this.v.setlenSafe(4));
 		var a = targetDir.setlen(this.acceleration);
 		this.v.add_(a.mul(dt));
 
@@ -184,6 +186,7 @@ Destroyer: extend(Ship,
 	{
 		Ship.call(this, p, dir.mul(25), 600);
 		this.lastShootTime = -1;
+		this.equipModule(0, new modules.ClosestEnemyTargeter());
 	},
 
 	m: 100e3,
@@ -198,11 +201,11 @@ Destroyer: extend(Ship,
 
 	step: function(timestamp, dt)
 	{
-		var targetDir = game.player.p.sub(this.p).setlen(1).add(this.v.setlen(5));
+		var targetDir = this.targetp.sub(this.p).setlen(1).add(this.v.setlen(5));
 		var a = targetDir.setlen(this.acceleration);
 		this.v.add_(a.mul(dt));
 
-		this.fireBullets(timestamp, game.player.p);
+		this.fireBullets(timestamp);
 
 		Ship.prototype.step.apply(this, arguments);
 	},
@@ -212,10 +215,10 @@ Destroyer: extend(Ship,
 		models.enemyDestroyer.render(this.color, this.p, this.v);
 	},
 
-	fireBullets: function(timestamp, targetp)
+	fireBullets: function(timestamp)
 	{
 		if (timestamp > this.lastShootTime + this.shootInterval) {
-			var v = targetp.sub(this.p);
+			var v = this.targetp.sub(this.p);
 			if (v.len() < 0.001)
 				v = new V(0, 1);
 			v.setlen_(this.bulletSpeed);
@@ -236,6 +239,7 @@ GunnerGreen: extend(Ship,
 		this.attackMode = false;
 		this.attackModeStart = undefined;
 		this.targetPos = undefined;
+		this.equipModule(0, new modules.ClosestEnemyTargeter());
 	},
 
 	m: 3e3,
@@ -253,14 +257,14 @@ GunnerGreen: extend(Ship,
 
 	step: function(timestamp, dt)
 	{
-		var distSqr = this.p.distSqr(game.player.p);
+		var distSqr = this.p.distSqr(this.targetp);
 
 		if (this.attackMode) {
 			this.deaccelerate(dt, this.breakAcceleration);
 			var attackLength = timestamp - this.attackModeStart;
 			if (attackLength >= this.attackDelay) {
 				if (!this.targetPos)
-					this.targetPos = game.player.p.clone();
+					this.targetPos = this.targetp.clone();
 				this.fireBullets(timestamp, this.targetPos);
 			}
 			if (attackLength >= this.minAttackLength) {
@@ -268,7 +272,7 @@ GunnerGreen: extend(Ship,
 				this.targetPos = undefined;
 			}
 		} else {
-			var a = game.player.p.sub(this.p).setlen_(1).add_(this.v.setlen(1));
+			var a = this.targetp.sub(this.p).setlen_(1).add_(this.v.setlen(1));
 			a.setlen_(this.acceleration).mul_(dt);
 			this.v.add_(a);
 			if (distSqr < this.proximity * this.proximity) {
@@ -316,6 +320,7 @@ CarrierYellow: extend(Ship,
 		this.lastSpawnTime = -1;
 		this.frontTurretTargetP = game.randomPosition();
 		this.frontTurretDir = this.v.setlenSafe(1);
+		this.equipModule(0, new modules.ClosestEnemyTargeter());
 	},
 
 	m: 500e3,
@@ -331,13 +336,15 @@ CarrierYellow: extend(Ship,
 
 	step: function(timestamp, dt)
 	{
-		var targetDir = game.player.p.sub(this.p).setlen(1).add(this.v.setlen(5));
+		var targetDir = this.targetp.sub(this.p).setlen(1);
+		targetDir.add_(this.v.setlen(5));
+		targetDir.add_(new V(0,0).sub(this.p).setlen(1));
 		var a = targetDir.setlen(this.acceleration);
 		this.v.add_(a.mul(dt));
 
 		this.frontTurretDir.rotToward_(this.frontTurretTargetP.sub(this.relativePos(0, 37.5)), 2 * dt);
 
-		this.fireBullets(timestamp, game.player.p);
+		this.fireBullets(timestamp);
 		this.spawnShips(timestamp);
 
 		Ship.prototype.step.apply(this, arguments);
@@ -348,7 +355,7 @@ CarrierYellow: extend(Ship,
 		models.enemyCarrierYellow.render(this.color, this.p, this.v);
 		for (var i = -1; i <= 1; i += 2) {
 			var turretp = this.relativePos(21.5 * i, 7.5);
-			var turretDir = game.player.p.sub(turretp);
+			var turretDir = this.targetp.sub(turretp);
 			models.turretMedium.render(colors.enemyYellow2, turretp, turretDir);
 			models.flame.render(colors.flameYellow, this.relativePos(8 * i, -25), this.v, 3);
 		}
@@ -356,17 +363,17 @@ CarrierYellow: extend(Ship,
 		models.turretMedium.render(colors.enemyYellow2, this.relativePos(0, 37.5), this.frontTurretDir);
 	},
 
-	fireBullets: function(timestamp, targetp)
+	fireBullets: function(timestamp)
 	{
 		if (timestamp > this.lastShootTime + this.shootInterval) {
 			// Side turrets.
 			for (var i = -1; i <= 1; i += 2) {
 				var turretp = this.relativePos(21.5 * i, 7.5);
-				var v = targetp.sub(this.p);
+				var v = this.targetp.sub(this.p);
 				if (v.len() < 0.001)
 					v = new V(0, 1);
 				v.setlen_(this.bulletSpeed);
-				var expire = this.p.dist(targetp) / this.bulletSpeed;
+				var expire = this.p.dist(this.targetp) / this.bulletSpeed;
 				game.addEntity(new Grenade(turretp, v, timestamp + expire, this.faction));
 			}
 

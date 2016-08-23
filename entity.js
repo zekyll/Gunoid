@@ -79,13 +79,13 @@ var Ship = extend(Entity,
 
 	step: function(timestamp, dt)
 	{
-		this.p.add_(this.v.mul(dt));
-		this.calculateDrag(dt);
-
 		for (var i = 0; i < this.modules.length; ++i) {
 			if (this.modules[i])
 				this.modules[i].step(timestamp, dt);
 		}
+
+		this.p.add_(this.v.mul(dt));
+		this.calculateDrag(dt);
 	},
 
 	canCollide: function(other)

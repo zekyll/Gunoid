@@ -1,5 +1,5 @@
 
-/* global game */
+/* global game, Ship */
 
 "use strict";
 
@@ -95,6 +95,34 @@ StarMovement: extend(Module,
 		if (ship.p.y < game.areaMinY || ship.p.y > game.areaMaxY)
 			ship.v.y *= -1.0;
 	},
+}),
+
+// AI targeting module that targets closest enemy after one has died.
+ClosestEnemyTargeter: extend(Module,
+{
+	ctor: function()
+	{
+		Module.call(this);
+	},
+
+	step: function(timestamp, dt)
+	{
+		var ship = this.ship;
+		if (!ship.target || ship.target.hp <= 0) {
+			ship.target = game.findClosestEntity(ship.p, function(e) {
+				return e instanceof Ship && e.faction !== ship.faction;
+			});
+		}
+		if (ship.target)
+			ship.targetp = ship.target.p;
+		else
+			ship.targetp = new V(0, 0);
+	},
+
+	equip: function()
+	{
+		this.step();
+	}
 }),
 
 
