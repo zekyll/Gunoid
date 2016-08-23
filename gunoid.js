@@ -328,12 +328,12 @@ var game =
 		b.v.sub_(cv.mul(- 2 * a.m / m));
 	},
 
-	findClosestEntity: function(p, type, faction)
+	findClosestEntity: function(p, filter)
 	{
 		var closestDistSqr = 1e99;
 		var closestEntity = null;
 		for (var i = 0; i < this.entities.length; ++i) {
-			if (this.entities[i] instanceof type && this.entities[i].faction === faction) {
+			if (filter(this.entities[i])) {
 				var distSqr = p.distSqr(this.entities[i].p);
 				if (distSqr < closestDistSqr) {
 					closestDistSqr = distSqr;
