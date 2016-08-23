@@ -38,7 +38,7 @@ var BlasterShot = extend(Projectile,
 		Projectile.call(this, p, v, 1, expire, faction);
 	},
 
-	radius: 2,
+	radius: 1,
 	damage: 30,
 	m: 10,
 
@@ -221,7 +221,7 @@ var Grenade = extend(Projectile,
 	},
 
 	growSpeed: 4,
-	radius: 1,
+	radius: 2,
 	damage: 30,
 	activationDelay: 1.0,
 	m: 10,
