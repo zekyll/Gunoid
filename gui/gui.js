@@ -283,7 +283,6 @@ var Gui = extend(Widget,
 
 		// Main menu.
 		this.addChild("mainMenu", new MainMenu(new Rect(50, 100, 280, 500)));
-		this.mainMenu.visible = false;
 
 		// HP bar.
 		this.addChild("hpBar", new HpBar(new Rect(20, 580, 220, 600)));

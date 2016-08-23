@@ -1,5 +1,5 @@
 
-/* global models, Spawner, enemies, input, textures, fonts, colors */
+/* global models, Spawner, enemies, input, textures, fonts, colors, Ship */
 
 "use strict";
 
@@ -26,6 +26,7 @@ var game =
 	spawner: undefined,
 	time: undefined,
 	dt: undefined,
+	speed: 1.0,
 	paused: false,
 	wireframeShaderProg: undefined,
 	texturedPointShaderProg: undefined,
@@ -82,38 +83,37 @@ var game =
 			fonts.add("big", fontFamily, 25);
 			this.initInput();
 			this.initGui();
-			this.initGameWorld();
+			this.startDemo();
 			this.requestFrame();
 		}
 	},
 
-	initGameWorld: function()
+	initEmptyWorld: function()
 	{
 		this.areaWidth = this.areaMaxX - this.areaMinX;
 		this.areaHeight = this.areaWidth / this.aspectRatio;
 		this.areaMinY = -0.5 * this.areaHeight;
 		this.areaMaxY = 0.5 * this.areaHeight;
-
 		this.entities = [];
 		this.newEntities = [];
+		this.time = null;
+		this.paused = false;
+		this.speed = 1.0;
+	},
+
+	initGameWorld: function()
+	{
+		this.initEmptyWorld();
 		this.player = new Player(new V(0, 0));
 		this.addEntity(this.player);
 		this._addNewEntities();
 		this.spawner = new Spawner();
-		this.time = null;
-		this.paused = false;
 	},
 
 	initBenchmark: function()
 	{
-		this.areaWidth = this.areaMaxX - this.areaMinX;
-		this.areaHeight = this.areaWidth / this.aspectRatio;
-		this.areaMinY = -0.5 * this.areaHeight;
-		this.areaMaxY = 0.5 * this.areaHeight;
-
+		this.initEmptyWorld();
 		this.player = null;
-		this.entities = [];
-		this.newEntities = [];
 
 		var BmSpawner = extend(Spawner,
 		{
@@ -134,9 +134,54 @@ var game =
 			}
 		});
 		this.spawner = new BmSpawner();
+	},
 
-		this.time = null;
-		this.paused = false;
+	// Starts a demo that battles random AI ships against each other.
+	startDemo: function()
+	{
+		this.initEmptyWorld();
+		this.player = null;
+		this.speed = 0.5;
+
+		this.spawner = {
+			step: function()
+			{
+				var totalHps = [0, 0];
+				var totalCounts = [0, 0];
+				for (var i = 0; i < game.entities.length; ++i) {
+					if (game.entities[i] instanceof Ship) {
+						totalHps[game.entities[i].faction] += game.entities[i].hp;
+						++totalCounts[game.entities[i].faction];
+					}
+				}
+				for (var i = 0; i < totalCounts.length; ++i) {
+					if (totalCounts[i] < 3 && totalHps[i] < 3000)
+						this._spawnNewShip(i);
+				}
+			},
+
+			finished: function()
+			{
+				return false;
+			},
+
+			_spawnNewShip: function(faction)
+			{
+				var enemyTypes = [];
+				for (var e in enemies) {
+					if (enemies.hasOwnProperty(e))
+						enemyTypes.push(enemies[e]);
+				}
+
+				var spawnType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+				var prm = Spawner.prototype.standardSpawnParams();
+
+				var newSpawn = new spawnType(prm.p, prm.dir);
+				newSpawn.faction = faction;
+				newSpawn.hp = Math.sqrt(newSpawn.hp) * 10; // Nerf bigger ships.
+				game.addEntity(newSpawn);
+			},
+		};
 	},
 
 	initInput: function()
@@ -152,7 +197,8 @@ var game =
 			"New game": 113,
 			"Benchmark": 115,
 			"Pause": 80,
-			"Main Menu": 27 // Esc
+			"Main Menu": 27, // Esc
+			"Demo": 79, // O
 		});
 
 		input.registerKeyPressHandler("New game", function() {
@@ -169,6 +215,9 @@ var game =
 		input.registerKeyPressHandler("Main Menu", function() {
 			self.gui.mainMenu.visible = !self.gui.mainMenu.visible;
 			self.paused = self.gui.mainMenu.visible;
+		});
+		input.registerKeyPressHandler("Demo", function() {
+			self.startDemo();
 		});
 	},
 
@@ -399,15 +448,18 @@ var game =
 				this.gui.shieldBar.update(this.player.shield.hp, this.player.shield.maxHp);
 		}
 
+		this.gui.mainMenu.continueBtn.enabled = this.player && this.player.hp > 0;
+
 		fonts.resetAll();
 		models.resetInstances();
 		this.gui.render(new V(0, 0), timestamp, dt);
 		var projViewMatrix = makeOrthoMatrix(0, this.gui.area.width(), this.gui.area.height(), 0);
 		models.renderInstances(projViewMatrix);
 
-		this.fps = 0.99 * this.fps + 0.01 / dt;
-		this.gui.stats.text = "fps: " + this.fps.toFixed(1) + "\n"
-				+ "time: " + this.time.toFixed(1);
+		this.fps = 0.98 * this.fps + 0.02 / this.realdt;
+		this.gui.stats.text = "fps: " + this.fps.toFixed(1);
+		if (this.player)
+			this.gui.stats.text += "\ntime: " + this.time.toFixed(1);
 
 		if (this.player && this.player.hp <= 0) {
 			fonts.big.setColor(colors.guiText);
@@ -433,7 +485,8 @@ var game =
 
 			timestamp *= 0.001;
 			self.realTime = timestamp;
-			self.dt = timestamp - self.lastTimestamp;
+			self.realdt = (timestamp - self.lastTimestamp);
+			self.dt = self.realdt * self.speed;
 
 			if (self.time === null) {
 				self.time = 0;

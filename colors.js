@@ -30,6 +30,8 @@ var colors =
 
 	// GUI:
 	guiText: new Float32Array([1.0, 0.7, 0.0, 1.0]),
+	guiDisabledText: new Float32Array([0.3, 0.3, 0.3, 1.0]),
 	guiBackground: new Float32Array([0.05, 0.15, 0.05, 0.6]),
 	guiBorder: new Float32Array([0.3, 0.7, 0.2, 1.0]),
+	guiDisabledBorder: new Float32Array([0.2, 0.4, 0.2, 1.0]),
 };
