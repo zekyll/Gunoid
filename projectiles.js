@@ -100,8 +100,10 @@ var Missile = extend(Projectile,
 
 	step: function(timestamp, dt)
 	{
-		var targetFaction = this.faction === 1 ? 2 : 1;
-		var target = game.findClosestEntity(this.p, Ship, targetFaction);
+		var self = this;
+		var target = game.findClosestEntity(this.p, function(e) {
+			return e instanceof Ship && e.faction !== self.faction;
+		});
 
 		var accelDir;
 		if (target) {
