@@ -78,4 +78,24 @@ Shield: extend(Module,
 	},
 }),
 
+
+// AI movement module for Star class enemies. Moves straight and collides off the walls.
+StarMovement: extend(Module,
+{
+	ctor: function()
+	{
+		Module.call(this);
+	},
+
+	step: function(timestamp, dt)
+	{
+		var ship = this.ship;
+		if (ship.p.x < game.areaMinX || ship.p.x > game.areaMaxX)
+			ship.v.x *= -1.0;
+		if (ship.p.y < game.areaMinY || ship.p.y > game.areaMaxY)
+			ship.v.y *= -1.0;
+	},
+}),
+
+
 };

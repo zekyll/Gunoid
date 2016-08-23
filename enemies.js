@@ -12,6 +12,7 @@ Star: extend(Ship,
 	ctor: function(p, dir)
 	{
 		Ship.call(this, p, dir.mul(80), 60);
+		this.equipModule(0, new modules.StarMovement());
 	},
 
 	m: 5e3,
@@ -20,15 +21,6 @@ Star: extend(Ship,
 	collisionDamage: 20,
 	dragCoefficient: 0,
 	color: colors.enemyGreen,
-
-	step: function(timestamp, dt)
-	{
-		if (this.p.x < game.areaMinX || this.p.x > game.areaMaxX)
-			this.v.x *= -1.0;
-		if (this.p.y < game.areaMinY || this.p.y > game.areaMaxY)
-			this.v.y *= -1.0;
-		Ship.prototype.step.apply(this, arguments);
-	},
 
 	render: function()
 	{
@@ -42,7 +34,8 @@ StarYellow: extend(Ship,
 	ctor: function(p, dir)
 	{
 		Ship.call(this, p, dir.mul(40), 300);
-		this.equipModule(0, new PlasmaSprinkler(this));
+		this.equipModule(0, new modules.StarMovement());
+		this.equipModule(1, new PlasmaSprinkler());
 	},
 
 	m: 10e3,
@@ -51,15 +44,6 @@ StarYellow: extend(Ship,
 	collisionDamage: 25,
 	dragCoefficient: 0,
 	color: colors.enemyYellow,
-
-	step: function(timestamp, dt)
-	{
-		if (this.p.x < game.areaMinX || this.p.x > game.areaMaxX)
-			this.v.x *= -1.0;
-		if (this.p.y < game.areaMinY || this.p.y > game.areaMaxY)
-			this.v.y *= -1.0;
-		Ship.prototype.step.apply(this, arguments);
-	},
 
 	render: function()
 	{
@@ -73,6 +57,7 @@ StarOrange: extend(Ship,
 	ctor: function(p, dir)
 	{
 		Ship.call(this, p, dir.mul(120), 200);
+		this.equipModule(0, new modules.StarMovement());
 	},
 
 	m: 20e3,
@@ -82,15 +67,6 @@ StarOrange: extend(Ship,
 	dragCoefficient: 0,
 	childCount: 12,
 	color: colors.enemyOrange,
-
-	step: function(timestamp, dt)
-	{
-		if (this.p.x < game.areaMinX || this.p.x > game.areaMaxX)
-			this.v.x *= -1.0;
-		if (this.p.y < game.areaMinY || this.p.y > game.areaMaxY)
-			this.v.y *= -1.0;
-		Ship.prototype.step.apply(this, arguments);
-	},
 
 	takeDamage: function(timestamp, damage)
 	{
