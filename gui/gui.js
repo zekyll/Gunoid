@@ -21,10 +21,13 @@ var Widget = extend(Object,
 	// Default values:
 	backgroundColor: colors.guiBackground,
 	textColor: colors.guiText,
+	disabledTextColor: colors.guiDisabledText,
 	borderColor: colors.guiBorder,
+	disabledBorderColor: colors.guiDisabledBorder,
 	horizontalMargin: 1,
 	verticalMargin: 1,
 	visible: true,
+	enabled: true,
 	selfVisible: true,
 	text: "",
 	horizontalTextAlign: 0.0, // Left.
@@ -140,29 +143,35 @@ var Button = extend(Widget,
 		Widget.prototype.mouseExit.apply(this, arguments);
 	},
 
-	renderSelf: function(offset, timestamp, dt)
+	renderSelf: function(offset)
+	{
+		var bgColor = this.isUnderCursor ? this.hoverBackgroundColor : this.backgroundColor;
+		var borderColor = this.isUnderCursor && this.isDragSource ? colors.black
+			: (this.enabled ? this.borderColor : this.disabledBorderColor);
+		var textColor = this.enabled ? this.textColor : this.disabledTextColor;
+		this._renderSelf(offset, bgColor, borderColor, textColor);
+	},
+
+	_renderSelf: function(offset, bgColor, borderColor, textColor)
 	{
 		var absoluteTopLeft = this.area.topLeft.add(offset);
-		var bgColor = this.isUnderCursor ? this.hoverBackgroundColor : this.backgroundColor;
-		bgColor = this.isUnderCursor && this.isDragSource ? this.pressedBackgroundColor : bgColor;
 		if (bgColor[3] > 0)
 			models.guiRect.render(bgColor, absoluteTopLeft, new V(0, 1), this.area.width(), this.area.height());
 
-		var bcolor = this.isUnderCursor && this.isDragSource ? colors.black : this.borderColor;
-		if (bcolor[3] > 0)
-			models.guiBorder.render(bcolor, absoluteTopLeft, new V(0, 1), this.area.width(), this.area.height());
+		if (borderColor[3] > 0)
+			models.guiBorder.render(borderColor, absoluteTopLeft, new V(0, 1), this.area.width(), this.area.height());
 
 		if (this.text) {
-			var offset = this.isUnderCursor && this.isDragSource ? 1 : 0;
-			this.font.setColor(this.textColor);
+			var displacement = this.isUnderCursor && this.isDragSource ? 1 : 0;
+			this.font.setColor(textColor);
 			this.font.addText(this.text,
-					absoluteTopLeft.x + this.horizontalMargin + offset,
-					absoluteTopLeft.y + this.verticalMargin + offset,
+					absoluteTopLeft.x + this.horizontalMargin + displacement,
+					absoluteTopLeft.y + this.verticalMargin + displacement,
 					this.area.width() - 2 * this.horizontalMargin,
 					this.area.height() - 2 * this.verticalMargin, this.horizontalTextAlign
 					);
 		}
-	}
+	},
 });
 
 
@@ -291,22 +300,24 @@ var Gui = extend(Widget,
 
 	mouseDown: function(p)
 	{
-		if (this.pointedWidget && this.pointedWidget !== this)
-			this.pointedWidget.mouseDown(p);
+		var w = this.pointedWidget && this.pointedWidget.enabled ? this.pointedWidget : null;
+		if (w && w !== this)
+			w.mouseDown(p);
 		if (this.mouseDownWidget)
 			this.mouseDownWidget.isDragSource = false;
-		this.mouseDownWidget = this.pointedWidget;
-		if (this.mouseDownWidget)
-			this.mouseDownWidget.isDragSource = true;
+		this.mouseDownWidget = w;
+		if (w)
+			w.isDragSource = true;
 	}	,
 
 	mouseUp: function(p)
 	{
-		if (this.pointedWidget && this.pointedWidget !== this) {
-			this.pointedWidget.mouseUp(p);
+		var w = this.pointedWidget && this.pointedWidget.enabled ? this.pointedWidget : null;
+		if (w && w !== this) {
+			w.mouseUp(p);
 			// Only send click event if mouse down/up events happened on the same widget.
-			if (this.pointedWidget === this.mouseDownWidget)
-				this.pointedWidget.mouseClick(p);
+			if (w === this.mouseDownWidget)
+				w.mouseClick(p);
 		}
 		if (this.mouseDownWidget)
 			this.mouseDownWidget.isDragSource = false;
@@ -316,9 +327,12 @@ var Gui = extend(Widget,
 	mouseMove: function(p)
 	{
 		var w = this.getWidgetAtLocation(p);
-		if (w !== this)
+		var w = w && w.enabled ? w : null
+		if (w && w !== this)
 			w.mouseMove(p);
 		if (w !== this.pointedWidget) {
+			// Note that mouseExit() gets called even on disabled widgets if a matching
+			// mouseEnter() was previously called.
 			if (this.pointedWidget)
 				this.pointedWidget.mouseExit();
 			if (w)
