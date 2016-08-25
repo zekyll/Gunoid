@@ -108,19 +108,22 @@ V.prototype =
 		return this.mul(newLen / this.len());
 	},
 
-	setlenSafe: function(newLen)
-	{
-		var len = this.len();
-		if (len === 0)
-			return new V(0, 1);
-		else
-			return this.mul(newLen / len);
-	},
-
 	setlen_: function(newLen)
 	{
 		this.mul_(newLen / this.len());
 		return this;
+	},
+
+	setlenSafe: function(newLen)
+	{
+		var len = this.len();
+		return len === 0 ? new V(0, newLen) : this.mul(newLen / len);
+	},
+
+	setlenSafe_: function(newLen)
+	{
+		var len = this.len();
+		return len === 0 ? this.setxy_(0, newLen) : this.mul_(newLen / len);
 	},
 
 	rot90left: function()

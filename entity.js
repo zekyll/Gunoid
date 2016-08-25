@@ -43,14 +43,6 @@ var Entity = extend(Object,
 			this.v.sub_(this.v.setlen(dragAccel));
 	},
 
-	calculateMaxSpeed: function()
-	{
-		if (this.acceleration)
-			return Math.sqrt(this.acceleration / this.dragCoefficient);
-		else
-			return this.maxSpeed;
-	},
-
 	deaccelerate: function(dt, deaccel)
 	{
 		var vlen = this.v.len();
@@ -72,6 +64,7 @@ var Ship = extend(Entity,
 			this.v = this.dir.mul_(this.calculateMaxSpeed());
 			delete this.dir;
 		}
+		this.a = new V(0, 0);
 		this.modules = [];
 	},
 
@@ -87,6 +80,7 @@ var Ship = extend(Entity,
 				this.modules[i].step(timestamp, dt);
 		}
 
+		this.v.add_(this.a.mul(dt));
 		this.p.add_(this.v.mul(dt));
 		this.calculateDrag(dt);
 	},
@@ -191,6 +185,11 @@ var Ship = extend(Entity,
 			if (this.modules[i])
 				this.modules[i].render();
 		}
+	},
+
+	calculateMaxSpeed: function()
+	{
+		return Math.sqrt(this.acceleration / this.dragCoefficient);
 	},
 });
 

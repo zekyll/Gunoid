@@ -89,6 +89,7 @@ StarMovement: extend(Module,
 			ship.v.x *= -1.0;
 		if (ship.p.y < game.areaMinY || ship.p.y > game.areaMaxY)
 			ship.v.y *= -1.0;
+		ship.a.set_(ship.v).setlenSafe_(ship.acceleration);
 	},
 }),
 

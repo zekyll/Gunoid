@@ -27,11 +27,10 @@ var Player = extend(Ship,
 		this.targetp.x = game.areaMinX + game.areaWidth * input.relativeCursorX;
 		this.targetp.y = game.areaMaxY - game.areaHeight * input.relativeCursorY;
 
-		var a = new V((input.keyDown("Accelerate right") & 1) - (input.keyDown("Accelerate left") & 1),
+		this.a.setxy_((input.keyDown("Accelerate right") & 1) - (input.keyDown("Accelerate left") & 1),
 				(input.keyDown("Accelerate up") & 1) - (input.keyDown("Accelerate down") & 1));
-		if (a.len() > 0)
-			a.setlen_(this.acceleration * dt);
-		this.v.add_(a);
+		if (this.a.len() > 0)
+			this.a.setlen_(this.acceleration);
 
 		Ship.prototype.step.apply(this, arguments);
 	},

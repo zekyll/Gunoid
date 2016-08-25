@@ -17,10 +17,10 @@ Star: extend(Ship,
 
 	hp: 60,
 	m: 5e3,
-	maxSpeed: 80,
 	radius: 4,
 	collisionDamage: 20,
-	dragCoefficient: 0,
+	acceleration: 7,
+	dragCoefficient: 0.001,
 	color: colors.enemyGreen,
 
 	render: function()
@@ -41,10 +41,10 @@ StarYellow: extend(Ship,
 
 	hp: 300,
 	m: 10e3,
-	maxSpeed: 40,
 	radius: 4,
 	collisionDamage: 25,
-	dragCoefficient: 0,
+	acceleration: 2,
+	dragCoefficient: 0.001,
 	color: colors.enemyYellow,
 
 	render: function()
@@ -64,10 +64,10 @@ StarOrange: extend(Ship,
 
 	hp: 200,
 	m: 20e3,
-	maxSpeed: 120,
 	radius: 6,
 	collisionDamage: 30,
-	dragCoefficient: 0,
+	acceleration: 14,
+	dragCoefficient: 0.001,
 	childCount: 12,
 	color: colors.enemyOrange,
 
@@ -111,10 +111,8 @@ Kamikaze: extend(Ship,
 	step: function(timestamp, dt)
 	{
 		Ship.prototype.step.apply(this, arguments);
-
 		var targetDir = this.targetp.sub(this.p).setlenSafe(1).add(this.v.setlenSafe(4));
-		var a = targetDir.setlen(this.acceleration);
-		this.v.add_(a.mul(dt));
+		this.a.set_(targetDir).setlenSafe_(this.acceleration);
 	},
 
 	takeDamage: function(timestamp, damage)
@@ -162,9 +160,7 @@ KamikazeYellow: extend(Ship,
 	step: function(timestamp, dt)
 	{
 		var targetDir = this.targetp.sub(this.p).setlenSafe(1).add(this.v.setlenSafe(4));
-		var a = targetDir.setlen(this.acceleration);
-		this.v.add_(a.mul(dt));
-
+		this.a.set_(targetDir).setlenSafe_(this.acceleration);
 		Ship.prototype.step.apply(this, arguments);
 	},
 
@@ -212,11 +208,8 @@ Destroyer: extend(Ship,
 	step: function(timestamp, dt)
 	{
 		var targetDir = this.targetp.sub(this.p).setlen(1).add(this.v.setlen(5));
-		var a = targetDir.setlen(this.acceleration);
-		this.v.add_(a.mul(dt));
-
+		this.a.set_(targetDir).setlenSafe_(this.acceleration);
 		this.fireBullets(timestamp);
-
 		Ship.prototype.step.apply(this, arguments);
 	},
 
@@ -283,9 +276,8 @@ GunnerGreen: extend(Ship,
 				this.targetPos = undefined;
 			}
 		} else {
-			var a = this.targetp.sub(this.p).setlen_(1).add_(this.v.setlen(1));
-			a.setlen_(this.acceleration).mul_(dt);
-			this.v.add_(a);
+			this.a.set_(this.targetp).sub_(this.p).setlen_(1).add_(this.v.setlen(1));
+			this.a.setlen_(this.acceleration);
 			if (distSqr < this.proximity * this.proximity) {
 				this.attackMode = true;
 				this.attackModeStart = timestamp;
