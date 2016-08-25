@@ -35,7 +35,7 @@ var Player = extend(Ship,
 		Ship.prototype.step.apply(this, arguments);
 	},
 
-	die: function()
+	die: function(timestamp)
 	{
 		for (var i = 0; i < 5; ++i) {
 			game.addEntity(init(Explosion, {

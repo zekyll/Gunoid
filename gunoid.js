@@ -174,9 +174,10 @@ var game =
 				}
 
 				var spawnType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
-				var param = Spawner.prototype.standardSpawnParams();
-				param.faction = faction;
-				var newSpawn = init(spawnType, param);
+				var p = game.randomEdgePosition();
+				var dest = game.randomPosition().mul(0.9);
+				var dir = dest.sub(p).setlen((0.5 +  Math.random()));
+				var newSpawn = init(spawnType, {p: p, dir: dir, faction: faction});
 				game.addEntity(newSpawn);
 				newSpawn.hp = Math.sqrt(newSpawn.hp) * 10; // Nerf bigger ships.
 			},

@@ -164,7 +164,7 @@ KamikazeYellow: extend(Ship,
 		Ship.prototype.step.apply(this, arguments);
 	},
 
-	die: function()
+	die: function(timestamp)
 	{
 		game.addEntity(init(Explosion, { p: this.p.clone(), v: this.v.clone(), maxRadius: 25, speed: 15,
 				damage: 30, force: 4e6, faction: this.faction }));

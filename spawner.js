@@ -115,7 +115,7 @@ var Spawner = extend(Object,
 		var p = game.randomEdgePosition();
 		var dest = game.randomPosition().mul(0.9);
 		var dir = dest.sub(p).setlen((0.5 +  Math.random()));
-		return {p: p, dir: dir, faction: 2};
+		return {p: p, dir: dir, faction: 2, lootProbabilityMultiplier: 1};
 	},
 
 	initWaves: function()

@@ -68,6 +68,7 @@ var Ship = extend(Entity,
 		this.modules = [];
 	},
 
+	lootProbabilityMultiplier: 0,
 	dragCoefficient: 0,
 	debrisSpeed: 50,
 	debrisExpireTime: 3,
@@ -99,32 +100,7 @@ var Ship = extend(Entity,
 	{
 		this.hp -= damage;
 		if (this.hp <= 0) {
-			if (this.faction === 2) {
-				var rnd = Math.random();
-				var lootClass = LootModule;
-				var moduleClass = undefined;
-				if ((rnd -= 0.06) < 0) {
-					lootClass = RepairKit
-				} else if ((rnd -= 0.01) < 0) {
-					moduleClass = RocketLauncher;
-				} else if ((rnd -= 0.01) < 0) {
-					moduleClass = MissileLauncher;
-				} else if ((rnd -= 0.01) < 0) {
-					moduleClass = Laser;
-				} else if ((rnd -= 0.01) < 0) {
-					moduleClass = DualBlaster;
-				} else if ((rnd -= 0.01) < 0) {
-					moduleClass = modules.Shield;
-				} else {
-					lootClass = null;
-				}
-
-				if (lootClass) {
-					game.addEntity(init(lootClass, { p: this.p.clone(), expire: timestamp + 10,
-							moduleClass: moduleClass}));
-				}
-			}
-			this.die();
+			this.die(timestamp);
 			this.spreadDebris(timestamp);
 		}
 	},
@@ -156,13 +132,14 @@ var Ship = extend(Entity,
 		return forward.mul_(y).add_(right.mul_(x)).add_(this.p);
 	},
 
-	die: function()
+	die: function(timestamp)
 	{
 		for (var i = 0; i < this.modules.length; ++i) {
 			if (this.modules[i])
 				this.modules[i].unequip();
 		}
 		this.modules = [];
+		this._dropLoot(timestamp);
 	},
 
 	equipModule: function(slot, module)
@@ -191,6 +168,35 @@ var Ship = extend(Entity,
 	{
 		return Math.sqrt(this.acceleration / this.dragCoefficient);
 	},
+
+	_dropLoot: function(timestamp)
+	{
+		if (this.faction === 2) {
+			var rnd = Math.random() / this.lootProbabilityMultiplier;
+			var lootClass = LootModule;
+			var moduleClass = undefined;
+			if ((rnd -= 0.06) < 0) {
+				lootClass = RepairKit
+			} else if ((rnd -= 0.01) < 0) {
+				moduleClass = RocketLauncher;
+			} else if ((rnd -= 0.01) < 0) {
+				moduleClass = MissileLauncher;
+			} else if ((rnd -= 0.01) < 0) {
+				moduleClass = Laser;
+			} else if ((rnd -= 0.01) < 0) {
+				moduleClass = DualBlaster;
+			} else if ((rnd -= 0.01) < 0) {
+				moduleClass = modules.Shield;
+			} else {
+				lootClass = null;
+			}
+
+			if (lootClass) {
+				game.addEntity(init(lootClass, { p: this.p.clone(), expire: timestamp + 10,
+						moduleClass: moduleClass}));
+			}
+		}
+	}
 });
 
 
@@ -302,7 +308,7 @@ var Explosion = extend(Entity,
 				faction: this.faction,
 			}));
 		}
-	}
+	},
 });
 
 
