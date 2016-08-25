@@ -42,15 +42,6 @@ var Entity = extend(Object,
 		if (vlen > 1e-10)
 			this.v.sub_(this.v.setlen(dragAccel));
 	},
-
-	deaccelerate: function(dt, deaccel)
-	{
-		var vlen = this.v.len();
-		if (vlen > deaccel * dt)
-			this.v.sub_(this.v.setlen(deaccel * dt));
-		else
-			this.v.setlen_(1e-9);
-	}
 });
 
 
@@ -196,6 +187,12 @@ var Ship = extend(Entity,
 						moduleClass: moduleClass}));
 			}
 		}
+	},
+
+	_deaccelerate: function(dt, deaccel)
+	{
+		var vlen = this.v.len();
+		this.a.set_(this.v).setlen_(-Math.min(deaccel, (vlen - 1e-3) / dt)); // Prevent zero velocity.
 	}
 });
 

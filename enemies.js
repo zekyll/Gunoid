@@ -264,7 +264,7 @@ GunnerGreen: extend(Ship,
 		var distSqr = this.p.distSqr(this.targetp);
 
 		if (this.attackMode) {
-			this.deaccelerate(dt, this.breakAcceleration);
+			this._deaccelerate(dt, this.breakAcceleration);
 			var attackLength = timestamp - this.attackModeStart;
 			if (attackLength >= this.attackDelay) {
 				if (!this.targetPos)
