@@ -24,7 +24,8 @@ var Blaster = extend(Module,
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			var v = targetDir.setlen(this.bulletSpeed);
-			game.addEntity(new BlasterShot(this.ship.p, v, timestamp + 2, this.ship.faction));
+			game.addEntity(init(BlasterShot, { p: this.ship.p.clone(), v: v,
+					expire: timestamp + 2, faction: this.ship.faction}));
 			this.lastShootTime = timestamp;
 		}
 	}
@@ -53,8 +54,10 @@ var DualBlaster = extend(Module,
 				targetDir = new V(0, 1);
 			var sideDir = targetDir.rot90left().setlen(0.5 * this.spread);
 			var v = targetDir.setlen(this.bulletSpeed);
-			game.addEntity(new BlasterShot(this.ship.p.add(sideDir), v, timestamp + 2, this.ship.faction));
-			game.addEntity(new BlasterShot(this.ship.p.sub(sideDir), v, timestamp + 2, this.ship.faction));
+			game.addEntity(init(BlasterShot, { p: this.ship.p.add(sideDir), v: v.clone(),
+					expire: timestamp + 2, faction: this.ship.faction}));
+			game.addEntity(init(BlasterShot, { p: this.ship.p.sub(sideDir), v: v.clone(),
+					expire: timestamp + 2, faction: this.ship.faction}));
 			this.lastShootTime = timestamp;
 		}
 	}
@@ -81,7 +84,8 @@ var PlasmaSprinkler = extend(Module,
 		if (timestamp > this.lastShootTime + this.shootInterval) {
 			this.targetDir.rot_((timestamp - this.lastShootTime) * this.rotateSpeed * this.rotateDir);
 			var v = this.targetDir.setlen(this.projectileSpeed);
-			game.addEntity(new PlasmaBall(this.ship.p, v, timestamp + 10, this.ship.faction));
+			game.addEntity(init(PlasmaBall, { p: this.ship.p.clone(), v: v, expire: timestamp + 10,
+					faction: this.ship.faction}));
 			this.lastShootTime = timestamp;
 		}
 	}
@@ -141,7 +145,12 @@ var Laser = extend(Module,
 			var angle = Math.random() * 2 * Math.PI;
 			var v = new V(Math.cos(angle), Math.sin(angle));
 			v.mul_(this.sparkSpeed * (0.1 + 0.9 * Math.random()));
-			game.addEntity(new Debris(targetp, v.add(targetv), timestamp + (0.2 + Math.random()) * this.sparkExpireTime, this.sparkColor));
+			game.addEntity(init(Debris, {
+				p: targetp,
+				v: v.add(targetv),
+				expire: timestamp + (0.2 + Math.random()) * this.sparkExpireTime,
+				color: this.sparkColor
+			}));
 		}
 	}
 });
@@ -167,7 +176,8 @@ var RocketLauncher = extend(Module,
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			var v = targetDir.setlen(this.projectileSpeed);
-			game.addEntity(new Rocket(this.ship.p, v, timestamp + 4, this.ship.faction));
+			game.addEntity(init(Missile, { p: this.ship.p.clone(), v: v, expire: timestamp + 4,
+					faction: this.ship.faction}));
 			this.lastShootTime = timestamp;
 		}
 	}
@@ -194,7 +204,8 @@ var MissileLauncher = extend(Module,
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			var v = targetDir.setlen(this.projectileSpeed);
-			game.addEntity(new Missile(this.ship.p, v, timestamp + 5, this.ship.faction));
+			game.addEntity(init(Missile, { p: this.ship.p.clone(), v: v, expire: timestamp + 5,
+					faction: this.ship.faction}));
 			this.lastShootTime = timestamp;
 		}
 	}

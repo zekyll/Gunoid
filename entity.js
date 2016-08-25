@@ -7,13 +7,11 @@
 // Base class for all game entities.
 var Entity = extend(Object,
 {
-	ctor: function(p)
+	ctor: function() // p, hp
 	{
-		this.p = p.clone();
 		this.id = this.staticVars.idCounter++;
 	},
 
-	mass: 0, // No physics.
 	faction: 0, // Neutral faction.
 	staticVars: {
 		idCounter: 0
@@ -45,9 +43,12 @@ var Entity = extend(Object,
 			this.v.sub_(this.v.setlen(dragAccel));
 	},
 
-	maxSpeed: function()
+	calculateMaxSpeed: function()
 	{
-		return Math.sqrt(this.acceleration / this.dragCoefficient);
+		if (this.acceleration)
+			return Math.sqrt(this.acceleration / this.dragCoefficient);
+		else
+			return this.maxSpeed;
 	},
 
 	deaccelerate: function(dt, deaccel)
@@ -64,11 +65,13 @@ var Entity = extend(Object,
 // Base class for ships.
 var Ship = extend(Entity,
 {
-	ctor: function(p, v, hp)
+	ctor: function() // p, hp, v/dir
 	{
-		Entity.call(this, p);
-		this.v = v.clone();
-		this.hp = hp;
+		Entity.call(this);
+		if (!this.v) {
+			this.v = this.dir.mul_(this.calculateMaxSpeed());
+			delete this.dir;
+		}
 		this.modules = [];
 	},
 
@@ -104,18 +107,27 @@ var Ship = extend(Entity,
 		if (this.hp <= 0) {
 			if (this.faction === 2) {
 				var rnd = Math.random();
+				var lootClass = LootModule;
+				var moduleClass = undefined;
 				if ((rnd -= 0.06) < 0) {
-					game.addEntity(new RepairKit(this.p, timestamp + 10));
+					lootClass = RepairKit
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootModule(this.p, timestamp + 10, RocketLauncher));
+					moduleClass = RocketLauncher;
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootModule(this.p, timestamp + 10, MissileLauncher));
+					moduleClass = MissileLauncher;
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootModule(this.p, timestamp + 10, Laser));
+					moduleClass = Laser;
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootModule(this.p, timestamp + 10, DualBlaster));
+					moduleClass = DualBlaster;
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootModule(this.p, timestamp + 10, modules.Shield));
+					moduleClass = modules.Shield;
+				} else {
+					lootClass = null;
+				}
+
+				if (lootClass) {
+					game.addEntity(init(lootClass, { p: this.p.clone(), expire: timestamp + 10,
+							moduleClass: moduleClass}));
 				}
 			}
 			this.die();
@@ -138,7 +150,8 @@ var Ship = extend(Entity,
 			v.mul_(this.debrisSpeed * (0.1 + 0.9 * Math.random()));
 			v.add_(this.v);
 			var expire = timestamp + (0.2 + Math.random()) * this.debrisExpireTime;
-			game.addEntity(new Debris(this.p, v, expire, this.color));
+			game.addEntity(init(Debris, { p: this.p.clone(), v: v,
+					expire: expire, color: this.color.slice(0)}));
 		}
 	},
 
@@ -185,26 +198,22 @@ var Ship = extend(Entity,
 // Expanding circular explosion that deals damage to ships and pushes them back.
 var Explosion = extend(Entity,
 {
-	ctor: function(p, v, maxRadius, speed, damage, force, faction)
+	ctor: function() // p, v, maxRadius, speed, damage, force
 	{
-		Entity.call(this, p);
-		this.v = v.clone();
-		this.maxRadius = maxRadius;
-		if (!damage)
+		Entity.call(this);
+		if (!this.damage)
 			this.startRadius = 0;
 		this.radius = this.startRadius; // Ensure that explosive projectiles deal damage on collision.
-		this.damage = damage;
-		this.force = force;
-		this.faction = faction;
-		this.hp = 1;
 		this.phase = 0;
-		this.c = speed / maxRadius;
-		this.speed = speed;
+		this.c = this.speed / this.maxRadius;
 		this.hitEntities = {}; // Keep track of entities hit by explosion
-		if (damage)
+		if (this.damage)
 			this._addSecondaryExplosions(3);
 	},
 
+	force: 0,
+	damage: 0,
+	hp: 1,
 	dragCoefficient: 0.05,
 	startRadius: 2,
 	fadeTime: 0.3,
@@ -284,20 +293,15 @@ var Explosion = extend(Entity,
 	_addSecondaryExplosions: function(n)
 	{
 		for (var i = 0; i < n; ++i) {
-			var radius = (1 - (i + 1) * (0.5 / n)) * this.maxRadius;
-			var speed = (1 - 0.5 / n) * this.speed;
-
-			// Randomize position.
-			var dp = new V((Math.random() - 0.5) * 0.3 * this.maxRadius,
-					(Math.random() - 0.5) * 0.3 * this.maxRadius);
-			var p = this.p.add(dp);
-
-			// Randomize velocity.
-			var dv = new V((Math.random() - 0.5) * 0.5 * this.speed,
-					(Math.random() - 0.5) * 0.5 * this.speed);
-			var v = this.v.add(dv);
-
-			game.addEntity(new Explosion(p, v, radius, speed, 0, 0, this.faction));
+			game.addEntity(init(Explosion, {
+				p: this.p.add(new V((Math.random() - 0.5) * 0.3 * this.maxRadius,
+					(Math.random() - 0.5) * 0.3 * this.maxRadius)),
+				v: this.v.add(new V((Math.random() - 0.5) * 0.5 * this.speed,
+					(Math.random() - 0.5) * 0.5 * this.speed)),
+				maxRadius: (1 - (i + 1) * (0.5 / n)) * this.maxRadius,
+				speed: (1 - 0.5 / n) * this.speed,
+				faction: this.faction,
+			}));
 		}
 	}
 });
@@ -307,24 +311,22 @@ var Explosion = extend(Entity,
 // If it reaches 0 hp, it doesn't die but becomes inactive. It can activate again by regenerating.
 var ShieldEntity = extend(Entity,
 {
-	ctor: function(p, radius, maxHp, regen, regenDelay, inactiveRegenDelay, faction)
+	ctor: function() // p, radius
 	{
-		Entity.call(this, p);
-		this.radius = radius;
+		Entity.call(this);
 		// Make the shield hollow so that enemies inside the shield range can still shoot.
-		this.innerRadius = Math.max(radius - 5, 0);
-		this.faction = faction;
-		this.hp = maxHp;
+		this.innerRadius = Math.max(this.radius - 5, 0);
+		this.hp = this.maxHp;
 		this.v = new V(0,0);
-		this.maxHp = maxHp;
-		this.m = 1e9;
-		this.regen = regen;
-		this.regenDelay = regenDelay;
-		this.inactiveRegenDelay = inactiveRegenDelay;
 		this._active = true;
 		this._lastDamageTime = 0;
 	},
 
+	maxHp: 1e9, //TODO Infinity?
+	m: 1e9,
+	regen: 0,
+	regenDelay: 0,
+	inactiveRegenDelay: 0,
 	maxBlockRadius: 3,
 	collisionDamage: 10,
 

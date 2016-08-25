@@ -5,20 +5,22 @@
 
 var Player = extend(Ship,
 {
-	ctor: function(p)
+	ctor: function() // p
 	{
-		Ship.call(this, p, new V(0, 0), 100);
-		this.m = 10e3;
-		this.faction = 1;
-		this.radius = 7;
+		this.v = new V(0, 0),
+		Ship.call(this);
 		this.targetp = new V(0, 1);
-		this.acceleration = 2000;
-		this.dragCoefficient = 0.1;
-
-		this.color = colors.player;
 		this.modules = [];
 		this.pickupItem(new Blaster());
 	},
+
+	hp: 100,
+	m: 10e3,
+	radius: 7,
+	faction: 1,
+	dragCoefficient: 0.1,
+	acceleration: 2000,
+	color: colors.player,
 
 	step: function(timestamp, dt)
 	{
@@ -37,10 +39,15 @@ var Player = extend(Ship,
 	die: function()
 	{
 		for (var i = 0; i < 5; ++i) {
-			var p = this.p.add(new V(-20 + Math.random() * 40, -20 + Math.random() * 40));
-			var radius = 80 + Math.random() * 40;
-			var speed = 30 + Math.random() * 30;
-			game.addEntity(new Explosion(p, this.v, radius, speed, 2000, 3e6, this.faction));
+			game.addEntity(init(Explosion, {
+				p: this.p.add(new V(-20 + Math.random() * 40, -20 + Math.random() * 40)),
+				v: this.v.clone(),
+				maxRadius: 80 + Math.random() * 40,
+				speed: 30 + Math.random() * 30,
+				damage: 2000,
+				force: 3e6,
+				faction: this.faction
+			}));
 		}
 		Ship.prototype.die.apply(this, arguments);
 	},

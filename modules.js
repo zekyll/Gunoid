@@ -32,22 +32,13 @@ var modules = {
 // Shield module.
 Shield: extend(Module,
 {
-	ctor: function(radius, maxHp, regen, regenDelay, inactiveRegenDelay)
+	ctor: function(shieldParam)
 	{
 		Module.call(this);
-		if (typeof radius === "undefined") {
-			this._radius =  15;
-			this._maxHp = 50;
-			this._regen = 2;
-			this._regenDelay = 5;
-			this._inactiveRegenDelay = 5;
-		} else {
-			this._radius = radius;
-			this._maxHp = maxHp;
-			this._regen = regen;
-			this._regenDelay = regenDelay;
-			this._inactiveRegenDelay = inactiveRegenDelay;
-		}
+		if (shieldParam)
+			this.shieldParam = copyShallow(shieldParam);
+		else
+			this.shieldParam = {radius: 15, maxHp: 50, regen: 2, regenDelay: 5, inactiveRegenDelay: 5};
 	},
 
 	modelName: "itemShield",
@@ -63,8 +54,11 @@ Shield: extend(Module,
 	equip: function()
 	{
 		// Create the actual shield entity that handles physics.
-		this.shield = new ShieldEntity(this.ship.p, this._radius, this._maxHp, this._regen,
-				this._regenDelay, this._inactiveRegenDelay, this.ship.faction);
+		var param = copyShallow(this.shieldParam)
+		param.p = this.ship.p.clone();
+		param.faction = this.ship.faction;
+
+		this.shield = init(ShieldEntity, param);
 		this.ship.shield = this.shield; // For GUI.
 		game.addEntity(this.shield);
 	},

@@ -104,7 +104,7 @@ var game =
 	initGameWorld: function()
 	{
 		this.initEmptyWorld();
-		this.player = new Player(new V(0, 0));
+		this.player = init(Player, {p: new V(0, 0)});
 		this.addEntity(this.player);
 		this._addNewEntities();
 		this.spawner = new Spawner();
@@ -174,12 +174,11 @@ var game =
 				}
 
 				var spawnType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
-				var prm = Spawner.prototype.standardSpawnParams();
-
-				var newSpawn = new spawnType(prm.p, prm.dir);
-				newSpawn.faction = faction;
-				newSpawn.hp = Math.sqrt(newSpawn.hp) * 10; // Nerf bigger ships.
+				var param = Spawner.prototype.standardSpawnParams();
+				param.faction = faction;
+				var newSpawn = init(spawnType, param);
 				game.addEntity(newSpawn);
+				newSpawn.hp = Math.sqrt(newSpawn.hp) * 10; // Nerf bigger ships.
 			},
 		};
 	},

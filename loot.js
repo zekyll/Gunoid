@@ -7,16 +7,15 @@
 // Baseclass for collectable objects.
 var Loot = extend(Entity,
 {
-	ctor: function(p, expire, model)
+	ctor: function(p, expire, model) // p, model
 	{
 		Entity.call(this, p);
 		this.v = new V(0, 0);
-		this.hp = 1;
-		this.expire = expire;
 		this.blinkState = undefined;
-		this.model = model;
 	},
 
+	hp: 1,
+	expire: 1e9,
 	radius: 5,
 	faction: 1,
 	color: colors.loot,
@@ -52,9 +51,10 @@ var Loot = extend(Entity,
 // Restores hitpoints.
 var RepairKit = extend(Loot,
 {
-	ctor: function(p, expire)
+	ctor: function() // p
 	{
-		Loot.call(this, p, expire, models.repairKit);
+		this.model = models.repairKit;
+		Loot.call(this);
 	},
 
 	repairAmount: 20,
@@ -69,10 +69,11 @@ var RepairKit = extend(Loot,
 // Contains a module that can be equipped by player's ship.
 var LootModule = extend(Loot,
 {
-	ctor: function(p, expire, moduleClass)
+	ctor: function() // p, moduleClass
 	{
-		Loot.call(this, p, expire, models[moduleClass.prototype.modelName]);
-		this.moduleClass = moduleClass;
+		if (!this.model)
+			this.model = models[this.moduleClass.prototype.modelName];
+		Loot.call(this);
 	},
 
 	pickup: function(ship)

@@ -83,8 +83,7 @@ var Subwave = extend(Object,
 
 	spawn: function(timestamp)
 	{
-		var prm = this.spawnParamFunc(timestamp);
-		var newSpawn = new this.spawnClass(prm.p, prm.dir);
+		var newSpawn = init(this.spawnClass, this.spawnParamFunc(timestamp));
 		this.aliveSpawns.push(newSpawn);
 		game.addEntity(newSpawn);
 	},
@@ -116,7 +115,7 @@ var Spawner = extend(Object,
 		var p = game.randomEdgePosition();
 		var dest = game.randomPosition().mul(0.9);
 		var dir = dest.sub(p).setlen((0.5 +  Math.random()));
-		return {p: p, dir: dir};
+		return {p: p, dir: dir, faction: 2};
 	},
 
 	initWaves: function()

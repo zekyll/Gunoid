@@ -7,15 +7,15 @@
 // Base class for projectiles.
 var Projectile = extend(Entity,
 {
-	ctor: function(p, v, hp, expire, faction)
+	ctor: function() // p, v
 	{
-		Entity.call(this, p);
-		this.v = v.clone();
-		this.hp = hp;
-		this.expire = expire;
-		this.faction = faction;
-		this.color = faction === 1 ? colors.projectile : colors.enemyProjectile;
+		Entity.call(this);
+		if (!this.color)
+			this.color = this.faction === 1 ? colors.projectile : colors.enemyProjectile;
 	},
+
+	hp: 1,
+	expire: 1e9,
 
 	step: function(timestamp, dt)
 	{
@@ -33,9 +33,9 @@ var Projectile = extend(Entity,
 
 var BlasterShot = extend(Projectile,
 {
-	ctor: function(p, v, expire, faction)
+	ctor: function() // p, v
 	{
-		Projectile.call(this, p, v, 1, expire, faction);
+		Projectile.call(this);
 	},
 
 	radius: 1,
@@ -46,7 +46,8 @@ var BlasterShot = extend(Projectile,
 	{
 		other.takeDamage(timestamp, this.damage);
 		this.hp -= 1;
-		game.addEntity(new Explosion(this.p, other.v, 2.5, 30, 0, 0, this.faction));
+		game.addEntity(init(Explosion, { p: this.p.clone(), v: other.v.clone(),
+				maxRadius: 2.5, speed: 30, faction: this.faction}));
 	},
 
 	render: function()
@@ -58,21 +59,21 @@ var BlasterShot = extend(Projectile,
 
 var PlasmaBall = extend(Projectile,
 {
-	ctor: function(p, v, expire, faction)
+	ctor: function() // p, v
 	{
-		Projectile.call(this, p, v, 1, expire, faction);
+		Projectile.call(this);
 	},
 
 	radius: 3,
 	damage: 30,
 	m: 10,
-	color: colors.plasmaBall,
 
 	collide: function(timestamp, dt, other)
 	{
 		other.takeDamage(timestamp, this.damage);
 		this.hp -= 1;
-		game.addEntity(new Explosion(this.p, other.v, 4, 20, 0, 0, this.faction));
+		game.addEntity(init(Explosion, { p: this.p.clone(), v: other.v.clone(),
+				maxRadius: 4, speed: 20, faction: this.faction}));
 	},
 
 	render: function()
@@ -84,9 +85,9 @@ var PlasmaBall = extend(Projectile,
 
 var Missile = extend(Projectile,
 {
-	ctor: function(p, v, expire, faction)
+	ctor: function() // p, v
 	{
-		Projectile.call(this, p, v, 1, expire, faction);
+		Projectile.call(this);
 	},
 
 	radius: 2,
@@ -127,8 +128,9 @@ var Missile = extend(Projectile,
 	collide: function(timestamp, dt, other)
 	{
 		this.hp -= 1;
-		game.addEntity(new Explosion(this.p, other.v, this.explosionRadius,
-				this.explosionSpeed, this.damage, this.explosionForce, this.faction));
+		game.addEntity(init(Explosion, { p: this.p.clone(), v: other.v.clone(),
+				maxRadius: this.explosionRadius, speed: this.explosionSpeed,
+				damage: this.damage, force: this.explosionForce, faction: this.faction}));
 	},
 
 	render: function()
@@ -140,9 +142,9 @@ var Missile = extend(Projectile,
 
 var Rocket = extend(Projectile,
 {
-	ctor: function(p, v, expire, faction)
+	ctor: function() // p, v
 	{
-		Projectile.call(this, p, v, 1, expire, faction);
+		Projectile.call(this);
 	},
 
 	radius: 2,
@@ -169,8 +171,9 @@ var Rocket = extend(Projectile,
 	collide: function(timestamp, dt, other)
 	{
 		this.hp -= 1;
-		game.addEntity(new Explosion(this.p, other.v, this.explosionRadius,
-					this.explosionSpeed, this.damage, this.explosionForce, this.faction));
+		game.addEntity(init(Explosion, { p: this.p.clone(), v: other.v.clone(),
+				maxRadius: this.explosionRadius, speed: this.explosionSpeed,
+				damage: this.damage, force: this.explosionForce, faction: this.faction}));
 	},
 
 	render: function()
@@ -182,10 +185,9 @@ var Rocket = extend(Projectile,
 
 var Debris = extend(Projectile,
 {
-	ctor: function(p, v, expire, color)
+	ctor: function() // p, v, color
 	{
-		Projectile.call(this, p, v, 1, expire, undefined);
-		this.color = color.slice(0);
+		Projectile.call(this);
 		this.brightness = 1;
 		var angle = Math.random() * 2 * Math.PI;
 		this.dir = new V(Math.cos(angle), Math.sin(angle));
@@ -217,9 +219,10 @@ var Debris = extend(Projectile,
 // Flies in straight line and explodes after a delay.
 var Grenade = extend(Projectile,
 {
-	ctor: function(p, v, expire, faction)
+	ctor: function() // p, v
 	{
-		Projectile.call(this, p, v, 1, expire + this.activationDelay, faction);
+		Projectile.call(this);
+		this.expire += this.activationDelay;
 	},
 
 	growSpeed: 4,
@@ -251,8 +254,9 @@ var Grenade = extend(Projectile,
 
 	detonate: function(v)
 	{
-		game.addEntity(new Explosion(this.p, v, this.explosionRadius, this.explosionSpeed,
-				this.damage, this.explosionForce, this.faction));
+		game.addEntity(init(Explosion, { p: this.p.clone(), v: v.clone(),
+				maxRadius: this.explosionRadius, speed: this.explosionSpeed,
+				damage: this.damage, force: this.explosionForce, faction: this.faction}));
 	},
 
 	render: function()

@@ -41,3 +41,20 @@ function getFileExtension(filename)
 {
 	return filename.substr(filename.lastIndexOf('.') + 1);
 }
+
+function init(clsFunc, prm)
+{
+	prm.__proto__ = clsFunc.prototype;
+	clsFunc.call(prm);
+	return prm;
+}
+
+function copyShallow(obj)
+{
+	var ret = {};
+	for (var key in obj) {
+		if (obj.hasOwnProperty(key))
+			ret[key] = obj[key];
+	}
+	return ret;
+}
