@@ -320,10 +320,12 @@ var game =
 		if (!a.m || !b.m)
 			return;
 		// Simulating a perfectly elastic collision between 2 objects
-		var m = a.m + b.m;
 		var dp = a.p.sub(b.p);
 		var dv = a.v.sub(b.v);
+		if (dp.dot(dv) > 0)
+			return;
 		var cv = dp.mul(dv.dot(dp)/dp.lenSqr());
+		var m = a.m + b.m;
 		a.v.sub_(cv.mul(2 * b.m / m));
 		b.v.sub_(cv.mul(- 2 * a.m / m));
 	},
