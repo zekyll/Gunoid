@@ -56,19 +56,23 @@ var input =
 
 		document.onkeydown = function(e) {
 			if (!self.keyStates[e.keyCode]){
+				self.keyStates[e.keyCode] = true
 				var bindingName = self.reverseBindings[e.keyCode];
-				if (self.keyPressHandlers.hasOwnProperty(bindingName))
+				if (self.keyPressHandlers.hasOwnProperty(bindingName)) {
 					self.keyPressHandlers[bindingName]();
-				self.keyStates[e.keyCode] = true;
+					return false;
+				}
 			}
 		};
 
 		document.onkeyup = function(e) {
 			if (self.keyStates[e.keyCode]){
-				var bindingName = self.reverseBindings[e.keyCode];
-				if (self.keyUpHandlers.hasOwnProperty(bindingName))
-					self.keyUpHandlers[bindingName]();
 				delete self.keyStates[e.keyCode];
+				var bindingName = self.reverseBindings[e.keyCode];
+				if (self.keyUpHandlers.hasOwnProperty(bindingName)) {
+					self.keyUpHandlers[bindingName]();
+					return false;
+				}
 			}
 		};
 
