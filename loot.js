@@ -69,9 +69,9 @@ var RepairKit = extend(Loot,
 // Contains a module that can be equipped by player's ship.
 var LootModule = extend(Loot,
 {
-	ctor: function(p, expire, moduleClass, model)
+	ctor: function(p, expire, moduleClass)
 	{
-		Loot.call(this, p, expire, model);
+		Loot.call(this, p, expire, models[moduleClass.prototype.modelName]);
 		this.moduleClass = moduleClass;
 	},
 

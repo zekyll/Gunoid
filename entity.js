@@ -107,15 +107,15 @@ var Ship = extend(Entity,
 				if ((rnd -= 0.06) < 0) {
 					game.addEntity(new RepairKit(this.p, timestamp + 10));
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootModule(this.p, timestamp + 10, RocketLauncher, models.lootRocket));
+					game.addEntity(new LootModule(this.p, timestamp + 10, RocketLauncher));
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootModule(this.p, timestamp + 10, MissileLauncher, models.lootMissile));
+					game.addEntity(new LootModule(this.p, timestamp + 10, MissileLauncher));
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootModule(this.p, timestamp + 10, Laser, models.lootLaser));
+					game.addEntity(new LootModule(this.p, timestamp + 10, Laser));
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootModule(this.p, timestamp + 10, DualBlaster, models.lootDualBlaster));
+					game.addEntity(new LootModule(this.p, timestamp + 10, DualBlaster));
 				} else if ((rnd -= 0.01) < 0) {
-					game.addEntity(new LootModule(this.p, timestamp + 10, modules.Shield, models.lootShield));
+					game.addEntity(new LootModule(this.p, timestamp + 10, modules.Shield));
 				}
 			}
 			this.die();

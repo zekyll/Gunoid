@@ -50,6 +50,7 @@ Shield: extend(Module,
 		}
 	},
 
+	modelName: "itemShield",
 	slot: 2,
 
 	step: function(timestamp, dt)
