@@ -53,7 +53,7 @@ var Ship = extend(Entity,
 		Entity.call(this);
 		if (!this.v) {
 			this.v = this.dir.mul_(this.calculateMaxSpeed());
-			delete this.dir;
+			this.dir = undefined;
 		}
 		this.a = new V(0, 0);
 		this.modules = [];
