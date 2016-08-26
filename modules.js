@@ -85,9 +85,9 @@ StarMovement: extend(Module,
 	step: function(timestamp, dt)
 	{
 		var ship = this.ship;
-		if (ship.p.x < game.areaMinX || ship.p.x > game.areaMaxX)
-			ship.v.x *= -1.0;
-		if (ship.p.y < game.areaMinY || ship.p.y > game.areaMaxY)
+		if ((ship.p.x < game.areaMinX || ship.p.x > game.areaMaxX) && ship.p.x * ship.v.x > 0)
+			ship.v.x *= -1;
+		if ((ship.p.y < game.areaMinY || ship.p.y > game.areaMaxY) && ship.p.y * ship.v.y > 0)
 			ship.v.y *= -1.0;
 		ship.a.set_(ship.v).setlenSafe_(ship.acceleration);
 	},
