@@ -74,7 +74,27 @@ var Widget = extend(Object,
 
 	// Event handlers.
 
+	onMouseEnter: function()
+	{
+	},
+
+	onMouseExit: function()
+	{
+	},
+
+	onMouseDown: function(p)
+	{
+	},
+
+	onMouseUp: function(p, dragObject)
+	{
+	},
+
 	onMouseClick: function(p)
+	{
+	},
+
+	onMousemove: function(p)
 	{
 	},
 
@@ -83,15 +103,18 @@ var Widget = extend(Object,
 	mouseEnter: function()
 	{
 		this.isUnderCursor = true;
+		this.onMouseEnter();
 	},
 
 	mouseExit: function()
 	{
+		this.onMouseExit();
 		this.isUnderCursor = false;
 	},
 
 	mouseDown: function(p)
 	{
+		return this.onMouseDown();
 	},
 
 	mouseClick: function(p)
@@ -99,12 +122,14 @@ var Widget = extend(Object,
 		this.onMouseClick(p);
 	},
 
-	mouseUp: function(p)
+	mouseUp: function(p, dragObject)
 	{
+		this.onMouseUp(p, dragObject);
 	},
 
 	mouseMove: function(p)
 	{
+		this.onMouseMove(p);
 	},
 
 	getWidgetAtLocation: function(p)
@@ -132,16 +157,6 @@ var Button = extend(Widget,
 	verticalMargin: 5,
 	hoverBackgroundColor: new Float32Array([0.2, 0.4, 0.1, 0.6]),
 	pressedBackgroundColor: new Float32Array([0.15, 0.35, 0.05, 0.6]),
-
-	mouseEnter: function()
-	{
-		Widget.prototype.mouseEnter.apply(this, arguments);
-	},
-
-	mouseExit: function()
-	{
-		Widget.prototype.mouseExit.apply(this, arguments);
-	},
 
 	renderSelf: function(offset)
 	{
@@ -277,6 +292,8 @@ var Gui = extend(Widget,
 		Widget.call(this, new Rect(0, 0, width, height));
 		this.pointedWidget = null; // widget that is under cursor.
 		this.mouseDownWidget = null;
+		this.dragObject = undefined;
+		this.cursorPos = new V(0, 0);
 
 		// Stats.
 		this.addChild("stats", new Text(new Rect(10, 10, 300, 300)));
@@ -301,19 +318,20 @@ var Gui = extend(Widget,
 	{
 		var w = this.pointedWidget && this.pointedWidget.enabled ? this.pointedWidget : null;
 		if (w && w !== this)
-			w.mouseDown(p);
+			this.dragObject = w.mouseDown(p); // Store drag n drop item if any.
 		if (this.mouseDownWidget)
 			this.mouseDownWidget.isDragSource = false;
 		this.mouseDownWidget = w;
 		if (w)
 			w.isDragSource = true;
-	}	,
+	},
 
 	mouseUp: function(p)
 	{
 		var w = this.pointedWidget && this.pointedWidget.enabled ? this.pointedWidget : null;
 		if (w && w !== this) {
-			w.mouseUp(p);
+			w.mouseUp(p, this.dragObject); // Release dragged item.
+			this.dragObject = undefined;
 			// Only send click event if mouse down/up events happened on the same widget.
 			if (w === this.mouseDownWidget)
 				w.mouseClick(p);
@@ -321,12 +339,13 @@ var Gui = extend(Widget,
 		if (this.mouseDownWidget)
 			this.mouseDownWidget.isDragSource = false;
 		this.mouseDownWidget = null;
-	}	,
+	},
 
 	mouseMove: function(p)
 	{
+		this.cursorPos = p;
 		var w = this.getWidgetAtLocation(p);
-		var w = w && w.enabled ? w : null
+		var w = w && w.enabled ? w : null;
 		if (w && w !== this)
 			w.mouseMove(p);
 		if (w !== this.pointedWidget) {
@@ -337,6 +356,17 @@ var Gui = extend(Widget,
 			if (w)
 				w.mouseEnter();
 			this.pointedWidget = w;
+		}
+	},
+
+	render: function(offset, timestamp, dt)
+	{
+		Widget.prototype.render.apply(this, arguments);
+
+		// Render dragged object on top of everything else.
+		if (this.dragObject) {
+			this.dragObject.model.render(this.dragObject.modelColor, this.cursorPos, new V(0, 1),
+					this.dragObject.modelScaling, -this.dragObject.modelScaling);
 		}
 	}
 });
