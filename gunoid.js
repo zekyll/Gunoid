@@ -407,8 +407,10 @@ var game =
 
 	_addNewEntities: function()
 	{
-		for (var i = 0; i < this.newEntities.length; ++i)
-			this.entities.push(this.newEntities[i]);
+		for (var i = 0; i < this.newEntities.length; ++i) {
+			if (this.newEntities[i].hp >= 0)
+				this.entities.push(this.newEntities[i]);
+		}
 		this.newEntities = [];
 	},
 
