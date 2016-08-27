@@ -255,6 +255,20 @@ var game =
 	removeDeadEntities: function()
 	{
 		for (var i = 0; i < this.entities.length; ++i) {
+			var distSqr = this.entities[i].p.lenSqr();
+
+			// Remove stray projectiles.
+			if (distSqr > 250e3 && this.entities[i] instanceof Projectile) {
+				this.entities[i].hp = 0;
+
+			// Failsafe check. Should not happen unless bug somewhere.
+			} else if (isNaN(this.entities[i].p.x) || isNaN(this.entities[i].hp) || distSqr > 1e6) {
+				if (config.debug)
+					console.error("Invalid entity:", this.entities[i]);
+				this.entities[i].hp = 0;
+			}
+
+			// Remove dead.
 			if (this.entities[i].hp <= 0) {
 				this.entities.splice(i, 1);
 				--i;
