@@ -94,7 +94,7 @@ var Widget = extend(Object,
 	{
 	},
 
-	onMousemove: function(p)
+	onMouseMove: function(p)
 	{
 	},
 
