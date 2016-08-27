@@ -41,8 +41,8 @@ Shield: extend(Module,
 			this.shieldParam = {radius: 15, maxHp: 50, regen: 2, regenDelay: 5, inactiveRegenDelay: 5};
 	},
 
+	name: "Shield",
 	modelName: "itemShield",
-	slot: 2,
 
 	step: function(timestamp, dt)
 	{

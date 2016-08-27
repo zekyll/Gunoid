@@ -35,7 +35,8 @@ var Widget = extend(Object,
 	addChild: function(name, childWidget)
 	{
 		this.children.push(childWidget);
-		this[name] = childWidget;
+		if (name)
+			this[name] = childWidget;
 	},
 
 	// Renders the widget itself without children.
@@ -199,8 +200,8 @@ var Text = extend(Widget,
 		Widget.call(this, area, text);
 	},
 
-	horizontalMargin: 2,
-	verticalMargin: 2,
+	horizontalMargin: 3,
+	verticalMargin: 3,
 	backgroundColor: colors.transparent,
 	borderColor: colors.transparent
 });
@@ -261,6 +262,7 @@ var MainMenu = extend(Widget,
 		this.addChild("instructionsTextLeft", new Text(new Rect(10, 150, 120, 300),
 			"[W,A,S,D]"
 			+ "\n[Mouse]"
+			+ "\n[Tab]"
 			+ "\n[P]"
 			+ "\n[ESC]"
 			+ "\n[F2]"
@@ -269,6 +271,7 @@ var MainMenu = extend(Widget,
 		this.addChild("instructionsTextRight", new Text(new Rect(120, 150, 280, 300),
 			"Move ship"
 			+ "\nTarget"
+			+ "\nInventory"
 			+ "\nPause"
 			+ "\nMenu"
 			+ "\nRestart "
@@ -336,6 +339,10 @@ var Gui = extend(Widget,
 		this.shieldBar.hpBarColor[3] *= 3;
 		this.shieldBar.backgroundColor = colors.transparent;
 		this.shieldBar.borderColor = colors.shield;
+
+		// Inventory screen.
+		this.addChild("inventoryScreen", new InventoryScreen(new Rect(300, 100, 900, 500)));
+		this.inventoryScreen.visible = false;
 	},
 
 	selfVisible: false,

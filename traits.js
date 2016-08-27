@@ -124,7 +124,8 @@ CollisionDamage:
 {
 	collide: function(timestamp, dt, other)
 	{
-		other.takeDamage(timestamp, this.collisionDamage);
+		if (other.faction !== this.faction)
+			other.takeDamage(timestamp, this.collisionDamage);
 	}
 },
 

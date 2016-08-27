@@ -14,8 +14,8 @@ var Blaster = extend(Module,
 		this.bulletSpeed = 300;
 	},
 
+	name: "Blaster",
 	modelName: "itemDualBlaster",
-	slot: 0,
 
 	step: function(timestamp, dt)
 	{
@@ -42,8 +42,8 @@ var DualBlaster = extend(Module,
 		this.bulletSpeed = 300;
 	},
 
+	name: "Dual Blaster",
 	modelName: "itemDualBlaster",
-	slot: 0,
 	spread: 6,
 
 	step: function(timestamp, dt)
@@ -74,7 +74,7 @@ var PlasmaSprinkler = extend(Module,
 		this.rotateDir = Math.random() < 0.5 ? 1 : -1;
 	},
 
-	slot: 0,
+	name: "Plasma Sprinkler",
 	rotateSpeed: 1.8,
 	projectileSpeed: 150,
 	shootInterval: 0.09,
@@ -100,8 +100,8 @@ var Laser = extend(Module,
 		this.range = 200;
 	},
 
+	name: "Laser",
 	modelName: "itemLaser",
-	slot: 0,
 	damage: 300, // Per second.
 	color: colors.laser,
 	sparkColor: colors.flameYellow,
@@ -167,8 +167,8 @@ var RocketLauncher = extend(Module,
 		this.projectileSpeed = 5;
 	},
 
+	name: "Rocket Launcher",
 	modelName: "itemRocketLauncher",
-	slot: 1,
 
 	step: function(timestamp, dt)
 	{
@@ -195,8 +195,8 @@ var MissileLauncher = extend(Module,
 		this.projectileSpeed = 50;
 	},
 
+	name: "Missile Launcher",
 	modelName: "itemMissileLauncher",
-	slot: 1,
 
 	step: function(timestamp, dt)
 	{

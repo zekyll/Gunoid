@@ -28,7 +28,7 @@ StarYellow: compose(Ship, traits.StarMovement,
 {
 	init: function()
 	{
-		this.equipModule(1, new PlasmaSprinkler());
+		this.equipModule(new PlasmaSprinkler(), 0);
 	},
 
 	hp: 300,
@@ -106,7 +106,7 @@ KamikazeYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	init: function()
 	{
 		var shieldParam = {radius: 70, maxHp: 1e3, regen: 1e3, regenDelay: 0, inactiveRegenDelay: 2};
-		this.equipModule(0, new modules.Shield(shieldParam));
+		this.equipModule(new modules.Shield(shieldParam), 0);
 	},
 
 	hp: 120,

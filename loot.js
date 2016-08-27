@@ -26,8 +26,8 @@ var Loot = compose(Entity, traits.Expire, // p, model
 
 	collide: function(timestamp, dt, other)
 	{
-		this.pickup(other);
-		this.hp = 0;
+		if (this.pickup(other))
+			this.hp = 0;
 	},
 
 	render: function()
@@ -52,6 +52,7 @@ var RepairKit = compose(Loot,
 	pickup: function(ship)
 	{
 		ship.hp += this.repairAmount;
+		return true;
 	}
 });
 
@@ -68,6 +69,6 @@ var LootModule = compose(Loot,
 	pickup: function(ship)
 	{
 		var module = new this.moduleClass();
-		ship.pickupItem(module);
+		return ship.pickupItem(module);
 	}
 });

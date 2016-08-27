@@ -78,18 +78,33 @@ var Ship = compose(Entity, traits.Movement, traits.Drag, traits.Debris, traits.C
 		this.modules = [];
 	},
 
-	equipModule: function(slot, module)
+	// Equips a module to slot. Unequps existing module and returns it.
+	equipModule: function(module, slotIdx)
 	{
-		var oldModule = null;
-		if (this.modules[slot]) {
-			oldModule = this.modules[slot];
-			oldModule.unequip();
-			oldModule.ship = null;
+		// Find an empty slot if now slot idx given.
+		if (typeof slotIdx === "undefined") {
+			for (var i = 0; i < this.modules.length; ++i) {
+				if (!this.modules[i]) {
+					slotIdx = i;
+					break;
+				}
+			}
+			// Return module if no free slot.
+			if (typeof slotIdx === "undefined")
+				return module;
 		}
-		this.modules[slot] = module;
-		this.modules[slot].ship = this;
-		this.modules[slot].equip();
-		return oldModule;
+
+		var replacedModule = this.modules[slotIdx];
+		if (replacedModule) {
+			replacedModule.unequip();
+			replacedModule.ship = null;
+		}
+		this.modules[slotIdx] = module;
+		if (module) {
+			module.ship = this;
+			module.equip();
+		}
+		return replacedModule;
 	},
 
 	render: function()

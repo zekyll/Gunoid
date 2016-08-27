@@ -204,6 +204,7 @@ var game =
 			"Benchmark": 115,
 			"Pause": 80,
 			"Main Menu": 27, // Esc
+			"Inventory": 9, // Tab
 			"Demo": 79, // O
 		});
 
@@ -212,7 +213,7 @@ var game =
 			self.gui.mainMenu.visible = false;
 		});
 		input.registerKeyPressHandler("Pause", function() {
-			if (!self.gui.mainMenu.visible)
+			if (!self.gui.mainMenu.visible && !self.gui.inventoryScreen.visible)
 				self.paused = !self.paused;
 		});
 		input.registerKeyPressHandler("Benchmark", function() {
@@ -220,7 +221,11 @@ var game =
 		});
 		input.registerKeyPressHandler("Main Menu", function() {
 			self.gui.mainMenu.visible = !self.gui.mainMenu.visible;
-			self.paused = self.gui.mainMenu.visible;
+			self.paused = self.gui.mainMenu.visible || self.gui.inventoryScreen.visible;
+		});
+		input.registerKeyPressHandler("Inventory", function() {
+			self.gui.inventoryScreen.visible = !self.gui.inventoryScreen.visible;
+			self.paused = self.gui.mainMenu.visible || self.gui.inventoryScreen.visible;
 		});
 		input.registerKeyPressHandler("Demo", function() {
 			self.startDemo();
@@ -472,6 +477,9 @@ var game =
 				this.gui.shieldBar.update(this.player.shield.hp, this.player.shield.maxHp);
 		}
 
+		if (this.gui.inventoryScreen.visible && this.player)
+			this.gui.inventoryScreen.update(this.player);
+
 		this.gui.mainMenu.continueBtn.enabled = this.player && this.player.hp > 0;
 
 		fonts.resetAll();
@@ -491,7 +499,7 @@ var game =
 		} else if (this.spawner.finished()) {
 			fonts.big.setColor(colors.guiText);
 			fonts.big.addText("FINISHED!\nPress F2 to start a new game", 0, 250, 1000, 200, 0.5);
-		} else if (this.paused) {
+		} else if (this.paused && !this.gui.mainMenu.visible && !this.gui.inventoryScreen.visible) {
 			fonts.big.setColor(colors.guiText);
 			fonts.big.addText("PAUSED", 400, 230, 200, 50, 0.5);
 		}

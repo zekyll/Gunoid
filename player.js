@@ -10,7 +10,8 @@ var Player = compose(Ship,
 		this.v = new V(0, 0),
 		Ship.call(this);
 		this.targetp = new V(0, 1);
-		this.modules = [];
+		this.modules = new Array(3);
+		this.inventory = new Array(40);
 		this.pickupItem(new Blaster());
 	},
 
@@ -52,12 +53,26 @@ var Player = compose(Ship,
 	// Picks up an item to inventory. Automatically equip modules if there's a free slot.
 	pickupItem: function(module)
 	{
-		this.equipModule(module.slot, module);
+		if (this.equipModule(module) === module) //TODO check that item is module
+			return this.putItemInInventory(module);
+		return true;
+	},
+
+	putItemInInventory: function(item)
+	{
+		console.log(item);
+		for (var i = 0; i < this.inventory.length; ++i) {
+			if (!this.inventory[i]) {
+				this.inventory[i] = item;
+				return true;
+			}
+		}
+		return false;
 	},
 
 	render: function()
 	{
 		var targetDir = this.targetp.sub(this.p);
 		models.ship.render(this.color, this.p, targetDir);
-	}
+	},
 });
