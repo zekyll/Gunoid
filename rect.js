@@ -30,6 +30,11 @@ Rect.prototype =
 		return this.bottomRight.y - this.topLeft.y;
 	},
 
+	size: function()
+	{
+		return new V(this.bottomRight.y - this.topLeft.y, this.bottomRight.y - this.topLeft.y);
+	},
+
 	contains: function(p)
 	{
 		return this.topLeft.x <= p.x && p.x <= this.bottomRight.x

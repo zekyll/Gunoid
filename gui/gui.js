@@ -206,6 +206,33 @@ var Text = extend(Widget,
 });
 
 
+// Rendered model without background/borders
+var Img = extend(Widget,
+{
+	ctor: function(area, model)
+	{
+		Widget.call(this, area, "");
+		this.model = model;
+	},
+
+	backgroundColor: colors.transparent,
+	borderColor: colors.transparent,
+	modelScaling: 1,
+	modelColor: colors.white,
+
+	renderSelf: function(offset, timestamp, dt)
+	{
+		Widget.prototype.renderSelf.apply(this, arguments);
+
+		if (this.model) {
+			var center = this.area.topLeft.add(offset).add(this.area.size().mul(0.5));
+			var scaling = Math.min(this.area.width(), this.area.height()) * this.modelScaling;
+			this.model.render(this.modelColor, center, new V(0, 1), scaling, -scaling);
+		}
+	},
+});
+
+
 // Main menu.
 var MainMenu = extend(Widget,
 {
