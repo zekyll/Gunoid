@@ -155,7 +155,7 @@ ExplodeOnCollision:
 
 
 // Spreads debris on death.
-// Input: p, v, m, color, [debrisSpeed, debrisExpireTime]
+// Input: p, v, radius, color, [debrisSpeed, debrisExpireTime]
 Debris:
 {
 	debrisSpeed: 50,
@@ -163,7 +163,7 @@ Debris:
 
 	die: function(timestamp)
 	{
-		var debrisCount = 3 + this.m / 5e3;
+		var debrisCount = 3 + this.radius * this.radius / 10;
 		var color = new Float32Array([
 			0.3 + 0.5 * this.color[0],
 			0.3 + 0.5 * this.color[1],
@@ -171,11 +171,10 @@ Debris:
 			1
 		]);
 		for (var i = 0; i < debrisCount; ++i) {
-			var angle = Math.random() * 2 * Math.PI;
-			var v = new V(Math.cos(angle), Math.sin(angle));
-			v.mul_(this.debrisSpeed * (0.1 + 0.9 * Math.random()));
+			var v = new V(0, 1).rot_(Math.random() * 2 * Math.PI);
+			v.mul_(this.debrisSpeed * (Math.random() + Math.random() + Math.random() - 1.5));
 			v.add_(this.v);
-			var expire = timestamp + (0.2 + Math.random()) * this.debrisExpireTime;
+			var expire = timestamp + (0.3 + Math.random()) * this.debrisExpireTime;
 			game.addEntity(init(Debris, { p: this.p.clone(), v: v,
 					expire: expire, color: this.color.slice(0)}));
 		}

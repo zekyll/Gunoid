@@ -149,7 +149,7 @@ var Laser = extend(Module,
 				p: targetp,
 				v: v.add(targetv),
 				expire: timestamp + (0.2 + Math.random()) * this.sparkExpireTime,
-				color: this.sparkColor
+				color: this.sparkColor.slice(0)
 			}));
 		}
 	}

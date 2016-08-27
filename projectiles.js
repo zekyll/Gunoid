@@ -114,28 +114,21 @@ var Debris = compose(Projectile, traits.Drag,
 {
 	init: function()
 	{
-		this.brightness = 1;
 		var angle = Math.random() * 2 * Math.PI;
 		this.dir = new V(Math.cos(angle), Math.sin(angle));
+		this._fadeSpeed = this.color[3] / (this.expire - game.time);
 	},
 
 	dragCoefficient: 0.05,
-	fadeSpeed: 0.7,
 
 	step: function(timestamp, dt)
 	{
-		this.brightness -= this.fadeSpeed * this.brightness * dt;
+		this.color[3] -= this._fadeSpeed * dt;
 	},
 
 	render: function()
 	{
-		var color = [
-			this.brightness * this.color[0],
-			this.brightness * this.color[1],
-			this.brightness * this.color[2],
-			1.0
-		];
-		models.debris.render(color, this.p, this.dir);
+		models.debris.render(this.color, this.p, this.dir);
 	}
 });
 
