@@ -119,7 +119,8 @@ var Laser = extend(Module,
 		//TODO create proper entity class for laser beam.
 		var laserBeamEntity = {faction: this.ship.faction, v: targetDir, p: this.ship.p, radius: 1};
 		var hit = game.findClosestEntityInDirection(this.ship.p, targetDir, function(e) {
-			return e.canCollide && e.canCollide(laserBeamEntity) && e.faction !== self.ship.faction;
+			return e.canCollide && e.canCollide(laserBeamEntity)
+					&& !(e instanceof Projectile) && e.faction !== self.ship.faction;
 		});
 
 		// Calculate laser beam end point. Use max range if din't hit anything.
