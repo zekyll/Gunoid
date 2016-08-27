@@ -11,6 +11,7 @@ var colors =
 	green: new Float32Array([0, 1, 0, 1]),
 	blue: new Float32Array([0, 0, 1, 1]),
 	yellow: new Float32Array([1, 1, 0, 1]),
+	gray: new Float32Array([0.6, 0.6, 0.6, 1]),
 
 	// Game objects:
 	player: new Float32Array([0.9, 0.9, 1.0, 1.0]),
@@ -27,6 +28,7 @@ var colors =
 	explosiveProjectile: new Float32Array([1, 0, 0, 1]),
 	plasmaBall: new Float32Array([0.1, 1.0, 0.9, 1.0]),
 	shield: new Float32Array([0.6, 0.6, 1.0, 0.2]),
+	asteroid: new Float32Array([0.7, 0.7, 0.7, 1.0]),
 
 	// GUI:
 	guiText: new Float32Array([1.0, 0.7, 0.0, 1.0]),

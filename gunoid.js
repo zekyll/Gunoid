@@ -146,17 +146,23 @@ var game =
 		this.spawner = {
 			step: function()
 			{
-				var totalHps = [0, 0];
-				var totalCounts = [0, 0];
+				var totalHps = [0, 0, 0];
+				var shipCounts = [0, 0, 0];
+				var obstacleCount = 0;
 				for (var i = 0; i < game.entities.length; ++i) {
 					if (game.entities[i] instanceof Ship) {
 						totalHps[game.entities[i].faction] += game.entities[i].hp;
-						++totalCounts[game.entities[i].faction];
+						++shipCounts[game.entities[i].faction];
+					} else if (game.entities[i] instanceof Obstacle) {
+						++obstacleCount;
 					}
 				}
-				for (var i = 0; i < totalCounts.length; ++i) {
-					if (totalCounts[i] < 3 && totalHps[i] < 3000)
+				for (var i = 1; i < shipCounts.length; ++i) {
+					if (shipCounts[i] < 3 && totalHps[i] < 3000)
 						this._spawnNewShip(i);
+				}
+				if (obstacleCount < 3) {
+					game.addEntity(init(Asteroid, { p: game.randomPosition() }));
 				}
 			},
 
