@@ -176,7 +176,7 @@ var RocketLauncher = extend(Module,
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			var v = targetDir.setlen(this.projectileSpeed);
-			game.addEntity(init(Missile, { p: this.ship.p.clone(), v: v, expire: timestamp + 4,
+			game.addEntity(init(Rocket, { p: this.ship.p.clone(), v: v, expire: timestamp + 4,
 					faction: this.ship.faction}));
 			this.lastShootTime = timestamp;
 		}
