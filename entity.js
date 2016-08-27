@@ -275,3 +275,45 @@ var ShieldEntity = compose(Entity, traits.CollisionDamage,
 		}
 	},
 });
+
+
+// A solid object that can collide with anything.
+// Input: p, radius, model, dir, color
+var Obstacle = compose(Entity, traits.Movement, traits.Drag, traits.Debris, traits.CollisionDamage,
+{
+	hp: 1e9,
+	m: 1e9,
+	color: colors.asteroid,
+	dragCoefficient: 0.02,
+	collisionDamage: 1,
+
+	canCollide: function(other)
+	{
+		return true;
+	},
+
+	render: function()
+	{
+		this.model.render(this.color, this.p, this.dir, this.radius);
+	}
+});
+
+
+// Destructible rock.
+// Input: p
+var Asteroid = compose(Obstacle,
+{
+	init: function()
+	{
+		if (!this.radius)
+			this.radius = 5 + Math.random() * 10;
+		if (!this.hasOwnProperty("hp"))
+			this.hp = 50 * this.radius;
+		if (!this.hasOwnProperty("m"))
+			this.m = 1000e3 * this.radius * this.radius / 100;
+		this.model = models.asteroid;
+		this.dir = new V(0, 1).rot_(Math.random() * 2 * Math.PI);
+	},
+
+	color: colors.asteroid,
+});
