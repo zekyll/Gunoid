@@ -1,5 +1,5 @@
 
-/* global game, Ship */
+/* global game, Ship, ShieldEntity */
 
 "use strict";
 
@@ -71,54 +71,6 @@ Shield: extend(Module,
 		this.shield.regen = 0;
 		this.shield = null;
 	},
-}),
-
-
-// AI movement module for Star class enemies. Moves straight and collides off the walls.
-StarMovement: extend(Module,
-{
-	ctor: function()
-	{
-		Module.call(this);
-	},
-
-	step: function(timestamp, dt)
-	{
-		var ship = this.ship;
-		if ((ship.p.x < game.areaMinX || ship.p.x > game.areaMaxX) && ship.p.x * ship.v.x > 0)
-			ship.v.x *= -1;
-		if ((ship.p.y < game.areaMinY || ship.p.y > game.areaMaxY) && ship.p.y * ship.v.y > 0)
-			ship.v.y *= -1.0;
-		ship.a.set_(ship.v).setlenSafe_(ship.acceleration);
-	},
-}),
-
-// AI targeting module that targets closest enemy after one has died.
-ClosestEnemyTargeter: extend(Module,
-{
-	ctor: function()
-	{
-		Module.call(this);
-	},
-
-	step: function(timestamp, dt)
-	{
-		var ship = this.ship;
-		if (!ship.target || ship.target.hp <= 0) {
-			ship.target = game.findClosestEntity(ship.p, function(e) {
-				return e instanceof Ship && e.faction !== ship.faction;
-			});
-		}
-		if (ship.target)
-			ship.targetp = ship.target.p;
-		else
-			ship.targetp = new V(0, 0);
-	},
-
-	equip: function()
-	{
-		this.step();
-	}
 }),
 
 

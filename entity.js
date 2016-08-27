@@ -47,7 +47,7 @@ var Ship = compose(Entity, traits.Movement, traits.Drag, traits.Debris, traits.C
 
 	lootProbabilityMultiplier: 0,
 	dragCoefficient: 0,
-	collisionDamage: 0,
+	collisionDamage: 10,
 
 	step: function(timestamp, dt)
 	{
@@ -110,7 +110,7 @@ var Ship = compose(Entity, traits.Movement, traits.Drag, traits.Debris, traits.C
 
 // Expanding circular explosion that deals damage to ships and pushes them back.
 // Input: p, v, maxRadius, speed, damage, force, faction
-var Explosion = compose(Entity, traits.Movement, traits.Drag, traits.Immune,
+var Explosion = compose(Entity, traits.Movement, traits.Drag,
 {
 	init: function()
 	{

@@ -23,18 +23,13 @@ var Projectile = compose(Entity, traits.Movement, traits.Expire,
 });
 
 
-var BlasterShot = compose(Projectile, traits.CollisionDamage,
+var BlasterShot = compose(Projectile, traits.CollisionDamage, traits.ExplodeOnCollision,
 {
 	radius: 1,
 	collisionDamage: 30,
 	m: 10,
-
-	collide: function(timestamp, dt, other)
-	{
-		this.hp -= 1;
-		game.addEntity(init(Explosion, { p: this.p.clone(), v: other.v.clone(),
-				maxRadius: 2.5, speed: 30, faction: this.faction}));
-	},
+	explosionRadius: 2.5,
+	explosionSpeed: 30,
 
 	render: function()
 	{
@@ -43,18 +38,13 @@ var BlasterShot = compose(Projectile, traits.CollisionDamage,
 });
 
 
-var PlasmaBall = compose(Projectile, traits.CollisionDamage,
+var PlasmaBall = compose(Projectile, traits.CollisionDamage, traits.ExplodeOnCollision,
 {
 	radius: 3,
 	collisionDamage: 30,
 	m: 10,
-
-	collide: function(timestamp, dt, other)
-	{
-		this.hp -= 1;
-		game.addEntity(init(Explosion, { p: this.p.clone(), v: other.v.clone(),
-				maxRadius: 4, speed: 20, faction: this.faction}));
-	},
+	explosionRadius: 4,
+	explosionSpeed: 20,
 
 	render: function()
 	{
@@ -63,12 +53,13 @@ var PlasmaBall = compose(Projectile, traits.CollisionDamage,
 });
 
 
-var Missile = compose(Projectile, traits.Drag,
+var Missile = compose(Projectile, traits.Drag, traits.TargetClosestEnemy, traits.ExplodeOnCollision,
+		traits.ExplodeOnDeath,
 {
 	radius: 2,
-	damage: 80,
 	explosionRadius: 8,
 	explosionSpeed: 20,
+	explosionDamage: 80,
 	explosionForce: 0.4e6,
 	m: 30,
 	acceleration: 400,
@@ -76,14 +67,9 @@ var Missile = compose(Projectile, traits.Drag,
 
 	step: function(timestamp, dt)
 	{
-		var self = this;
-		var target = game.findClosestEntity(this.p, function(e) {
-			return e instanceof Ship && e.faction !== self.faction;
-		});
-
 		var accelDir;
-		if (target) {
-			var targetDir = target.p.sub(this.p);
+		if (this.target) {
+			var targetDir = this.target.p.sub(this.p);
 			var e = this.v.rot90left().setlen(1);
 			var targetDirE = e.dot(targetDir);
 			accelDir = e.mul(targetDirE).setlen(1).add(this.v.setlen(2));
@@ -93,14 +79,6 @@ var Missile = compose(Projectile, traits.Drag,
 		this.a = accelDir.setlen(this.acceleration);
 	},
 
-	collide: function(timestamp, dt, other)
-	{
-		this.hp -= 1;
-		game.addEntity(init(Explosion, { p: this.p.clone(), v: other.v.clone(),
-				maxRadius: this.explosionRadius, speed: this.explosionSpeed,
-				damage: this.damage, force: this.explosionForce, faction: this.faction}));
-	},
-
 	render: function()
 	{
 		models.missile.render(this.color, this.p, this.v);
@@ -108,10 +86,10 @@ var Missile = compose(Projectile, traits.Drag,
 });
 
 
-var Rocket = compose(Projectile, traits.Drag,
+var Rocket = compose(Projectile, traits.Drag, traits.ExplodeOnCollision, traits.ExplodeOnDeath,
 {
 	radius: 2,
-	damage: 180,
+	explosionDamage: 180,
 	m: 30,
 	acceleration: 200,
 	dragCoefficient: 0.01,
@@ -124,14 +102,6 @@ var Rocket = compose(Projectile, traits.Drag,
 		this.a = this.v.setlen(this.acceleration);
 	},
 
-	collide: function(timestamp, dt, other)
-	{
-		this.hp -= 1;
-		game.addEntity(init(Explosion, { p: this.p.clone(), v: other.v.clone(),
-				maxRadius: this.explosionRadius, speed: this.explosionSpeed,
-				damage: this.damage, force: this.explosionForce, faction: this.faction}));
-	},
-
 	render: function()
 	{
 		models.rocket.render(this.color, this.p, this.v);
@@ -139,9 +109,10 @@ var Rocket = compose(Projectile, traits.Drag,
 });
 
 
+// Input: p, v, color
 var Debris = compose(Projectile, traits.Drag,
 {
-	init: function() // p, v, color
+	init: function()
 	{
 		this.brightness = 1;
 		var angle = Math.random() * 2 * Math.PI;
@@ -170,33 +141,28 @@ var Debris = compose(Projectile, traits.Drag,
 
 
 // Flies in straight line and explodes after a delay.
-var Grenade = extend(Projectile,
+var Grenade = compose(Projectile, traits.ExplodeOnCollision, traits.ExplodeOnDeath,
 {
-	ctor: function() // p, v
+	init: function()
 	{
-		Projectile.call(this);
 		this.expire += this.activationDelay;
 	},
 
 	growSpeed: 4,
 	radius: 2,
-	damage: 30,
+	explosionDamage: 30,
 	activationDelay: 1.0,
 	m: 10,
-	explosionRadius: 50,
+	explosionRadius: 40,
 	explosionSpeed: 20,
 	explosionForce: 6e6,
 
 	step: function(timestamp, dt)
 	{
-		Projectile.prototype.step.apply(this, arguments);
 		if (this.expire - timestamp <= this.activationDelay) {
 			this.v.setxy_(0, 0);
 			this.radius += dt * this.growSpeed;
 		}
-
-		if (this.hp <= 0)
-			this.detonate(this.v);
 	},
 
 	collide: function(timestamp, dt, other)

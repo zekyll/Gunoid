@@ -21,6 +21,7 @@ var Player = compose(Ship,
 	dragCoefficient: 0.1,
 	acceleration: 2000,
 	color: colors.player,
+	collisionDamage: 1,
 
 	step: function(timestamp, dt)
 	{

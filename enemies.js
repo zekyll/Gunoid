@@ -1,5 +1,5 @@
 
-/* global Ship, game, models, V, colors, modules */
+/* global Ship, game, models, V, colors, modules, Explosion, traits */
 
 "use strict";
 
@@ -7,14 +7,8 @@
 var enemies = {
 
 
-Star: extend(Ship,
+Star: compose(Ship, traits.StarMovement,
 {
-	ctor: function() // p, dir/v
-	{
-		Ship.call(this);
-		this.equipModule(0, new modules.StarMovement());
-	},
-
 	hp: 60,
 	m: 5e3,
 	radius: 4,
@@ -30,12 +24,10 @@ Star: extend(Ship,
 }),
 
 
-StarYellow: extend(Ship,
+StarYellow: compose(Ship, traits.StarMovement,
 {
-	ctor: function() // p, dir/v
+	init: function()
 	{
-		Ship.call(this);
-		this.equipModule(0, new modules.StarMovement());
 		this.equipModule(1, new PlasmaSprinkler());
 	},
 
@@ -54,14 +46,8 @@ StarYellow: extend(Ship,
 }),
 
 
-StarOrange: extend(Ship,
+StarOrange: compose(Ship, traits.StarMovement,
 {
-	ctor: function() // p, dir/v
-	{
-		Ship.call(this);
-		this.equipModule(0, new modules.StarMovement());
-	},
-
 	hp: 200,
 	m: 20e3,
 	radius: 6,
@@ -71,17 +57,14 @@ StarOrange: extend(Ship,
 	childCount: 12,
 	color: colors.enemyOrange,
 
-	takeDamage: function(timestamp, damage)
+	die: function(timestamp)
 	{
-		Ship.prototype.takeDamage.apply(this, arguments);
-		if (this.hp <= 0) { //TODO make sure that on death events don't trigger multiple times.
-			for (var i = 0; i < this.childCount; ++i) {
-				game.addEntity(init(enemies.Star, {
-					p: this.p.clone(),
-					dir: (new V(0, 1)).rot_(2 * Math.PI * Math.random()).mul_(0.7 + 0.3 * Math.random()),
-					faction: this.faction
-				}));
-			}
+		for (var i = 0; i < this.childCount; ++i) {
+			game.addEntity(init(enemies.Star, {
+				p: this.p.clone(),
+				dir: (new V(0, 1)).rot_(2 * Math.PI * Math.random()).mul_(0.7 + 0.3 * Math.random()),
+				faction: this.faction
+			}));
 		}
 	},
 
@@ -93,43 +76,20 @@ StarOrange: extend(Ship,
 
 
 // Flies towards player and explodes on contact.
-Kamikaze: extend(Ship,
+Kamikaze: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
+		traits.ExplodeOnDeath, traits.DieOnEnemyCollision,
 {
-	ctor: function(p, dir) // p, dir/v
-	{
-		Ship.call(this);
-		this.equipModule(0, new modules.ClosestEnemyTargeter());
-	},
-
 	hp: 80,
 	m: 5e3,
 	radius: 4,
 	acceleration: 300,
 	dragCoefficient: 0.1,
+	turnSpeed: 4,
+	explosionRadius: 25,
+	explosionSpeed: 15,
+	explosionDamage: 30,
+	explosionForce: 4e6,
 	color: colors.enemyGreen,
-
-	step: function(timestamp, dt)
-	{
-		Ship.prototype.step.apply(this, arguments);
-		var targetDir = this.targetp.sub(this.p).setlenSafe(1).add(this.v.setlenSafe(4));
-		this.a.set_(targetDir).setlenSafe_(this.acceleration);
-	},
-
-	takeDamage: function(timestamp, damage)
-	{
-		Ship.prototype.takeDamage.apply(this, arguments);
-		if (this.hp <= 0) {
-			game.addEntity(init(Explosion, { p: this.p.clone(), v: this.v.clone(), maxRadius: 25, speed: 15,
-					damage: 30, force: 4e6, faction: this.faction }));
-		}
-	},
-
-	collide: function(timestamp, dt, other)
-	{
-		if (other instanceof Ship && other.faction !== this.faction)
-			this.takeDamage(timestamp, this.hp); // Suicide!
-		return Ship.prototype.collide.apply(this, arguments);;
-	},
 
 	render: function()
 	{
@@ -140,14 +100,13 @@ Kamikaze: extend(Ship,
 
 
 // Flies towards target and explodes on contact. Has a proximity shield.
-KamikazeYellow: extend(Ship,
+KamikazeYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
+		traits.ExplodeOnDeath, traits.DieOnEnemyCollision,
 {
-	ctor: function() // p, dir/v
+	init: function()
 	{
-		Ship.call(this);
-		this.equipModule(0, new modules.ClosestEnemyTargeter());
 		var shieldParam = {radius: 70, maxHp: 1e3, regen: 1e3, regenDelay: 0, inactiveRegenDelay: 2};
-		this.equipModule(1, new modules.Shield(shieldParam));
+		this.equipModule(0, new modules.Shield(shieldParam));
 	},
 
 	hp: 120,
@@ -155,28 +114,12 @@ KamikazeYellow: extend(Ship,
 	radius: 4,
 	acceleration: 350,
 	dragCoefficient: 0.1,
+	turnSpeed: 4,
+	explosionRadius: 25,
+	explosionSpeed: 15,
+	explosionDamage: 30,
+	explosionForce: 4e6,
 	color: colors.enemyYellow,
-
-	step: function(timestamp, dt)
-	{
-		var targetDir = this.targetp.sub(this.p).setlenSafe(1).add(this.v.setlenSafe(4));
-		this.a.set_(targetDir).setlenSafe_(this.acceleration);
-		Ship.prototype.step.apply(this, arguments);
-	},
-
-	die: function(timestamp)
-	{
-		game.addEntity(init(Explosion, { p: this.p.clone(), v: this.v.clone(), maxRadius: 25, speed: 15,
-				damage: 30, force: 4e6, faction: this.faction }));
-		Ship.prototype.die.apply(this, arguments);
-	},
-
-	collide: function(timestamp, dt, other)
-	{
-		if (other instanceof Ship && other.faction !== this.faction)
-			this.takeDamage(timestamp, this.hp); // Suicide!
-		return Ship.prototype.collide.apply(this, arguments);
-	},
 
 	render: function()
 	{
@@ -186,13 +129,12 @@ KamikazeYellow: extend(Ship,
 }),
 
 
-Destroyer: extend(Ship,
+
+Destroyer: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 {
-	ctor: function() // p, dir/v
+	init: function()
 	{
-		Ship.call(this);
 		this.lastShootTime = -1;
-		this.equipModule(0, new modules.ClosestEnemyTargeter());
 	},
 
 	hp: 600,
@@ -201,16 +143,14 @@ Destroyer: extend(Ship,
 	collisionDamage: 15,
 	acceleration: 14,
 	dragCoefficient: 0.1,
+	turnSpeed: 5,
 	shootInterval: 1.5,
 	bulletSpeed: 80,
 	color: colors.enemyOrange,
 
 	step: function(timestamp, dt)
 	{
-		var targetDir = this.targetp.sub(this.p).setlen(1).add(this.v.setlen(5));
-		this.a.set_(targetDir).setlenSafe_(this.acceleration);
 		this.fireBullets(timestamp);
-		Ship.prototype.step.apply(this, arguments);
 	},
 
 	render: function()
@@ -234,16 +174,14 @@ Destroyer: extend(Ship,
 
 
 // Fast enemy that gets in close range, stops, and shoots a burst with a blaster weapon.
-GunnerGreen: extend(Ship,
+GunnerGreen: compose(Ship, traits.TargetClosestEnemy,
 {
-	ctor: function() // p, dir/v
+	init: function()
 	{
-		Ship.call(this);
 		this.lastShootTime = -1;
 		this.attackMode = false;
 		this.attackModeStart = undefined;
 		this.targetPos = undefined;
-		this.equipModule(0, new modules.ClosestEnemyTargeter());
 	},
 
 	hp: 100,
@@ -283,8 +221,6 @@ GunnerGreen: extend(Ship,
 				this.attackModeStart = timestamp;
 			}
 		}
-
-		Ship.prototype.step.apply(this, arguments);
 	},
 
 	render: function()
@@ -315,16 +251,14 @@ GunnerGreen: extend(Ship,
 
 
 // Launcher small ships and shoots 3 grenade launchers at regular intervals.
-CarrierYellow: extend(Ship,
+CarrierYellow: compose(Ship, traits.TargetClosestEnemy,
 {
-	ctor: function() // p, dir/v
+	init: function()
 	{
-		Ship.call(this);
 		this.lastShootTime = -1;
 		this.lastSpawnTime = -1;
 		this.frontTurretTargetP = game.randomPosition();
-		this.frontTurretDir = this.v.setlenSafe(1);
-		this.equipModule(0, new modules.ClosestEnemyTargeter());
+		this.frontTurretDir = (new V(0, 1)).rot_(2 * Math.PI * Math.random());
 	},
 
 	hp: 5000,
@@ -350,8 +284,6 @@ CarrierYellow: extend(Ship,
 
 		this.fireBullets(timestamp);
 		this.spawnShips(timestamp);
-
-		Ship.prototype.step.apply(this, arguments);
 	},
 
 	render: function()

@@ -1,11 +1,70 @@
 
-/* global game */
+/* global game, Ship, Explosion */
 
 "use strict";
 
 
 var traits = {
 
+
+// AI movement module for Star class enemies. Moves straight and collides off the walls.
+// Input: p, v, acceleration
+// Output: a, v
+StarMovement:
+{
+	step: function(timestamp, dt)
+	{
+		if ((this.p.x < game.areaMinX || this.p.x > game.areaMaxX) && this.p.x * this.v.x > 0)
+			this.v.x *= -1;
+		if ((this.p.y < game.areaMinY || this.p.y > game.areaMaxY) && this.p.y * this.v.y > 0)
+			this.v.y *= -1.0;
+		this.a.set_(this.v).setlenSafe_(this.acceleration);
+	}
+},
+
+
+// AI targeting trait that targets closest enemy after one has died.
+// Input: [target]
+// Output: targetp, [target]
+TargetClosestEnemy:
+{
+	priority: -10,
+
+	init: function()
+	{
+		this.targetp = new V(0, 0);
+	},
+
+	step: function(timestamp, dt)
+	{
+		// Find target if we don't have isn't one.
+		var self = this;
+		if (!this.target || this.target.hp <= 0) {
+			this.target = game.findClosestEntity(self.p, function(e) {
+				return e instanceof Ship && e.faction !== self.faction;
+			});
+		}
+
+		// Always set targetp even if no target.
+		if (this.target)
+			this.targetp.set_(this.target.p);
+		else
+			this.targetp.setxy_(0, 0);
+	}
+},
+
+
+// Accelerates toward target. Turning has some "inertia" determined by turnSpeed.
+// Input: p, v, targetp, acceleration, turnSpeed
+// Output: a
+FlyTowardTarget:
+{
+	step: function(timestamp, dt)
+	{
+		var targetDir = this.targetp.sub(this.p).setlenSafe(1).add(this.v.setlenSafe(this.turnSpeed));
+		this.a.set_(targetDir).setlenSafe_(this.acceleration);
+	}
+},
 
 // Standard movement calculations.
 // Input: p, [v, a]
@@ -38,16 +97,16 @@ Movement:
 	_maxSpeed: function()
 	{
 		return Math.sqrt(this.acceleration / this.dragCoefficient);
-	},
+	}
 },
 
 
-// Speed is slowed don
+// Deacceleration proportional to square of speed.
 // Input: dragCoefficient, v
 // Output: v
 Drag:
 {
-	priority: 40, //
+	priority: 40,
 
 	step: function(timestep, dt)
 	{
@@ -66,6 +125,31 @@ CollisionDamage:
 	collide: function(timestamp, dt, other)
 	{
 		other.takeDamage(timestamp, this.collisionDamage);
+	}
+},
+
+// Self destructs when collides with an enemy ship.
+DieOnEnemyCollision:
+{
+	collide: function(timestamp, dt, other)
+	{
+		if (other instanceof Ship && other.faction !== this.faction)
+			this.takeDamage(timestamp, this.hp);
+	},
+},
+
+// Explodes on collision.
+// Input: p, explosionRadius, explosionSpeed, [explosionDamage, explosionForce]
+ExplodeOnCollision:
+{
+	collide: function(timestamp, dt, other)
+	{
+		if (!this._exploded) {
+			game.addEntity(init(Explosion, { p: this.p.clone(), v: other.v.clone(),
+					maxRadius: this.explosionRadius, speed: this.explosionSpeed,
+					damage: this.explosionDamage, force: this.explosionForce, faction: this.faction }));
+			this._exploded = true;
+		}
 	}
 },
 
@@ -129,6 +213,22 @@ DropLoot:
 				game.addEntity(init(lootClass, { p: this.p.clone(), expire: timestamp + 10,
 						moduleClass: moduleClass}));
 			}
+		}
+	}
+},
+
+
+// Explodes on death.
+// Input: p, v, explosionRadius, explosionSpeed, [explosionDamage, explosionForce,]
+ExplodeOnDeath:
+{
+	die: function(timestamp)
+	{
+		if (!this._exploded) {
+			game.addEntity(init(Explosion, { p: this.p.clone(), v: this.v.clone(),
+				maxRadius: this.explosionRadius, speed: this.explosionSpeed,
+				damage: this.explosionDamage, force: this.explosionForce, faction: this.faction }));
+			this._exploded = true;
 		}
 	}
 },
