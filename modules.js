@@ -54,7 +54,7 @@ Shield: extend(Module,
 	equip: function()
 	{
 		// Create the actual shield entity that handles physics.
-		var param = copyShallow(this.shieldParam)
+		var param = copyShallow(this.shieldParam);
 		param.p = this.ship.p.clone();
 		param.faction = this.ship.faction;
 

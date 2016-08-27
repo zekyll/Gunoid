@@ -1,5 +1,5 @@
 
-/* global game, enemies */
+/* global game, enemies, Asteroid */
 
 "use strict";
 

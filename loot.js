@@ -1,11 +1,12 @@
 
-/* global Entity, Ship, models, colors */
+/* global Entity, Ship, models, colors, traits */
 
 "use strict";
 
 
 // Baseclass for collectable objects.
-var Loot = compose(Entity, traits.Expire, // p, model
+// Parameters: p, model
+var Loot = compose(Entity, traits.Expire,
 {
 	hp: 1,
 	expire: 1e9,
@@ -40,6 +41,7 @@ var Loot = compose(Entity, traits.Expire, // p, model
 
 
 // Restores hitpoints.
+// Parameters: p
 var RepairKit = compose(Loot,
 {
 	init: function() // p
@@ -58,9 +60,10 @@ var RepairKit = compose(Loot,
 
 
 // Contains a module that can be equipped by player's ship.
+// Parameters: p, moduleClass
 var LootModule = compose(Loot,
 {
-	init: function() // p, moduleClass
+	init: function()
 	{
 		if (!this.model)
 			this.model = models[this.moduleClass.prototype.modelName];

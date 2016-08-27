@@ -1,5 +1,5 @@
 
-/* global game, Ship, Explosion */
+/* global game, Ship, Explosion, LootModule */
 
 "use strict";
 

@@ -1,5 +1,5 @@
 
-/* global Ship, input, game, models, colors */
+/* global Ship, input, game, models, colors, Explosion */
 
 "use strict";
 
@@ -60,7 +60,6 @@ var Player = compose(Ship,
 
 	putItemInInventory: function(item)
 	{
-		console.log(item);
 		for (var i = 0; i < this.inventory.length; ++i) {
 			if (!this.inventory[i]) {
 				this.inventory[i] = item;

@@ -1,5 +1,5 @@
 
-/* global game, Ship, models, colors, Module */
+/* global game, Ship, models, colors, Module, BlasterShot, PlasmaBall, Projectile, Debris, Rocket, Missile */
 
 "use strict";
 

@@ -1,5 +1,5 @@
 
-/* global Ship, game, models, V, colors, modules, Explosion, traits */
+/* global Ship, game, models, V, colors, modules, Explosion, traits, Grenade */
 
 "use strict";
 

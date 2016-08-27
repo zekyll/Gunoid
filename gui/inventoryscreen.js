@@ -16,7 +16,7 @@ function DragItem(item, sourceSlot)
 }
 
 
-
+// Slot for a game item. Supports dragging items from one slot to another.
 var ItemSlot = extend(Widget,
 {
 	ctor: function(area, itemInfoWidget)
@@ -62,10 +62,8 @@ var ItemSlot = extend(Widget,
 		if (dragObject && dragObject instanceof DragItem) {
 			var item = dragObject.sourceSlot.put(null);
 			// Check that dragged item is still in source slot. Might need this check in future.
-			if (item !== dragObject.item) {
-				console.log("fail");
+			if (item !== dragObject.item)
 				return;
-			}
 
 			// Swap items if both slots had one.
 			var replacedItem = this.put(item);
@@ -86,7 +84,6 @@ var ItemSlotGrid = extend(Widget,
 		this.slots = [];
 		var self = this;
 		this.slotSize = new V(area.width() / columns, area.height() / rows);
-		console.log(this.slotSize);
 
 		for (var i = 0; i < rows; ++i) {
 			for (var j = 0; j < columns; ++j) {

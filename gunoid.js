@@ -1,5 +1,5 @@
 
-/* global models, Spawner, enemies, input, textures, fonts, colors, Ship */
+/* global models, Spawner, enemies, input, textures, fonts, colors, Ship, Player, Asteroid, config, Projectile, Obstacle */
 
 "use strict";
 
@@ -260,7 +260,7 @@ var game =
 		this.spawner.step(timestamp);
 		this.checkCollisions(timestamp, dt);
 		this._addNewEntities();
-		this.removeDeadEntities();
+		this.removeDeadEntities(); // TODO do this first?
 	},
 
 	removeDeadEntities: function()
@@ -440,8 +440,7 @@ var game =
 				preferLowPowerToHighPerformance: false
 			});
 			glext = gl.getExtension("ANGLE_instanced_arrays");
-		}
-		catch(e) {
+		} catch(e) {
 		}
 
 		if (!gl) {
