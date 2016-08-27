@@ -58,3 +58,62 @@ function copyShallow(obj)
 	}
 	return ret;
 }
+
+// First argument is a "base class", other arguments are mixins/traits.
+function compose(/*arguments*/)
+{
+	//var newProperties = arguments[arguments.length - 1];
+	//var proto = newProperties.init.prototype = Object.create(base.prototype);
+	var proto = Object.create(arguments[0].prototype);
+
+	// Deep copy the traits object.
+	proto._traitMethods = Object.create(null);
+	for (key in arguments[0].prototype._traitMethods)
+		proto._traitMethods[key] = arguments[0].prototype._traitMethods[key].slice(0);
+
+	// Add new traits.
+	for (var i = 1; i < arguments.length; ++i) {
+		for (var key in arguments[i]) {
+			if (arguments[i].hasOwnProperty(key)) {
+				if (typeof arguments[i][key] === "function") {
+					// Keep list of methods with same name instead of overwriting.
+					if (!proto._traitMethods[key])
+						proto._traitMethods[key] = [];
+					var len = proto._traitMethods[key].push(arguments[i][key]);
+
+					// Save priority in function object.
+					proto._traitMethods[key][len - 1]._priority = arguments[i].priority || 0;
+				} else {
+					// Copy/overwrite normal properties.
+					proto[key] = arguments[i][key];
+				}
+			}
+		}
+	}
+
+	// Add methods to the new prototype.
+	for (key in proto._traitMethods) {
+		// If there's only one method use it directly.
+		if (proto._traitMethods[key].length === 1) {
+			proto[key] = proto._traitMethods[key][0];
+		} else {
+			// Sort methods according to priority;
+			proto._traitMethods[key].sort(function(method1, method2) {
+				return method1._priority - method2._priority;
+			});
+
+			// Use a closure to create a new function that calls all the methods.
+			(function(methods) {
+				proto[key] = function() {
+					for (var i = 0; i < methods.length - 1; ++i)
+						methods[i].apply(this, arguments);
+					return methods[methods.length - 1].apply(this, arguments);
+				};
+			})(proto._traitMethods[key]);
+		}
+	}
+
+	proto.constructor = proto.init;
+	proto.init.prototype = proto;
+	return proto.constructor;
+}

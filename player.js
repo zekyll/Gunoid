@@ -3,9 +3,9 @@
 
 "use strict";
 
-var Player = extend(Ship,
+var Player = compose(Ship,
 {
-	ctor: function() // p
+	init: function() // p
 	{
 		this.v = new V(0, 0),
 		Ship.call(this);
@@ -31,8 +31,6 @@ var Player = extend(Ship,
 				(input.keyDown("Accelerate up") & 1) - (input.keyDown("Accelerate down") & 1));
 		if (this.a.len() > 0)
 			this.a.setlen_(this.acceleration);
-
-		Ship.prototype.step.apply(this, arguments);
 	},
 
 	die: function(timestamp)
@@ -48,7 +46,6 @@ var Player = extend(Ship,
 				faction: this.faction
 			}));
 		}
-		Ship.prototype.die.apply(this, arguments);
 	},
 
 	// Picks up an item to inventory. Automatically equip modules if there's a free slot.
@@ -61,6 +58,5 @@ var Player = extend(Ship,
 	{
 		var targetDir = this.targetp.sub(this.p);
 		models.ship.render(this.color, this.p, targetDir);
-		Ship.prototype.render.apply(this, arguments);
 	}
 });

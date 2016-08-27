@@ -5,15 +5,8 @@
 
 
 // Baseclass for collectable objects.
-var Loot = extend(Entity,
+var Loot = compose(Entity, traits.Expire, // p, model
 {
-	ctor: function(p, expire, model) // p, model
-	{
-		Entity.call(this, p);
-		this.v = new V(0, 0);
-		this.blinkState = undefined;
-	},
-
 	hp: 1,
 	expire: 1e9,
 	radius: 5,
@@ -22,8 +15,6 @@ var Loot = extend(Entity,
 
 	step: function(timestamp, dt)
 	{
-		if (timestamp > this.expire)
-			this.hp = 0;
 		var timeLeft = this.expire - timestamp;
 		this.blinkState = timeLeft > 3 ? 1 : Math.floor(timeLeft * 5) % 2;
 	},
@@ -49,12 +40,11 @@ var Loot = extend(Entity,
 
 
 // Restores hitpoints.
-var RepairKit = extend(Loot,
+var RepairKit = compose(Loot,
 {
-	ctor: function() // p
+	init: function() // p
 	{
 		this.model = models.repairKit;
-		Loot.call(this);
 	},
 
 	repairAmount: 20,
@@ -67,13 +57,12 @@ var RepairKit = extend(Loot,
 
 
 // Contains a module that can be equipped by player's ship.
-var LootModule = extend(Loot,
+var LootModule = compose(Loot,
 {
-	ctor: function() // p, moduleClass
+	init: function() // p, moduleClass
 	{
 		if (!this.model)
 			this.model = models[this.moduleClass.prototype.modelName];
-		Loot.call(this);
 	},
 
 	pickup: function(ship)

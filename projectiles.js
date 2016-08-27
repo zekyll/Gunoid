@@ -1,28 +1,20 @@
 
-/* global Entity, Ship, game, models, colors */
+/* global Entity, Ship, game, models, colors, traits, Explosion */
 
 "use strict";
 
 
 // Base class for projectiles.
-var Projectile = extend(Entity,
+var Projectile = compose(Entity, traits.Movement, traits.Expire,
 {
-	ctor: function() // p, v
+	init: function() // p, v
 	{
-		Entity.call(this);
 		if (!this.color)
 			this.color = this.faction === 1 ? colors.projectile : colors.enemyProjectile;
 	},
 
 	hp: 1,
 	expire: 1e9,
-
-	step: function(timestamp, dt)
-	{
-		this.p.add_(this.v.mul(dt));
-		if (timestamp > this.expire)
-			this.hp = 0;
-	},
 
 	canCollide: function(other)
 	{
@@ -31,20 +23,14 @@ var Projectile = extend(Entity,
 });
 
 
-var BlasterShot = extend(Projectile,
+var BlasterShot = compose(Projectile, traits.CollisionDamage,
 {
-	ctor: function() // p, v
-	{
-		Projectile.call(this);
-	},
-
 	radius: 1,
-	damage: 30,
+	collisionDamage: 30,
 	m: 10,
 
 	collide: function(timestamp, dt, other)
 	{
-		other.takeDamage(timestamp, this.damage);
 		this.hp -= 1;
 		game.addEntity(init(Explosion, { p: this.p.clone(), v: other.v.clone(),
 				maxRadius: 2.5, speed: 30, faction: this.faction}));
@@ -57,20 +43,14 @@ var BlasterShot = extend(Projectile,
 });
 
 
-var PlasmaBall = extend(Projectile,
+var PlasmaBall = compose(Projectile, traits.CollisionDamage,
 {
-	ctor: function() // p, v
-	{
-		Projectile.call(this);
-	},
-
 	radius: 3,
-	damage: 30,
+	collisionDamage: 30,
 	m: 10,
 
 	collide: function(timestamp, dt, other)
 	{
-		other.takeDamage(timestamp, this.damage);
 		this.hp -= 1;
 		game.addEntity(init(Explosion, { p: this.p.clone(), v: other.v.clone(),
 				maxRadius: 4, speed: 20, faction: this.faction}));
@@ -83,13 +63,8 @@ var PlasmaBall = extend(Projectile,
 });
 
 
-var Missile = extend(Projectile,
+var Missile = compose(Projectile, traits.Drag,
 {
-	ctor: function() // p, v
-	{
-		Projectile.call(this);
-	},
-
 	radius: 2,
 	damage: 80,
 	explosionRadius: 8,
@@ -115,14 +90,7 @@ var Missile = extend(Projectile,
 		} else {
 			accelDir = this.v;
 		}
-		var a = accelDir.setlen(this.acceleration);
-		this.v.add_(a.mul(dt));
-		this.p.add_(this.v.mul(dt));
-
-		this.calculateDrag(dt);
-
-		if (timestamp > this.expire)
-			this.hp = 0;
+		this.a = accelDir.setlen(this.acceleration);
 	},
 
 	collide: function(timestamp, dt, other)
@@ -140,13 +108,8 @@ var Missile = extend(Projectile,
 });
 
 
-var Rocket = extend(Projectile,
+var Rocket = compose(Projectile, traits.Drag,
 {
-	ctor: function() // p, v
-	{
-		Projectile.call(this);
-	},
-
 	radius: 2,
 	damage: 180,
 	m: 30,
@@ -158,14 +121,7 @@ var Rocket = extend(Projectile,
 
 	step: function(timestamp, dt)
 	{
-		var a = this.v.setlen(this.acceleration);
-		this.v.add_(a.mul(dt));
-		this.p.add_(this.v.mul(dt));
-
-		this.calculateDrag(dt);
-
-		if (timestamp > this.expire)
-			this.hp = 0;
+		this.a = this.v.setlen(this.acceleration);
 	},
 
 	collide: function(timestamp, dt, other)
@@ -183,11 +139,10 @@ var Rocket = extend(Projectile,
 });
 
 
-var Debris = extend(Projectile,
+var Debris = compose(Projectile, traits.Drag,
 {
-	ctor: function() // p, v, color
+	init: function() // p, v, color
 	{
-		Projectile.call(this);
 		this.brightness = 1;
 		var angle = Math.random() * 2 * Math.PI;
 		this.dir = new V(Math.cos(angle), Math.sin(angle));
@@ -198,9 +153,7 @@ var Debris = extend(Projectile,
 
 	step: function(timestamp, dt)
 	{
-		Projectile.prototype.step.apply(this, arguments);
 		this.brightness -= this.fadeSpeed * this.brightness * dt;
-		this.calculateDrag(dt);
 	},
 
 	render: function()

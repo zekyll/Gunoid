@@ -1,68 +1,52 @@
 
-/* global game, models, MissileLauncher, RocketLauncher, DualBlaster, Laser, Projectile, modules, colors */
+/* global game, models, Projectile, modules, colors, traits */
 
 "use strict";
 
 
 // Base class for all game entities.
-var Entity = extend(Object,
+// Input: hp
+var Entity = compose(Object,
 {
-	ctor: function() // p, hp
+	init: function()
 	{
-		this.id = this.staticVars.idCounter++;
+		this.id = this.staticVars.idCounter++; // Unique ID for each entity.
 	},
 
+	priority: -100, // Before everything else.
 	faction: 0, // Neutral faction.
-	staticVars: {
-		idCounter: 0
-	},
-
-	canCollide: null,
-
-	step: function(timestamp, dt)
-	{
-	},
-
-	collide: function(timestamp, dt, other)
-	{
-	},
+	staticVars: { idCounter: 0 },
 
 	takeDamage: function(timestamp, damage)
 	{
-	},
+		// Initializes damage amount for other traits.
+		this.damageTaken = damage;
+	}
+},
+{
+	priority: 100, // After everything else.
 
-	render: function()
+	takeDamage: function(timestamp, damage)
 	{
-	},
-
-	calculateDrag: function(dt)
-	{
-		var vlen = this.v.len();
-		var dragAccel = Math.min(this.dragCoefficient * vlen * vlen * dt, vlen);
-		if (vlen > 1e-10)
-			this.v.sub_(this.v.setlen(dragAccel));
+		// Death check.
+		this.hp -= this.damageTaken;
+		if (this.hp <= 0 && this.die)
+			this.die(timestamp);
 	},
 });
 
 
 // Base class for ships.
-var Ship = extend(Entity,
+// Input: p, v/dir, hp
+var Ship = compose(Entity, traits.Movement, traits.Drag, traits.Debris, traits.CollisionDamage, traits.DropLoot,
 {
-	ctor: function() // p, hp, v/dir
+	init: function()
 	{
-		Entity.call(this);
-		if (!this.v) {
-			this.v = this.dir.mul_(this.calculateMaxSpeed());
-			this.dir = undefined;
-		}
-		this.a = new V(0, 0);
 		this.modules = [];
 	},
 
 	lootProbabilityMultiplier: 0,
 	dragCoefficient: 0,
-	debrisSpeed: 50,
-	debrisExpireTime: 3,
 	collisionDamage: 0,
 
 	step: function(timestamp, dt)
@@ -71,49 +55,11 @@ var Ship = extend(Entity,
 			if (this.modules[i])
 				this.modules[i].step(timestamp, dt);
 		}
-
-		this.v.add_(this.a.mul(dt));
-		this.p.add_(this.v.mul(dt));
-		this.calculateDrag(dt);
 	},
 
 	canCollide: function(other)
 	{
 		return !(other instanceof Ship && other.faction === this.faction);
-	},
-
-	collide: function(timestamp, dt, other)
-	{
-		other.takeDamage(timestamp, this.collisionDamage);
-	},
-
-	takeDamage: function(timestamp, damage)
-	{
-		this.hp -= damage;
-		if (this.hp <= 0) {
-			this.die(timestamp);
-			this.spreadDebris(timestamp);
-		}
-	},
-
-	spreadDebris: function(timestamp)
-	{
-		var debrisCount = 3 + this.m / 5e3;
-		var color = new Float32Array([
-			0.3 + 0.5 * this.color[0],
-			0.3 + 0.5 * this.color[1],
-			0.3 + 0.5 * this.color[2],
-			1
-		]);
-		for (var i = 0; i < debrisCount; ++i) {
-			var angle = Math.random() * 2 * Math.PI;
-			var v = new V(Math.cos(angle), Math.sin(angle));
-			v.mul_(this.debrisSpeed * (0.1 + 0.9 * Math.random()));
-			v.add_(this.v);
-			var expire = timestamp + (0.2 + Math.random()) * this.debrisExpireTime;
-			game.addEntity(init(Debris, { p: this.p.clone(), v: v,
-					expire: expire, color: this.color.slice(0)}));
-		}
 	},
 
 	relativePos: function(x, y)
@@ -130,7 +76,6 @@ var Ship = extend(Entity,
 				this.modules[i].unequip();
 		}
 		this.modules = [];
-		this._dropLoot(timestamp);
 	},
 
 	equipModule: function(slot, module)
@@ -155,40 +100,6 @@ var Ship = extend(Entity,
 		}
 	},
 
-	calculateMaxSpeed: function()
-	{
-		return Math.sqrt(this.acceleration / this.dragCoefficient);
-	},
-
-	_dropLoot: function(timestamp)
-	{
-		if (this.faction === 2) {
-			var rnd = Math.random() / this.lootProbabilityMultiplier;
-			var lootClass = LootModule;
-			var moduleClass = undefined;
-			if ((rnd -= 0.06) < 0) {
-				lootClass = RepairKit
-			} else if ((rnd -= 0.01) < 0) {
-				moduleClass = RocketLauncher;
-			} else if ((rnd -= 0.01) < 0) {
-				moduleClass = MissileLauncher;
-			} else if ((rnd -= 0.01) < 0) {
-				moduleClass = Laser;
-			} else if ((rnd -= 0.01) < 0) {
-				moduleClass = DualBlaster;
-			} else if ((rnd -= 0.01) < 0) {
-				moduleClass = modules.Shield;
-			} else {
-				lootClass = null;
-			}
-
-			if (lootClass) {
-				game.addEntity(init(lootClass, { p: this.p.clone(), expire: timestamp + 10,
-						moduleClass: moduleClass}));
-			}
-		}
-	},
-
 	_deaccelerate: function(dt, deaccel)
 	{
 		var vlen = this.v.len();
@@ -198,11 +109,11 @@ var Ship = extend(Entity,
 
 
 // Expanding circular explosion that deals damage to ships and pushes them back.
-var Explosion = extend(Entity,
+// Input: p, v, maxRadius, speed, damage, force, faction
+var Explosion = compose(Entity, traits.Movement, traits.Drag, traits.Immune,
 {
-	ctor: function() // p, v, maxRadius, speed, damage, force
+	init: function()
 	{
-		Entity.call(this);
 		if (!this.damage)
 			this.startRadius = 0;
 		this.radius = this.startRadius; // Ensure that explosive projectiles deal damage on collision.
@@ -215,18 +126,14 @@ var Explosion = extend(Entity,
 
 	force: 0,
 	damage: 0,
-	hp: 1,
+	hp: 1e9,
 	dragCoefficient: 0.05,
 	startRadius: 2,
 	fadeTime: 0.3,
 
 	step: function(timestamp, dt)
 	{
-		this.calculateDrag(dt);
-		this.p.add_(this.v.mul(dt));
-
 		this.phase += this.c * dt;
-
 		if (this.phase < 1) {
 			// Radius function is adjusted so that expanding stops when phase = 1.
 			this.radius = this.maxRadius * Math.pow(2 * this.phase - this.phase * this.phase, 0.8) + this.startRadius;
@@ -311,11 +218,11 @@ var Explosion = extend(Entity,
 
 // Shield that blocks incoming enemy projectiles. The shield takes damage and regenerates hitpoints over time.
 // If it reaches 0 hp, it doesn't die but becomes inactive. It can activate again by regenerating.
-var ShieldEntity = extend(Entity,
+// Input: p, radius
+var ShieldEntity = compose(Entity, traits.CollisionDamage,
 {
-	ctor: function() // p, radius
+	init: function()
 	{
-		Entity.call(this);
 		// Make the shield hollow so that enemies inside the shield range can still shoot.
 		this.innerRadius = Math.max(this.radius - 5, 0);
 		this.hp = this.maxHp;
@@ -347,20 +254,14 @@ var ShieldEntity = extend(Entity,
 		return this._active && other.radius <= this.maxBlockRadius && this.p.sub(other.p).dot(other.v) >= 0;
 	},
 
-	collide: function(timestamp, dt, other)
-	{
-		other.takeDamage(timestamp, this.collisionDamage);
-	},
-
 	takeDamage: function(timestamp, damage)
 	{
 		// Prevent the shield from taking lethal damage. Instead we just deactivate it.
 		this._lastDamageTime = timestamp;
 		if (this.hp - damage < 1e-3) {
-			arguments[1] = this.hp - 1e-3;
+			this.damageTaken = this.hp - 1e-3;
 			this._active = false;
 		}
-		Ship.prototype.takeDamage.apply(this, arguments);
 	},
 
 	render: function()
