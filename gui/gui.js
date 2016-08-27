@@ -157,6 +157,7 @@ var Button = extend(Widget,
 	verticalMargin: 5,
 	hoverBackgroundColor: new Float32Array([0.2, 0.4, 0.1, 0.6]),
 	pressedBackgroundColor: new Float32Array([0.15, 0.35, 0.05, 0.6]),
+	horizontalTextAlign: 0.5,
 
 	renderSelf: function(offset)
 	{
@@ -217,7 +218,6 @@ var MainMenu = extend(Widget,
 		// New game.
 		this.addChild("newGameBtn", new Button(new Rect(30, 30, 200, 70), "New Game"));
 		this.newGameBtn.font = fonts.medium;
-		this.newGameBtn.horizontalTextAlign = 0.5;
 		this.newGameBtn.onMouseClick = function() {
 			game.initGameWorld();
 			self.visible = false;
@@ -226,7 +226,6 @@ var MainMenu = extend(Widget,
 		// Continue.
 		this.addChild("continueBtn", new Button(new Rect(30, 80, 200, 120), "Continue"));
 		this.continueBtn.font = fonts.medium;
-		this.continueBtn.horizontalTextAlign = 0.5;
 		this.continueBtn.onMouseClick = function() {
 			game.paused = !game.paused;
 			self.visible = false;
