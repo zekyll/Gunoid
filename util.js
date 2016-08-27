@@ -73,6 +73,8 @@ function compose(/*arguments*/)
 
 	// Add new traits.
 	for (var i = 1; i < arguments.length; ++i) {
+		if (!arguments[i])
+			throw new Error("Trait is undefined.")
 		for (var key in arguments[i]) {
 			if (arguments[i].hasOwnProperty(key)) {
 				if (typeof arguments[i][key] === "function") {
