@@ -730,8 +730,19 @@ var game =
 			this.camPos.add_(targetp.sub_(this.camPos).mul_(dt * 1.3));
 			this.camPos.add_(this.player.v.mul(0.2 * dt));
 		} else {
-			var angle = 0.2 * t;
-			this.camPos.setxy_(Math.cos(angle) * 60, Math.sin(angle) * 60 * this.aspectRatio);
+			// Calculate average of all ship positions.
+			var targetp = new V(0, 0);
+			var count = 1; // Start from 1 in case of no ships. Also weighting towards center.
+			for (var i = 0; i < this.entities.length; ++i) {
+				if (this.entities[i] instanceof Ship) {
+					targetp.add_(this.entities[i].p);
+					++count;
+				}
+			}
+			targetp.mul_(1 / count);
+
+			// Exponential approach.
+			this.camPos.add_(targetp.sub_(this.camPos).mul_(dt * 0.4));
 		}
 	}
 };
