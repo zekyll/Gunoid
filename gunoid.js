@@ -155,6 +155,18 @@ var game =
 		this.player = null;
 		this.speed = 0.5;
 
+		// Add a ring of asteroids.
+		for (var i = 0; i < 40; ++i) {
+			var dist = 270 + 50 * (Math.random() + Math.random() - 1);
+			var angle = i / 40 * 2 * Math.PI;
+			var p = new V(0, 1).rot_(angle).mul_(dist);
+			var radius  = 20 + Math.random() * 25;
+			var prm = {p: p, v: new V(0, 0), radius: radius, m: 1e99, hp: 1e99, _ringAsteroid: true,
+				canCollide: function(other) { return !other._ringAsteroid; }
+			};
+			game.addEntity(init(Asteroid, prm));
+		}
+
 		this.spawner = {
 			step: function()
 			{
@@ -165,7 +177,7 @@ var game =
 					if (game.entities[i] instanceof Ship) {
 						totalHps[game.entities[i].faction] += game.entities[i].hp;
 						++shipCounts[game.entities[i].faction];
-					} else if (game.entities[i] instanceof Obstacle) {
+					} else if (game.entities[i]._roid) {
 						++obstacleCount;
 					}
 				}
@@ -173,8 +185,8 @@ var game =
 					if (shipCounts[i] < 3 && totalHps[i] < 3000)
 						this._spawnNewShip(i);
 				}
-				if (obstacleCount < 3) {
-					game.addEntity(init(Asteroid, { p: game.randomPosition() }));
+				if (obstacleCount < 10) {
+					game.addEntity(init(Asteroid, { p: game.randomPosition(), _roid: true }));
 				}
 			},
 
