@@ -63,7 +63,7 @@ var Subwave = extend(Object,
 			return;
 		while (timestamp > this.lastIterationTime + this.iterationInterval) {
 			for (var i = 0; i < this.spawnsPerIteration; ++i)
-				this.spawn(timestamp);
+				this.spawn(timestamp, i);
 			--this.iterationsRemaining;
 			this.lastIterationTime += this.iterationInterval;
 		}
@@ -82,9 +82,10 @@ var Subwave = extend(Object,
 		return true;
 	},
 
-	spawn: function(timestamp)
+	spawn: function(timestamp, i)
 	{
-		var newSpawn = init(this.spawnClass, this.spawnParamFunc(timestamp));
+			var prm = this.spawnParamFunc(timestamp, i);
+		var newSpawn = init(this.spawnClass, prm);
 		this.aliveSpawns.push(newSpawn);
 		game.addEntity(newSpawn);
 	},
@@ -123,12 +124,27 @@ var Spawner = extend(Object,
 	{
 		var p = game.randomEdgePosition();
 		var dest = game.randomPosition().mul(0.9);
-		var dir = dest.sub(p).setlen((0.5 +  Math.random()));
-		return {p: p, v: dir.setlen(10)};
+		var dir = dest.sub(p).setlen((0.2 +  Math.random()));
+		return {p: p, v: dir.setlen(30)};
+	},
+
+	asteroidRingParams: function(t, i)
+	{
+
+		var dist = 250 + 25 * (Math.random() + Math.random() - 1);
+		var angle = i / 30 * 2 * Math.PI;
+		var p = new V(0, 1).rot_(angle).mul_(dist);
+		var radius  = 30 + Math.random() * 20;
+		return {p: p, v: new V(0, 0), radius: radius, m: 1e9, hp: Infinity};
 	},
 
 	initWaves: function()
 	{
+		// Asteroid ring.
+		this.addWave(
+			[0, 0.05, 1, 30, Asteroid, this.asteroidRingParams, {remaining: 30}]
+		);
+
 		this.addWave(
 			[0, 0.1, 1, 3, Asteroid, this.asteroidSpawnParams, {time: 1}]
 		);
