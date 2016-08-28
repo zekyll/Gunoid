@@ -286,7 +286,7 @@ var game =
 		this._addNewEntities();
 		this.removeDeadEntities(); // TODO do this first?
 
-		this._moveCamera(dt);
+		this._moveCamera(timestamp, dt);
 	},
 
 	removeDeadEntities: function()
@@ -700,7 +700,7 @@ var game =
 	},
 
 	// Set camera position.
-	_moveCamera: function(dt)
+	_moveCamera: function(t, dt)
 	{
 		// Smooth step that is only smoothing for the upper bound
 		function smoothClamp(x, x2, ymax) {
@@ -729,7 +729,8 @@ var game =
 			this.camPos.add_(targetp.sub_(this.camPos).mul_(dt * 1.3));
 			this.camPos.add_(this.player.v.mul(0.2 * dt));
 		} else {
-			this.camPos.setxy_(0, 0);
+			var angle = 0.2 * t;
+			this.camPos.setxy_(Math.cos(angle) * 60, Math.sin(angle) * 60 * this.aspectRatio);
 		}
 	}
 };
