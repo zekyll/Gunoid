@@ -17,6 +17,12 @@ var game =
 	areaMaxY: undefined,
 	areaWidth: undefined,
 	areaHeight: undefined,
+	areaRadius: 200,
+	camRadius: 180, // Radius of circle that has same area as camera view. In game units.
+	camMovementRadius: 120,
+	camWidth: undefined,
+	camHeight: undefined,
+	camPos: new V(0, 0),
 	entities: [],
 	newEntities: [],
 	fps: 0,
@@ -96,6 +102,10 @@ var game =
 		this.areaHeight = this.areaWidth / this.aspectRatio;
 		this.areaMinY = -0.5 * this.areaHeight;
 		this.areaMaxY = 0.5 * this.areaHeight;
+
+		this.camWidth = Math.sqrt(Math.PI * this.camRadius * this.camRadius * this.aspectRatio);
+		this.camHeight = this.camWidth / this.aspectRatio;
+
 		this.entities = [];
 		this.newEntities = [];
 		this.time = null;
@@ -263,6 +273,8 @@ var game =
 		this.checkCollisions(timestamp, dt);
 		this._addNewEntities();
 		this.removeDeadEntities(); // TODO do this first?
+
+		this._moveCamera(dt);
 	},
 
 	removeDeadEntities: function()
@@ -461,7 +473,9 @@ var game =
 		models.background.render(new Float32Array([1, 1, 0.7, 1]), new V(0, 0), new V(0, 1), this.areaWidth / 2);
 		for (var i = 0; i < this.entities.length; ++i)
 			this.entities[i].render();
-		var projViewMatrix = makeOrthoMatrix(this.areaMinX, this.areaMaxX, this.areaMinY, this.areaMaxY);
+		var projViewMatrix = makeOrthoMatrix(
+				this.camPos.x - 0.5 * this.camWidth, this.camPos.y + 0.5 * this.camHeight,
+				this.camPos.x + 0.5 * this.camWidth, this.camPos.y - 0.5 * this.camHeight);
 		models.renderInstances(projViewMatrix);
 
 		// GUI.
@@ -486,7 +500,7 @@ var game =
 		fonts.resetAll();
 		models.resetInstances();
 		this.gui.render(new V(0, 0), timestamp, dt);
-		var projViewMatrix = makeOrthoMatrix(0, this.gui.area.width(), this.gui.area.height(), 0);
+		var projViewMatrix = makeOrthoMatrix(0, 0, this.gui.area.width(), this.gui.area.height());
 		models.renderInstances(projViewMatrix);
 
 		this.fps = 0.98 * this.fps + 0.02 / this.realdt;
@@ -657,5 +671,39 @@ var game =
 	{
 		var loc = this.currentShaderProg.uniformLocations.projViewMatrix;
 		gl.uniformMatrix3fv(loc, false, projViewMatrix);
+	},
+
+	// Set camera position.
+	_moveCamera: function(dt)
+	{
+		// Smooth step that is only smoothing for the upper bound
+		function smoothClamp(x, x2, ymax) {
+			var q = x / x2;
+			if (q < 1)
+				return (2 * q - q * q) * ymax;
+			else
+				return ymax;
+		}
+
+		if (this.player) {
+			// Average of player position, cursor position and position extrapolated from velocity.
+			var targetp = this.player.p.clone();
+			targetp.add_(this.player.targetp);
+			targetp.add_(this.player.p).add_(this.player.v); // Position after 1s.
+			targetp.mul_(1/3);
+
+			// Clamp camera distance from center using a smooth function.
+			var targetp2 = targetp.clone();
+			targetp2.y *= this.aspectRatio;
+			var len = targetp2.len();
+			var len2 = smoothClamp(len, this.areaRadius, this.camMovementRadius);
+			targetp.setlenSafe_(1).mul_(len2);
+
+			// Make actual camera position approach target position exponentially.
+			this.camPos.add_(targetp.sub_(this.camPos).mul_(dt * 1.3));
+			this.camPos.add_(this.player.v.mul(0.2 * dt));
+		} else {
+			this.camPos.setxy_(0, 0);
+		}
 	}
 };

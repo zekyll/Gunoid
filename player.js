@@ -26,8 +26,8 @@ var Player = compose(Ship,
 
 	step: function(timestamp, dt)
 	{
-		this.targetp.x = game.areaMinX + game.areaWidth * input.relativeCursorX;
-		this.targetp.y = game.areaMaxY - game.areaHeight * input.relativeCursorY;
+		this.targetp.x = game.camPos.x + game.camWidth * (input.relativeCursorX - 0.5);
+		this.targetp.y = game.camPos.y - game.camHeight * (input.relativeCursorY - 0.5);
 
 		this.a.setxy_((input.keyDown("Accelerate right") & 1) - (input.keyDown("Accelerate left") & 1),
 				(input.keyDown("Accelerate up") & 1) - (input.keyDown("Accelerate down") & 1));

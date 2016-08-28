@@ -1,7 +1,7 @@
 
 "use strict";
 
-function makeOrthoMatrix(left, right, bottom, top)
+function makeOrthoMatrix(left, top, right, bottom)
 {
 	var tx = - (right + left) / (right - left);
 	var ty = - (top + bottom) / (top - bottom);

@@ -282,7 +282,7 @@ var Font = extend(Object,
 
 	_setProjViewMatrix: function()
 	{
-		var projViewMatrix = makeOrthoMatrix(0, game.canvas.width, game.canvas.height, 0);
+		var projViewMatrix = makeOrthoMatrix(0, 0, game.canvas.width, game.canvas.height);
 		var loc = game.currentShaderProg.uniformLocations.projViewMatrix;
 		gl.uniformMatrix3fv(loc, false, projViewMatrix);
 	},
