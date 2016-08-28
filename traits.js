@@ -237,7 +237,7 @@ Expire:
 	step: function(timestamp, dt)
 	{
 		if (timestamp > this.expire)
-			this.hp = 0;
+			this.takeDamage(timestamp, this.hp);
 	}
 },
 

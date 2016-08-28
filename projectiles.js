@@ -87,6 +87,7 @@ var Missile = compose(Projectile, traits.Drag, traits.TargetClosestEnemy, traits
 
 
 var Rocket = compose(Projectile, traits.Drag, traits.ExplodeOnCollision, traits.ExplodeOnDeath,
+		traits.StraightLineMovement,
 {
 	radius: 2,
 	explosionDamage: 180,
@@ -96,11 +97,6 @@ var Rocket = compose(Projectile, traits.Drag, traits.ExplodeOnCollision, traits.
 	explosionRadius: 15,
 	explosionSpeed: 20,
 	explosionForce: 0.6e6,
-
-	step: function(timestamp, dt)
-	{
-		this.a = this.v.setlen(this.acceleration);
-	},
 
 	render: function()
 	{
@@ -156,19 +152,6 @@ var Grenade = compose(Projectile, traits.ExplodeOnCollision, traits.ExplodeOnDea
 			this.v.setxy_(0, 0);
 			this.radius += dt * this.growSpeed;
 		}
-	},
-
-	collide: function(timestamp, dt, other)
-	{
-		this.hp -= 1;
-		this.detonate(other.v);
-	},
-
-	detonate: function(v)
-	{
-		game.addEntity(init(Explosion, { p: this.p.clone(), v: v.clone(),
-				maxRadius: this.explosionRadius, speed: this.explosionSpeed,
-				damage: this.damage, force: this.explosionForce, faction: this.faction}));
 	},
 
 	render: function()
