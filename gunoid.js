@@ -354,19 +354,32 @@ var game =
 				|| (e2.innerRadius && e1.p.dist(e2.p) < e2.innerRadius - e1.radius);
 	},
 
+	// Simulates a perfectly elastic collision between 2 objects.
 	collide: function(a, b)
 	{
 		if (!a.m || !b.m)
 			return;
-		// Simulating a perfectly elastic collision between 2 objects
+
 		var dp = a.p.sub(b.p);
 		var dv = a.v.sub(b.v);
+
+		// Do nothing if objects are already receding.
 		if (dp.dot(dv) > 0)
 			return;
-		var cv = dp.mul(dv.dot(dp)/dp.lenSqr());
-		var m = a.m + b.m;
-		a.v.sub_(cv.mul(2 * b.m / m));
-		b.v.sub_(cv.mul(- 2 * a.m / m));
+
+		// Apply the same momentum change (except opposite direction) to both objects.
+		var dist = dp.len();
+		dp.mul_(1 / dist); // Normalize.
+		var relvn = dp.mul(dv.dot(dp)); // Normal component of relative velocity.
+		var invm = 1 / (a.m + b.m);
+		a.v.add_(relvn.mul(-2 * b.m * invm));
+		b.v.add_(relvn.mul(2 * a.m * invm));
+
+		// Displace the objects out of each other's range. This prevents an object that is constantly
+		// accelerating toward another from getting closer each step.
+		var e = a.radius + b.radius - dist;
+		a.p.add_(dp.mul(e * b.m * invm));
+		b.p.add_(dp.mul(-e * a.m * invm));
 	},
 
 	findClosestEntity: function(p, filter)

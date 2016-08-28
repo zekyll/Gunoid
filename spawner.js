@@ -135,7 +135,9 @@ var Spawner = extend(Object,
 		var angle = i / 30 * 2 * Math.PI;
 		var p = new V(0, 1).rot_(angle).mul_(dist);
 		var radius  = 30 + Math.random() * 20;
-		return {p: p, v: new V(0, 0), radius: radius, m: 1e9, hp: Infinity};
+		return {p: p, v: new V(0, 0), radius: radius, m: 1e99, hp: 1e99, _ringAsteroid: true,
+			canCollide: function(other) { return !other._ringAsteroid; }
+		};
 	},
 
 	initWaves: function()
