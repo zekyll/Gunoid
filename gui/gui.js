@@ -325,7 +325,7 @@ var Gui = extend(Widget,
 		this.cursorPos = new V(0, 0);
 
 		// Stats.
-		this.addChild("stats", new Text(new Rect(10, 10, 300, 300)));
+		this.addChild("stats", new Text(new Rect(5, 5, 300, 300)));
 
 		// Main menu.
 		this.addChild("mainMenu", new MainMenu(new Rect(50, 100, 280, 500)));

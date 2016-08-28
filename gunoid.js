@@ -21,6 +21,8 @@ var game =
 	newEntities: [],
 	fps: 0,
 	frameCounter: 0,
+	renderTime: 0,
+	stepTime: 0,
 	lastTimestamp: -1,
 	player: undefined,
 	spawner: undefined,
@@ -489,6 +491,10 @@ var game =
 
 		this.fps = 0.98 * this.fps + 0.02 / this.realdt;
 		this.gui.stats.text = "fps: " + this.fps.toFixed(1);
+		this.gui.stats.text += "\nstep: " + this.stepTime.toFixed(2) + "ms";
+		this.gui.stats.text += "\nrender: " + this.renderTime.toFixed(2) + "ms";
+		var cpu = 0.1 * (this.renderTime + this.stepTime) * this.fps;
+		this.gui.stats.text += "\ncpu: " + cpu.toFixed(1) + "%";
 		if (this.player)
 			this.gui.stats.text += "\ntime: " + this.time.toFixed(1);
 
@@ -524,11 +530,17 @@ var game =
 			} else {
 				if (!self.paused) {
 					self.time += self.dt;
+					var startt = performance.now();
 					self.step(self.time, self.dt);
+					self.stepTime = 0.9 * self.stepTime + 0.1 * (performance.now() - startt);
+				} else {
+					self.stepTime = 0;
 				}
 			}
 
+			var startt = performance.now();
 			self.render(self.time, self.dt);
+			self.renderTime = 0.9 * self.renderTime + 0.1 * (performance.now() - startt);
 
 			self.requestFrame();
 			self.lastTimestamp = timestamp;
