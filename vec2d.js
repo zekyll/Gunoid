@@ -35,6 +35,18 @@ V.prototype =
 		return this;
 	},
 
+	addMul: function(rhs, c)
+	{
+		return new V(rhs.x + this.x * c, rhs.y + this.y * c);
+	},
+
+	addMul_: function(rhs, c)
+	{
+		this.x += rhs.x * c;
+		this.y += rhs.y * c;
+		return this;
+	},
+
 	sub: function(rhs)
 	{
 		return new V(this.x - rhs.x, this.y - rhs.y);
@@ -47,12 +59,12 @@ V.prototype =
 		return this;
 	},
 
-	neg: function(rhs)
+	neg: function()
 	{
 		return new V(-this.x, -this.y);
 	},
 
-	neg_: function(rhs)
+	neg_: function()
 	{
 		this.x = -this.x;
 		this.y = -this.y;
@@ -165,3 +177,6 @@ V.prototype =
 		return new V(this.x, this.y);
 	}
 };
+
+// Unit vector constant.
+V.UP = new V(0, 1);

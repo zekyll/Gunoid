@@ -94,7 +94,7 @@ Kamikaze: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	render: function()
 	{
 		models.enemyKamikaze.render(this.color, this.p, this.v);
-		models.circle8.render(colors.red, this.relativePos(0, 2.5), new V(0, 1), 0.6);
+		models.circle8.render(colors.red, this.relativePos(0, 2.5), V.UP, 0.6);
 	}
 }),
 
@@ -124,7 +124,7 @@ KamikazeYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	render: function()
 	{
 		models.enemyKamikaze.render(this.color, this.p, this.v);
-		models.circle8.render(colors.red, this.relativePos(0, 2.5), new V(0, 1), 0.6);
+		models.circle8.render(colors.red, this.relativePos(0, 2.5), V.UP, 0.6);
 	},
 }),
 

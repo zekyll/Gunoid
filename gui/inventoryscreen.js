@@ -35,7 +35,7 @@ var ItemSlot = extend(Widget,
 		if (this.item) {
 			var center = this.area.topLeft.add(offset).add(this.area.size().mul(0.5));
 			var scaling = Math.min(this.area.width(), this.area.height()) / this.moduleIconSize;
-			models[this.item.modelName].render(colors.loot, center, new V(0, 1), scaling, -scaling);
+			models[this.item.modelName].render(colors.loot, center, V.UP, scaling, -scaling);
 		}
 	},
 

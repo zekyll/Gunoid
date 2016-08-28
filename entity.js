@@ -203,12 +203,12 @@ var Explosion = compose(Entity, traits.Movement, traits.Drag,
 			if (i === 0) {
 				// If this explosion deals damage then render the outermost ring with hard edges.
 				if (this.damage) {
-					models.solidCircle16.render(color, this.p, new V(0, 1), r * this.radius);
-					models.circle16.render(new Float32Array([0.4, 0.2, 0, alpha]), this.p, new V(0, 1), this.radius);
+					models.solidCircle16.render(color, this.p, V.UP, r * this.radius);
+					models.circle16.render(new Float32Array([0.4, 0.2, 0, alpha]), this.p, V.UP, this.radius);
 				} else
-					models.point.render(color, this.p, new V(0, 1), r * this.radius * 1.9);
+					models.point.render(color, this.p, V.UP, r * this.radius * 1.9);
 			} else {
-				models.point.render(color, this.p, new V(0, 1), r * this.radius * 1.5);
+				models.point.render(color, this.p, V.UP, r * this.radius * 1.5);
 			}
 		}
 	},
@@ -285,8 +285,8 @@ var ShieldEntity = compose(Entity, traits.CollisionDamage,
 			var alpha = 0.5 + 0.5 * this.hp / this.maxHp;
 			var color = colors.shield.slice(0);
 			color[3] *= alpha;
-			models.solidCircle16.render(color, this.p, new V(0, 1), this.radius);
-			models.circle16.render([0.2, 0.2, 0.4, 1.0 * alpha], this.p, new V(0, 1), this.radius);
+			models.solidCircle16.render(color, this.p, V.UP, this.radius);
+			models.circle16.render([0.2, 0.2, 0.4, 1.0 * alpha], this.p, V.UP, this.radius);
 		}
 	},
 });

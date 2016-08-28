@@ -57,8 +57,9 @@ FlyTowardTarget:
 {
 	step: function(timestamp, dt)
 	{
-		var targetDir = this.targetp.sub(this.p).setlenSafe(1).add(this.v.setlenSafe(this.turnSpeed));
-		this.a.set_(targetDir).setlenSafe_(this.acceleration);
+		this.a.set_(this.targetp).sub_(this.p).setlenSafe_(1);
+		this.a.add_(this.v.setlenSafe(this.turnSpeed));
+		this.a.setlenSafe_(this.acceleration);
 	}
 },
 
@@ -85,8 +86,8 @@ Movement:
 
 	step: function(timestamp, dt)
 	{
-		this.v.add_(this.a.mul(dt));
-		this.p.add_(this.v.mul(dt));
+		this.v.addMul_(this.a, dt);
+		this.p.addMul_(this.v, dt);
 	},
 
 	// Get asymptotic speed with given acceleration/drag.
@@ -109,7 +110,7 @@ Drag:
 		var vlen = this.v.len();
 		var dragAccel = Math.min(this.dragCoefficient * vlen * vlen * dt, vlen);
 		if (vlen > 1e-10)
-			this.v.sub_(this.v.setlen(dragAccel));
+			this.v.addMul_(this.v, -dragAccel / vlen);
 	}
 },
 

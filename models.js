@@ -40,9 +40,6 @@ var  Model = extend(Object,
 		if (offset + this.instanceSize > this.instanceData.length)
 			this.growInstanceData();
 
-		if (rotateDir.x === 0 && rotateDir.y === 0)
-			rotateDir = new V(0, 1);
-		rotateDir = rotateDir.setlen(1);
 		if (typeof scalex === 'undefined') {
 			scalex = 1;
 			scaley = 1;
@@ -52,8 +49,14 @@ var  Model = extend(Object,
 
 		this.instanceData[offset + 0] = scalex;
 		this.instanceData[offset + 1] = scaley;
-		this.instanceData[offset + 2] = rotateDir.x;
-		this.instanceData[offset + 3] = rotateDir.y;
+		var rotLen = rotateDir.len();
+		if (rotLen) {
+			this.instanceData[offset + 2] = rotateDir.x / rotLen;
+			this.instanceData[offset + 3] = rotateDir.y / rotLen;
+		} else {
+			this.instanceData[offset + 2] = 0;
+			this.instanceData[offset + 3] = 1;
+		}
 		this.instanceData[offset + 4] = translate.x;
 		this.instanceData[offset + 5] = translate.y;
 		for (var i = 0; i < 4; ++i)

@@ -35,7 +35,7 @@ var Loot = compose(Entity, traits.Expire,
 	{
 		if (this.blinkState === 0)
 			return;
-		this.model.render(this.color, this.p, new V(0, 1));
+		this.model.render(this.color, this.p, V.UP);
 	}
 });
 

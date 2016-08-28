@@ -44,11 +44,11 @@ var Widget = extend(Object,
 	{
 		var absoluteTopLeft = this.area.topLeft.add(offset);
 		if (this.backgroundColor[3] > 0) {
-			models.guiRect.render(this.backgroundColor, absoluteTopLeft, new V(0, 1),
+			models.guiRect.render(this.backgroundColor, absoluteTopLeft, V.UP,
 					this.area.width(), this.area.height());
 		}
 		if (this.borderColor[3] > 0) {
-			models.guiBorder.render(this.borderColor, absoluteTopLeft, new V(0, 1),
+			models.guiBorder.render(this.borderColor, absoluteTopLeft, V.UP,
 					this.area.width(), this.area.height());
 		}
 		if (this.text) {
@@ -173,10 +173,10 @@ var Button = extend(Widget,
 	{
 		var absoluteTopLeft = this.area.topLeft.add(offset);
 		if (bgColor[3] > 0)
-			models.guiRect.render(bgColor, absoluteTopLeft, new V(0, 1), this.area.width(), this.area.height());
+			models.guiRect.render(bgColor, absoluteTopLeft, V.UP, this.area.width(), this.area.height());
 
 		if (borderColor[3] > 0)
-			models.guiBorder.render(borderColor, absoluteTopLeft, new V(0, 1), this.area.width(), this.area.height());
+			models.guiBorder.render(borderColor, absoluteTopLeft, V.UP, this.area.width(), this.area.height());
 
 		if (this.text) {
 			var displacement = this.isUnderCursor && this.isDragSource ? 1 : 0;
@@ -228,7 +228,7 @@ var Img = extend(Widget,
 		if (this.model) {
 			var center = this.area.topLeft.add(offset).add(this.area.size().mul(0.5));
 			var scaling = Math.min(this.area.width(), this.area.height()) * this.modelScaling;
-			this.model.render(this.modelColor, center, new V(0, 1), scaling, -scaling);
+			this.model.render(this.modelColor, center, V.UP, scaling, -scaling);
 		}
 	},
 });
@@ -307,7 +307,7 @@ var HpBar = extend(Widget,
 		Widget.prototype.renderSelf.apply(this, arguments);
 		var absoluteTopLeft = this.area.topLeft.add(offset);
 		var percentage = Math.min(Math.max(this.currentHp / this.maxHp, 0), 1);
-		models.guiRect.render(this.hpBarColor, absoluteTopLeft, new V(0, 1),
+		models.guiRect.render(this.hpBarColor, absoluteTopLeft, V.UP,
 				percentage * this.area.width(), this.area.height());
 	}
 });
@@ -398,7 +398,7 @@ var Gui = extend(Widget,
 
 		// Render dragged object on top of everything else.
 		if (this.dragObject) {
-			this.dragObject.model.render(this.dragObject.modelColor, this.cursorPos, new V(0, 1),
+			this.dragObject.model.render(this.dragObject.modelColor, this.cursorPos, V.UP,
 					this.dragObject.modelScaling, -this.dragObject.modelScaling);
 		}
 	}
