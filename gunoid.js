@@ -470,7 +470,8 @@ var game =
 
 		// Game entities.
 		models.resetInstances();
-		models.background.render(new Float32Array([1, 1, 0.7, 1]), new V(0, 0), new V(0, 1), this.areaWidth / 2);
+		models.background.render(new Float32Array([1, 1, 0.7, 1]), this.camPos.mul(0.5), new V(0, 1),
+				1.3 * this.areaWidth / 2);
 		for (var i = 0; i < this.entities.length; ++i)
 			this.entities[i].render();
 		var projViewMatrix = makeOrthoMatrix(
