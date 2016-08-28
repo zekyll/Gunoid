@@ -7,7 +7,7 @@
 var enemies = {
 
 
-Star: compose(Ship, traits.StarMovement,
+Star: compose(Ship, traits.StraightLineMovement,
 {
 	hp: 60,
 	m: 5e3,
@@ -24,7 +24,7 @@ Star: compose(Ship, traits.StarMovement,
 }),
 
 
-StarYellow: compose(Ship, traits.StarMovement,
+StarYellow: compose(Ship, traits.StraightLineMovement,
 {
 	init: function()
 	{
@@ -46,7 +46,7 @@ StarYellow: compose(Ship, traits.StarMovement,
 }),
 
 
-StarOrange: compose(Ship, traits.StarMovement,
+StarOrange: compose(Ship, traits.StraightLineMovement,
 {
 	hp: 200,
 	m: 20e3,

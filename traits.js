@@ -7,17 +7,13 @@
 var traits = {
 
 
-// AI movement module for Star class enemies. Moves straight and collides off the walls.
-// Input: p, v, acceleration
-// Output: a, v
-StarMovement:
+// AI movement trait that moves straight and bounces off the walls.
+// Input: v, acceleration
+// Output: a
+StraightLineMovement:
 {
 	step: function(timestamp, dt)
 	{
-		if ((this.p.x < game.areaMinX || this.p.x > game.areaMaxX) && this.p.x * this.v.x > 0)
-			this.v.x *= -1;
-		if ((this.p.y < game.areaMinY || this.p.y > game.areaMaxY) && this.p.y * this.v.y > 0)
-			this.v.y *= -1.0;
 		this.a.set_(this.v).setlenSafe_(this.acceleration);
 	}
 },
