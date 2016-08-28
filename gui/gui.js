@@ -261,7 +261,8 @@ var MainMenu = extend(Widget,
 
 		this.addChild("instructionsTextLeft", new Text(new Rect(10, 150, 120, 300),
 			"[W,A,S,D]"
-			+ "\n[Mouse]"
+			+ "\n[Cursor]"
+			+ "\n[Mouse1]"
 			+ "\n[Tab]"
 			+ "\n[P]"
 			+ "\n[ESC]"
@@ -270,7 +271,8 @@ var MainMenu = extend(Widget,
 		this.instructionsTextLeft.horizontalTextAlign = 0.5;
 		this.addChild("instructionsTextRight", new Text(new Rect(120, 150, 280, 300),
 			"Move ship"
-			+ "\nTarget"
+			+ "\nAim"
+			+ "\nUse module"
 			+ "\nInventory"
 			+ "\nPause"
 			+ "\nMenu"

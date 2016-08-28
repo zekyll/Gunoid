@@ -201,6 +201,8 @@ DropLoot:
 			} else if ((rnd -= 0.01) < 0) {
 				moduleClass = DualBlaster;
 			} else if ((rnd -= 0.01) < 0) {
+				moduleClass = BombLauncher;
+			} else if ((rnd -= 0.01) < 0) {
 				moduleClass = modules.Shield;
 			} else {
 				lootClass = null;

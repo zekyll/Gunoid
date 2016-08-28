@@ -224,6 +224,7 @@ var game =
 			"Accelerate down": 83,
 			"Accelerate left": 65,
 			"Accelerate right": 68,
+			"Activate module": "Mouse Button",
 			"New game": 113,
 			"Benchmark": 115,
 			"Pause": 80,

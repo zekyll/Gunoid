@@ -1,5 +1,5 @@
 
-/* global game, Ship, models, colors, Module, BlasterShot, PlasmaBall, Projectile, Debris, Rocket, Missile */
+/* global game, Ship, models, colors, Module, BlasterShot, PlasmaBall, Projectile, Debris, Rocket, Missile, Grenade */
 
 "use strict";
 
@@ -207,6 +207,34 @@ var MissileLauncher = extend(Module,
 			var v = targetDir.setlen(this.projectileSpeed);
 			game.addEntity(init(Missile, { p: this.ship.p.clone(), v: v, expire: timestamp + 5,
 					faction: this.ship.faction}));
+			this.lastShootTime = timestamp;
+		}
+	}
+});
+
+
+// Drops a bomb with a huge radius that explodes after a fixed delay. Manually activated.
+var BombLauncher = extend(Module,
+{
+	ctor: function()
+	{
+		Module.call(this);
+		this.shootInterval = 10;
+		this.lastShootTime = -1;
+	},
+
+	name: "Bomb Launcher",
+	modelName: "itemBombLauncher",
+
+	step: function(timestamp, dt)
+	{
+		if (timestamp > this.lastShootTime + this.shootInterval &&
+				input.keyDown("Activate module")) {
+			game.addEntity(init(Grenade, { p: this.ship.p.clone(), v: new V(0, 0),
+					explosionDamage: 150, explosionRadius: 100,
+					explosionSpeed: 60, explosionForce: 10e6,
+					activationDelay: 1.5,
+					expire: timestamp + 0, faction: this.ship.faction}));
 			this.lastShootTime = timestamp;
 		}
 	}

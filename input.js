@@ -54,7 +54,8 @@ var input =
 	{
 		var self = this;
 
-		document.onkeydown = function(e) {
+
+		function onkeydown(e) {
 			if (!self.keyStates[e.keyCode]){
 				self.keyStates[e.keyCode] = true
 				var bindingName = self.reverseBindings[e.keyCode];
@@ -64,8 +65,9 @@ var input =
 				}
 			}
 		};
+		document.onkeydown = onkeydown;
 
-		document.onkeyup = function(e) {
+		function onkeyup(e) {
 			if (self.keyStates[e.keyCode]){
 				delete self.keyStates[e.keyCode];
 				var bindingName = self.reverseBindings[e.keyCode];
@@ -75,15 +77,18 @@ var input =
 				}
 			}
 		};
+		document.onkeyup = onkeyup;
 
 		mouseInputElement.onmousedown = function(e){
 			if (self.keyPressHandlers.hasOwnProperty("Mouse Button"))
 				self.keyPressHandlers["Mouse Button"]();
+			onkeydown({ keyCode: "Mouse Button" });
 		};
 
 		mouseInputElement.onmouseup = function(e){
 			if (self.keyUpHandlers.hasOwnProperty("Mouse Button"))
 				self.keyUpHandlers["Mouse Button"]();
+			onkeyup({ keyCode: "Mouse Button" });
 		};
 
 		mouseInputElement.onmousemove = function(e){
