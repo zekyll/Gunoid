@@ -129,6 +129,43 @@ KamikazeYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 }),
 
 
+// Flies to close range and explodes after delay.
+KamikazeOrange: compose(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInCloseRange,
+		traits.ExplodeOnDeath,
+{
+	hp: 200,
+	m: 12e3,
+	radius: 5,
+	acceleration: 1100,
+	dragCoefficient: 0.04,
+	turnSpeed: 4,
+	breakAcceleration: 400,
+	attackLength: 1e9,
+	proximity: 40,
+	attackDelay: 1.2,
+	explosionRadius: 100,
+	explosionSpeed: 40,
+	explosionDamage: 80,
+	explosionForce: 30e6,
+	color: colors.enemyOrange,
+
+	step: function(timestamp, dt)
+	{
+		if (this.attackMode && timestamp - this.attackModeStart > this.attackDelay)
+			this.takeDamage(timestamp, this.hp); // Explodes on death.
+	},
+
+	render: function()
+	{
+		models.enemyKamikazeOrange.render(this.color, this.p, this.v);
+		if (this.attackMode)
+			var radius = 4 * Math.sin(10 / (this.attackModeStart + this.attackDelay - game.time + 0.5));
+		else
+			var radius = 1;
+		models.solidCircle8.render(colors.red, this.relativePos(0, -1.9), V.UP, radius);
+	},
+}),
+
 
 // Slow rotating enemy with four lasers.
 FencerYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
@@ -224,13 +261,11 @@ Destroyer: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 
 
 // Fast enemy that gets in close range, stops, and shoots a burst with a blaster weapon.
-GunnerGreen: compose(Ship, traits.TargetClosestEnemy,
+GunnerGreen: compose(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInCloseRange,
 {
 	init: function()
 	{
 		this.lastShootTime = -1;
-		this.attackMode = false;
-		this.attackModeStart = undefined;
 		this.targetPos = undefined;
 	},
 
@@ -242,34 +277,22 @@ GunnerGreen: compose(Ship, traits.TargetClosestEnemy,
 	dragCoefficient: 0.025,
 	shootInterval: 0.3,
 	bulletSpeed: 120,
-	minAttackLength: 2,
+	attackLength: 2,
 	proximity: 50,
 	attackDelay: 0.4,
 	color: colors.enemyGreen,
 
 	step: function(timestamp, dt)
 	{
-		var distSqr = this.p.distSqr(this.targetp);
-
 		if (this.attackMode) {
-			this._deaccelerate(dt, this.breakAcceleration);
 			var attackLength = timestamp - this.attackModeStart;
 			if (attackLength >= this.attackDelay) {
 				if (!this.targetPos)
 					this.targetPos = this.targetp.clone();
 				this.fireBullets(timestamp, this.targetPos);
 			}
-			if (attackLength >= this.minAttackLength) {
-				this.attackMode = false;
-				this.targetPos = undefined;
-			}
 		} else {
-			this.a.set_(this.targetp).sub_(this.p).setlen_(1).add_(this.v.setlen(1));
-			this.a.setlen_(this.acceleration);
-			if (distSqr < this.proximity * this.proximity) {
-				this.attackMode = true;
-				this.attackModeStart = timestamp;
-			}
+			this.targetPos = null;
 		}
 	},
 

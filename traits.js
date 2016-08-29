@@ -50,6 +50,33 @@ TargetClosestEnemy:
 },
 
 
+
+// Input: p, v, targetp, acceleration, proximity, breakAcceleration, attackLength
+// Output: attackMode, attackModeStart, moving
+StopAndAttackInCloseRange:
+{
+	priority: -5,
+
+	step: function(timestamp, dt)
+	{
+		if (this.attackMode) {
+			this._deaccelerate(dt, this.breakAcceleration);
+			if (timestamp - this.attackModeStart >= this.attackLength) {
+				this.attackMode = false;
+			}
+		} else {
+			this.a.set_(this.targetp).sub_(this.p).setlen_(1).add_(this.v.setlen(1));
+			this.a.setlen_(this.acceleration);
+			var distSqr = this.p.distSqr(this.targetp);
+			if (distSqr < this.proximity * this.proximity) {
+				this.attackMode = true;
+				this.attackModeStart = timestamp;
+			}
+		}
+	}
+},
+
+
 // Accelerates toward target. Turning has some "inertia" determined by turnSpeed.
 // Input: p, v, targetp, acceleration, turnSpeed
 // Output: a
