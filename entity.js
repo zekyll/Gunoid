@@ -129,6 +129,32 @@ var Ship = compose(Entity, traits.Movement, traits.Drag, traits.Debris, traits.C
 });
 
 
+// Small non-collidable objects that
+// Required parameters: p, v, color
+var Debris = compose(Entity, traits.Movement, traits.Drag, traits.Expire,
+{
+	init: function()
+	{
+		var angle = Math.random() * 2 * Math.PI;
+		this.dir = new V(Math.cos(angle), Math.sin(angle));
+		this._fadeSpeed = this.color[3] / (this.expire - game.time);
+	},
+
+	hp: 1,
+	dragCoefficient: 0.05,
+
+	step: function(timestamp, dt)
+	{
+		this.color[3] -= this._fadeSpeed * dt;
+	},
+
+	render: function()
+	{
+		models.debris.render(this.color, this.p, this.dir);
+	}
+});
+
+
 // Expanding circular explosion that deals damage to ships and pushes them back.
 // Input: p, v, maxRadius, speed, damage, force, faction
 var Explosion = compose(Entity, traits.Movement, traits.Drag,

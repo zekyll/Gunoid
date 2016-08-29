@@ -105,30 +105,6 @@ var Rocket = compose(Projectile, traits.Drag, traits.ExplodeOnCollision, traits.
 });
 
 
-// Input: p, v, color
-var Debris = compose(Projectile, traits.Drag,
-{
-	init: function()
-	{
-		var angle = Math.random() * 2 * Math.PI;
-		this.dir = new V(Math.cos(angle), Math.sin(angle));
-		this._fadeSpeed = this.color[3] / (this.expire - game.time);
-	},
-
-	dragCoefficient: 0.05,
-
-	step: function(timestamp, dt)
-	{
-		this.color[3] -= this._fadeSpeed * dt;
-	},
-
-	render: function()
-	{
-		models.debris.render(this.color, this.p, this.dir);
-	}
-});
-
-
 // Flies in straight line and explodes after a delay.
 var Grenade = compose(Projectile, traits.ExplodeOnCollision, traits.ExplodeOnDeath,
 {
