@@ -132,11 +132,11 @@ var Laser = extend(Module,
 	ctor: function()
 	{
 		Module.call(this);
-		this.range = 200;
 	},
 
 	name: "Laser",
 	modelName: "itemLaser",
+	range: 200,
 	damage: 300, // Per second.
 	color: colors.laser,
 	sparkColor: colors.flameYellow,
@@ -146,7 +146,7 @@ var Laser = extend(Module,
 
 	step: function(timestamp, dt)
 	{
-		var targetDir = this.ship.targetp.sub(this.ship.p);
+		var targetDir = this.ship.getModuleTargetPos(this).sub_(this.ship.p);
 		if (targetDir.len() < 0.001)
 			targetDir = new V(0, 1);
 
@@ -171,7 +171,7 @@ var Laser = extend(Module,
 
 	render: function()
 	{
-		var targetDir = this.ship.targetp.sub(this.ship.p);
+		var targetDir = this.ship.getModuleTargetPos(this).sub_(this.ship.p);
 		models.line.render(this.color, this.ship.p, targetDir, this.laserEndDistance);
 	},
 

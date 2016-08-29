@@ -107,6 +107,12 @@ var Ship = compose(Entity, traits.Movement, traits.Drag, traits.Debris, traits.C
 		return replacedModule;
 	},
 
+	// Get target position for specific module. This can be overriden to give each weapon a different target.
+	getModuleTargetPos: function(module)
+	{
+		return this.targetp.clone();
+	},
+
 	render: function()
 	{
 		for (var i = 0; i < this.modules.length; ++i) {

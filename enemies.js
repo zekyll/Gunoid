@@ -130,6 +130,56 @@ KamikazeYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 
 
 
+// Slow rotating enemy with four lasers.
+FencerYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
+{
+	init: function()
+	{
+		for (var i = 0; i < this.beamCount; ++i) {
+			this.equipModule(new Laser(), i);
+			this.modules[i].damage = 120;
+			this.modules[i].moduleIdx = i;
+		}
+		this.oscillationPhase = Math.random() * 2 * Math.PI;
+		this.laserTargetDir = new V(0, 1000).rot_(Math.random() * 2 * Math.PI);
+	},
+
+	range: 400,
+	hp: 400,
+	m: 30e3,
+	radius: 8,
+	collisionDamage: 10,
+	acceleration: 70,
+	dragCoefficient: 0.04,
+	turnSpeed: 2,
+	beamCount: 4,
+	beamRotateSpeed: 0.5,
+	oscillationSpeed: 2,
+	color: colors.enemyYellow,
+
+	step: function(timestamp, dt)
+	{
+		this.laserTargetDir.rot_(this.beamRotateSpeed * dt);
+		var range = (0.5 * Math.sin(timestamp * this.oscillationSpeed + this.oscillationPhase) + 0.5) * this.range;
+		for (var i = 0; i < this.beamCount; ++i) {
+			if (this.modules[i]) //TODO do all death handling after step() so modules don't unequip during step?
+				this.modules[i].range = range;
+		}
+	},
+
+	// Gives different direction for each laser.
+	getModuleTargetPos: function(module)
+	{
+		return this.laserTargetDir.rot(module.moduleIdx / this.beamCount * (2 * Math.PI)).add_(this.p);
+	},
+
+	render: function()
+	{
+		models.enemyFencerYellow.render(this.color, this.p, this.laserTargetDir);
+	}
+}),
+
+
 Destroyer: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 {
 	init: function()

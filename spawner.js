@@ -207,12 +207,25 @@ var Spawner = extend(Object,
 		);
 
 		this.addWave(
+			[0, 1, 1, 1, enemies.FencerYellow, this.standardSpawnParams, {remaining: 0}]
+		);
+
+		this.addWave(
+			[1, 20, 2, 2, enemies.FencerYellow, this.standardSpawnParams, {remaining: 0}]
+		);
+
+		this.addWave(
 			[0, 0.5, 5, 1, enemies.StarOrange, this.standardSpawnParams, {remaining: 0}],
 			[0, 0.5, 1, 3, Asteroid, this.asteroidSpawnParams, {time: 1}]
 		);
 
 		this.addWave(
 			[0, 6, 3, 15, enemies.Star, this.standardSpawnParams, {remaining: 0}]
+		);
+
+		this.addWave(
+			[0, 8, 4, 1, enemies.FencerYellow, this.standardSpawnParams, {remaining: 0}],
+			[0, 8, 4, 1, enemies.KamikazeYellow, this.standardSpawnParams, {remaining: 0}]
 		);
 
 		this.addWave(
