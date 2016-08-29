@@ -1,5 +1,5 @@
 
-/* global gl, game, glext, colors */
+/* global gl, game, glext, colors, shaders */
 
 "use strict";
 
@@ -24,7 +24,7 @@ var fonts =
 	// Render all fonts.
 	renderAll: function()
 	{
-		game.useShaderProg(game.textShaderProg);
+		shaders.useShaderProg(shaders.text);
 		for (var fontName in this) {
 			if (this[fontName] instanceof Font)
 				this[fontName].render();
@@ -141,8 +141,8 @@ var Font = extend(Object,
 
 		this._setProjViewMatrix();
 
-		var attribs = game.currentShaderProg.attribLocations;
-		var uniforms = game.currentShaderProg.uniformLocations;
+		var attribs = shaders.current.attribLocations;
+		var uniforms = shaders.current.uniformLocations;
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
 		gl.bufferData(gl.ARRAY_BUFFER, this.vertexData, gl.STREAM_DRAW);
@@ -283,7 +283,7 @@ var Font = extend(Object,
 	_setProjViewMatrix: function()
 	{
 		var projViewMatrix = makeOrthoMatrix(0, 0, game.canvas.width, game.canvas.height);
-		var loc = game.currentShaderProg.uniformLocations.projViewMatrix;
+		var loc = shaders.current.uniformLocations.projViewMatrix;
 		gl.uniformMatrix3fv(loc, false, projViewMatrix);
 	},
 

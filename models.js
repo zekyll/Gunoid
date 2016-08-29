@@ -1,5 +1,5 @@
 
-/* global gl, game, glext, modelData, getFileExtension */
+/* global gl, game, glext, modelData, getFileExtension, shaders */
 
 "use strict";
 
@@ -81,7 +81,7 @@ var  Model = extend(Object,
 		if (this.instanceCount === 0)
 			return;
 
-		var attribs = game.currentShaderProg.attribLocations;
+		var attribs = shaders.current.attribLocations;
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
 		this.defineVertexAttribs(attribs);
 
@@ -149,7 +149,7 @@ var TexturedPointModel = extend(Model,
 
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, this.texture);
-		gl.uniform1i(game.currentShaderProg.uniformLocations.sampler, 0);
+		gl.uniform1i(shaders.current.uniformLocations.sampler, 0);
 
 		Model.prototype.renderInstances.apply(this, arguments);
 	}
@@ -175,7 +175,7 @@ var TexturedModel = extend(Model,
 
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, this.texture);
-		gl.uniform1i(game.currentShaderProg.uniformLocations.sampler, 0);
+		gl.uniform1i(shaders.current.uniformLocations.sampler, 0);
 
 		Model.prototype.renderInstances.apply(this, arguments);
 	},
@@ -279,14 +279,14 @@ var models =
 
 	renderInstances: function(projViewMatrix)
 	{
-		game.useShaderProg(game.texturedModelShaderProg);
+		shaders.useShaderProg(shaders.texturedModel);
 		game.setProjViewMatrix(projViewMatrix);
 		for (var modelName in this) {
 			if (this[modelName] instanceof TexturedModel)
 				this[modelName].renderInstances();
 		}
 
-		game.useShaderProg(game.wireframeShaderProg);
+		shaders.useShaderProg(shaders.wireframe);
 		game.setProjViewMatrix(projViewMatrix);
 		for (var modelName in this) {
 			if (this[modelName] instanceof SolidModel)
@@ -297,10 +297,10 @@ var models =
 				this[modelName].renderInstances();
 		}
 
-		game.useShaderProg(game.texturedPointShaderProg);
+		shaders.useShaderProg(shaders.texturedPoint);
 		game.setProjViewMatrix(projViewMatrix);
-		var loc = game.currentShaderProg.uniformLocations.viewportSize;
-		gl.uniform2f(loc, game.canvas.width, game.canvas.height);
+		var location = shaders.current.uniformLocations.viewportSize;
+		gl.uniform2f(location, game.canvas.width, game.canvas.height);
 		for (var modelName in this) {
 			if (this[modelName] instanceof TexturedPointModel)
 				this[modelName].renderInstances();

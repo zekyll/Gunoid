@@ -36,11 +36,6 @@ var game =
 	dt: undefined,
 	speed: 1.0,
 	paused: false,
-	wireframeShaderProg: undefined,
-	texturedPointShaderProg: undefined,
-	texturedModelShaderProg: undefined,
-	textShaderProg: undefined,
-	currentShaderProg: null,
 	gui: undefined,
 
 	start: function()
@@ -83,7 +78,7 @@ var game =
 		if (gl) {
 			gl.clearColor(0.10, 0.0, 0.25, 1.0);
 			gl.clear(gl.COLOR_BUFFER_BIT);
-			this.initShaders();
+			shaders.init();
 			models.init();
 			var fontFamily = "Verdana, Trebuchet MS, Lucida Sans Unicode, Tahoma, Arial, sans-serif";
 			fonts.add("small", fontFamily, 10);
@@ -588,115 +583,9 @@ var game =
 		});
 	},
 
-	initShaders: function()
-	{
-		this.texturedModelShaderProg = this.createShaderProg("texturedModelVertexShader",
-				"texturedModelFragmentShader");
-		this.wireframeShaderProg = this.createShaderProg("wireframeVertexShader", "wireframeFragmentShader");
-		this.texturedPointShaderProg = this.createShaderProg("texturedPointVertexShader", "texturedPointFragmentShader");
-		this.textShaderProg = this.createShaderProg("textVertexShader", "textFragmentShader");
-	},
-
-	createShaderProg: function(vertexShaderName, fragmentShaderName)
-	{
-		var vertexShader = this.getShader(gl, vertexShaderName);
-		var fragmentShader = this.getShader(gl, fragmentShaderName);
-
-		var shaderProgram = gl.createProgram();
-		gl.attachShader(shaderProgram, vertexShader);
-		gl.attachShader(shaderProgram, fragmentShader);
-		gl.linkProgram(shaderProgram);
-
-		if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS))
-			alert("Unable to initialize the shader program.");
-
-		var attribCount = gl.getProgramParameter(shaderProgram, gl.ACTIVE_ATTRIBUTES);
-		shaderProgram.attribLocations = {};
-		for (var i = 0; i < attribCount; ++i) {
-			var attribName = gl.getActiveAttrib(shaderProgram, i).name;
-			var attribLoc = gl.getAttribLocation(shaderProgram, attribName);
-			shaderProgram.attribLocations[attribName] = attribLoc;
-		}
-
-		var uniformCount = gl.getProgramParameter(shaderProgram, gl.ACTIVE_UNIFORMS);
-		shaderProgram.uniformLocations = {};
-		for (var i = 0; i < uniformCount; ++i) {
-			var uniformName = gl.getActiveUniform(shaderProgram, i).name;
-			var uniformLoc = gl.getUniformLocation(shaderProgram, uniformName);
-			shaderProgram.uniformLocations[uniformName] = uniformLoc;
-		}
-
-		shaderProgram.toggleAttribArrays = function(enable)
-		{
-			for (attribName in this.attribLocations) {
-				if (this.attribLocations.hasOwnProperty(attribName)) {
-					var attribLoc = this.attribLocations[attribName];
-					if (enable)
-						gl.enableVertexAttribArray(attribLoc);
-					else
-						gl.disableVertexAttribArray(attribLoc);
-				}
-			}
-		};
-
-		return shaderProgram;
-	},
-
-	useShaderProg: function(prog)
-	{
-		if (prog === this.currentShaderProg)
-			return;
-		if (this.currentShaderProg)
-			this.currentShaderProg.toggleAttribArrays(false);
-		gl.useProgram(prog);
-		prog.toggleAttribArrays(true);
-		this.currentShaderProg = prog;
-	},
-
-	getShader: function(gl, id)
-	{
-		var shaderScript = document.getElementById(id);
-
-		if (!shaderScript) {
-			return null;
-		}
-
-		var theSource = "";
-		var currentChild = shaderScript.firstChild;
-
-		while(currentChild) {
-			if (currentChild.nodeType === 3) {
-				theSource += currentChild.textContent;
-			}
-
-			currentChild = currentChild.nextSibling;
-		}
-
-		var shader;
-
-		if (shaderScript.type === "x-shader/x-fragment") {
-			shader = gl.createShader(gl.FRAGMENT_SHADER);
-		} else if (shaderScript.type === "x-shader/x-vertex") {
-			shader = gl.createShader(gl.VERTEX_SHADER);
-		} else {
-			return null;
-		}
-
-		gl.shaderSource(shader, theSource);
-
-		gl.compileShader(shader);
-
-		if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-			alert("An error occurred compiling the shaders: " + gl.getShaderInfoLog(shader));
-			return null;
-		}
-
-		return shader;
-	},
-
 	setProjViewMatrix: function(projViewMatrix)
 	{
-		var loc = this.currentShaderProg.uniformLocations.projViewMatrix;
+		var loc = shaders.current.uniformLocations.projViewMatrix;
 		gl.uniformMatrix3fv(loc, false, projViewMatrix);
 	},
 

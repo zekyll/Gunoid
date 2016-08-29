@@ -4,142 +4,7 @@
 		<link rel="stylesheet" type="text/css" href="gunoid.css">
 		<title>Gunoid</title>
 
-		<!-- Lines/triangles without texturing. -->
-		<script id="wireframeVertexShader" type="x-shader/x-vertex">
-			attribute vec2 position;
-			attribute vec2 modelScaling;
-			attribute vec2 modelRotation;
-			attribute vec2 modelTranslation;
-			attribute vec4 modelColor;
-			uniform mat3 projViewMatrix;
-			varying vec4 color;
-
-			void main(void) {
-				mat2 rotMat = mat2(vec2(modelRotation.y, -modelRotation.x), modelRotation);
-				vec2 scaledAndRotated = rotMat * (modelScaling * position);
-				vec3 translated = vec3(scaledAndRotated + modelTranslation, 1.0);
-				gl_Position = vec4(projViewMatrix * translated, 1.0);
-				color = modelColor;
-			}
-		</script>
-		<script id="wireframeFragmentShader" type="x-shader/x-fragment">
-			precision mediump float;
-			varying vec4 color;
-
-			void main(void) {
-				gl_FragColor = color;
-			}
-		</script>
-
-		<!-- Textured point sprites. -->
-		<script id="texturedPointVertexShader" type="x-shader/x-vertex">
-			attribute vec2 position;
-			attribute vec2 modelScaling;
-			attribute vec2 modelRotation;
-			attribute vec2 modelTranslation;
-			attribute vec4 modelColor;
-			uniform mat3 projViewMatrix;
-			uniform vec2 viewportSize;
-			varying vec4 color;
-
-			void main(void) {
-				// Model scaling/rotation doesn't matter if there's only one point at (0,0), but
-				// we could theoretically have a list of points.
-				mat2 rotMat = mat2(vec2(modelRotation.y, -modelRotation.x), modelRotation);
-				vec2 scaledAndRotated = rotMat * (modelScaling * position);
-				vec3 translated = vec3(scaledAndRotated + modelTranslation, 1.0);
-				gl_Position = vec4(projViewMatrix * translated, 1.0);
-				color = modelColor;
-
-				// Calculate point size based on how the length of unit vector (1, 0) is changed by
-				// model/view/proj transforms. gl_PointSize is in pixels so we multiply final
-				// device coordinates by viewport size, then calculate length.
-				gl_PointSize = length((projViewMatrix * vec3(modelScaling.x, 0.0, 0.0)).xy * viewportSize);
-			}
-		</script>
-		<script id="texturedPointFragmentShader" type="x-shader/x-fragment">
-			precision mediump float;
-			varying vec4 color;
-			uniform sampler2D sampler;
-
-			void main(void) {
-				gl_FragColor = color * texture2D(sampler, gl_PointCoord);
-			}
-		</script>
-
-		<!-- Textured point sprites without model transform. Allows texture offset/scaling.
-		Uses texture luminance as alpha. -->
-		<script id="textVertexShader" type="x-shader/x-vertex">
-			attribute vec2 vertexPosition;
-			attribute vec2 vertexSize;
-			attribute vec4 vertexColor;
-			attribute vec2 vertexTextureOffset;
-			attribute vec2 vertexTextureSize;
-			attribute vec2 vertexTextureCutoff;
-			uniform mat3 projViewMatrix;
-			//uniform float viewportWidth;
-			varying vec4 fragColor;
-			varying vec2 fragTextureOffset;
-			varying vec2 fragTextureSize;
-			varying vec2 fragTextureCutoff;
-
-			void main(void) {
-				gl_Position = vec4(projViewMatrix * vec3(vertexPosition, 1.0), 1.0);
-				fragColor = vertexColor;
-				gl_PointSize = vertexSize.y;
-				fragTextureOffset = vertexTextureOffset;
-				fragTextureSize = vertexTextureSize;
-				fragTextureCutoff = vertexTextureCutoff;
-			}
-		</script>
-		<script id="textFragmentShader" type="x-shader/x-fragment">
-			precision mediump float;
-			varying vec4 fragColor;
-			varying vec2 fragTextureOffset;
-			varying vec2 fragTextureSize;
-			varying vec2 fragTextureCutoff;
-			uniform sampler2D sampler;
-
-			void main(void) {
-				if (gl_PointCoord.x >= fragTextureCutoff.x || gl_PointCoord.y >= fragTextureCutoff.y)
-					discard;
-				vec4 s = texture2D(sampler, fragTextureOffset + fragTextureSize * gl_PointCoord);
-				gl_FragColor = fragColor * vec4(s.rgb, s.r);
-			}
-		</script>
-
-		<!-- Textured triangles. -->
-		<script id="texturedModelVertexShader" type="x-shader/x-vertex">
-			attribute vec2 position;
-			attribute vec2 texCoords;
-			attribute vec2 modelScaling;
-			attribute vec2 modelRotation;
-			attribute vec2 modelTranslation;
-			attribute vec4 modelColor;
-			uniform mat3 projViewMatrix;
-			varying vec4 color;
-			varying vec2 fragTexCoords;
-
-			void main(void) {
-				mat2 rotMat = mat2(vec2(modelRotation.y, -modelRotation.x), modelRotation);
-				vec2 scaledAndRotated = rotMat * (modelScaling * position);
-				vec3 translated = vec3(scaledAndRotated + modelTranslation, 1.0);
-				gl_Position = vec4(projViewMatrix * translated, 1.0);
-				color = modelColor;
-				fragTexCoords = texCoords;
-			}
-		</script>
-		<script id="texturedModelFragmentShader" type="x-shader/x-fragment">
-			precision mediump float;
-			varying vec4 color;
-			varying vec2 fragTexCoords;
-			uniform sampler2D sampler;
-
-			void main(void) {
-				gl_FragColor = color * texture2D(sampler, fragTexCoords);
-			}
-		</script>
-
+		<!-- Increase memory size for BPG decoder. -->
 		<script>
 			var Module = { TOTAL_MEMORY: 20 * (1 << 20) };
 		</script>
@@ -161,6 +26,7 @@
 		<script src="modeldata.js" type="text/javascript"></script>
 		<script src="models.js" type="text/javascript"></script>
 		<script src="fonts.js" type="text/javascript"></script>
+		<script src="shaders.js" type="text/javascript"></script>
 
 		<!-- GUI -->
 		<script src="gui/gui.js" type="text/javascript"></script>
@@ -176,6 +42,8 @@
 		<script src="loot.js" type="text/javascript"></script>
 		<script src="player.js" type="text/javascript"></script>
 		<script src="spawner.js" type="text/javascript"></script>
+
+		<!-- Main class -->
 		<script src="gunoid.js" type="text/javascript"></script>
 	</head>
 	<body onload="game.start()">
