@@ -48,8 +48,8 @@ var Font = extend(Object,
 	ctor: function(family, size)
 	{
 		this.canvas = document.createElement("canvas");
-		this.canvas.width = 512;
-		this.canvas.height = 512;
+		this.canvas.width = 1024;
+		this.canvas.height = 1024;
 		this.family = family;
 		this.textSize = size;
 		this.textColor = colors.white;
