@@ -100,6 +100,7 @@ var game =
 
 		this.camWidth = Math.sqrt(Math.PI * this.camRadius * this.camRadius * this.aspectRatio);
 		this.camHeight = this.camWidth / this.aspectRatio;
+		this.camPos = new V(0, 0);
 
 		this.entities = [];
 		this.newEntities = [];
