@@ -247,7 +247,8 @@ var ShieldEntity = compose(Entity, traits.CollisionDamage,
 		// Make the shield hollow so that enemies inside the shield range can still shoot.
 		this.innerRadius = Math.max(this.radius - 5, 0);
 		this.hp = this.maxHp;
-		this.v = new V(0,0);
+		if (!this.v)
+			this.v = new V(0,0);
 		this._active = true;
 		this._lastDamageTime = 0;
 	},

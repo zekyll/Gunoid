@@ -20,6 +20,10 @@ var Module = extend(Object,
 	{
 	},
 
+	step: function()
+	{
+	},
+
 	render: function()
 	{
 	},
@@ -44,18 +48,15 @@ Shield: extend(Module,
 	name: "Shield",
 	modelName: "itemShield",
 
-	step: function(timestamp, dt)
-	{
-		// Shield follows the ship.
-		this.shield.p.set_(this.ship.p);
-		this.shield.v.set_(this.ship.v);
-	},
-
+	// Creates the actual shield entity that handles collisions.
 	equip: function()
 	{
-		// Create the actual shield entity that handles physics.
 		var param = copyShallow(this.shieldParam);
-		param.p = this.ship.p.clone();
+		// We can link the shield position/movement with the ship because it has no movement handling
+		// of its own. However we gotta be careful to never create new p/v vector for either entity.
+		param.p = this.ship.p; // No clone()!
+		param.v = this.ship.v; // No clone()!
+		param.m = this.ship.m;
 		param.faction = this.ship.faction;
 
 		this.shield = init(ShieldEntity, param);
