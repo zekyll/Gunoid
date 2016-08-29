@@ -16,6 +16,7 @@ var Blaster = extend(Module,
 
 	name: "Blaster",
 	modelName: "itemDualBlaster",
+	description: "Basic weapon that fires a single projectile.",
 
 	step: function(timestamp, dt)
 	{
@@ -44,6 +45,7 @@ var DualBlaster = extend(Module,
 
 	name: "Dual Blaster",
 	modelName: "itemDualBlaster",
+	description: "Fires two projectiles.",
 	spread: 6,
 
 	step: function(timestamp, dt)
@@ -64,7 +66,7 @@ var DualBlaster = extend(Module,
 });
 
 
-// Shoopts multiple projectiles in a wide angle.
+// Shoots multiple projectiles in a wide angle.
 var SpreadGun = extend(Module,
 {
 	ctor: function()
@@ -78,6 +80,7 @@ var SpreadGun = extend(Module,
 	projectileCount: 7,
 	name: "Spread Gun",
 	modelName: "itemSpreadGun",
+	description: "Shoots multiple projectiles in a wide angle.",
 	spreadAngle: 90 / 360 * (2 * Math.PI),
 
 	step: function(timestamp, dt)
@@ -136,6 +139,7 @@ var Laser = extend(Module,
 
 	name: "Laser",
 	modelName: "itemLaser",
+	description: "High-energy beam that deals damage over time.",
 	range: 200,
 	damage: 300, // Per second.
 	color: colors.laser,
@@ -204,6 +208,7 @@ var RocketLauncher = extend(Module,
 
 	name: "Rocket Launcher",
 	modelName: "itemRocketLauncher",
+	description: "Launches rockets that fly straight and explode on contact.",
 
 	step: function(timestamp, dt)
 	{
@@ -232,6 +237,7 @@ var MissileLauncher = extend(Module,
 
 	name: "Missile Launcher",
 	modelName: "itemMissileLauncher",
+	description: "Launches seeking missiles that target the closest enemy ship.",
 
 	step: function(timestamp, dt)
 	{
@@ -260,6 +266,7 @@ var BombLauncher = extend(Module,
 
 	name: "Bomb Launcher",
 	modelName: "itemBombLauncher",
+	description: "Launches bombs that explode after a delay.\nManually activated.\nCooldown: 10 seconds.",
 
 	step: function(timestamp, dt)
 	{

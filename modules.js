@@ -47,6 +47,7 @@ Shield: extend(Module,
 
 	name: "Shield",
 	modelName: "itemShield",
+	description: "Generates a shield that blocks incoming projectiles.",
 
 	// Creates the actual shield entity that handles collisions.
 	equip: function()
