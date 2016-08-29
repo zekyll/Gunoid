@@ -64,6 +64,41 @@ var DualBlaster = extend(Module,
 });
 
 
+// Shoopts multiple projectiles in a wide angle.
+var SpreadGun = extend(Module,
+{
+	ctor: function()
+	{
+		Module.call(this);
+		this._lastShootTime = -1;
+	},
+
+	shootInterval: 1.0,
+	projectileSpeed: 200,
+	projectileCount: 7,
+	name: "Spread Gun",
+	modelName: "itemSpreadGun",
+	spreadAngle: 90 / 360 * (2 * Math.PI),
+
+	step: function(timestamp, dt)
+	{
+		if (timestamp > this._lastShootTime + this.shootInterval) {
+			var targetDir = this.ship.targetp.sub(this.ship.p);
+			if (targetDir.len() < 0.001)
+				targetDir = new V(0, 1);
+			targetDir.rot_(-this.spreadAngle / 2);
+			for (var i = 0; i < this.projectileCount; ++i) {
+				var v = targetDir.setlen(this.projectileSpeed);
+				game.addEntity(init(PlasmaBall, { p: this.ship.p.clone(), v: v,
+						expire: timestamp + 5, faction: this.ship.faction}));
+				targetDir.rot_(this.spreadAngle / (this.projectileCount - 1));
+			}
+			this._lastShootTime = timestamp;
+		}
+	}
+});
+
+
 var PlasmaSprinkler = extend(Module,
 {
 	ctor: function()
