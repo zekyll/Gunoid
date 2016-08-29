@@ -12,7 +12,7 @@ var Player = compose(Ship,
 		this.targetp = new V(0, 1);
 		this.modules = new Array(3);
 		this.inventory = new Array(40);
-		this.pickupItem(new Blaster());
+		this.pickupItem(new weapons.Blaster());
 	},
 
 	hp: 100,

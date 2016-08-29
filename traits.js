@@ -193,17 +193,17 @@ DropLoot:
 			if ((rnd -= 0.06) < 0) {
 				lootClass = RepairKit
 			} else if ((rnd -= 0.01) < 0) {
-				moduleClass = RocketLauncher;
+				moduleClass = weapons.RocketLauncher;
 			} else if ((rnd -= 0.01) < 0) {
-				moduleClass = MissileLauncher;
+				moduleClass = weapons.MissileLauncher;
 			} else if ((rnd -= 0.01) < 0) {
-				moduleClass = Laser;
+				moduleClass = weapons.Laser;
 			} else if ((rnd -= 0.01) < 0) {
-				moduleClass = DualBlaster;
+				moduleClass = weapons.DualBlaster;
 			} else if ((rnd -= 0.01) < 0) {
-				moduleClass = BombLauncher;
+				moduleClass = weapons.BombLauncher;
 			} else if ((rnd -= 0.01) < 0) {
-				moduleClass = SpreadGun;
+				moduleClass = weapons.SpreadGun;
 			} else if ((rnd -= 0.01) < 0) {
 				moduleClass = modules.Shield;
 			} else {

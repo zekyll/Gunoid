@@ -3,8 +3,10 @@
 
 "use strict";
 
+var weapons = {
 
-var Blaster = extend(Module,
+
+Blaster: extend(Module,
 {
 	ctor: function()
 	{
@@ -30,10 +32,10 @@ var Blaster = extend(Module,
 			this.lastShootTime = timestamp;
 		}
 	}
-});
+}),
 
 
-var DualBlaster = extend(Module,
+DualBlaster: extend(Module,
 {
 	ctor: function()
 	{
@@ -63,11 +65,11 @@ var DualBlaster = extend(Module,
 			this.lastShootTime = timestamp;
 		}
 	}
-});
+}),
 
 
 // Shoots multiple projectiles in a wide angle.
-var SpreadGun = extend(Module,
+SpreadGun: extend(Module,
 {
 	ctor: function()
 	{
@@ -99,10 +101,10 @@ var SpreadGun = extend(Module,
 			this._lastShootTime = timestamp;
 		}
 	}
-});
+}),
 
 
-var PlasmaSprinkler = extend(Module,
+PlasmaSprinkler: extend(Module,
 {
 	ctor: function()
 	{
@@ -127,10 +129,10 @@ var PlasmaSprinkler = extend(Module,
 			this.lastShootTime = timestamp;
 		}
 	}
-});
+}),
 
 
-var Laser = extend(Module,
+Laser: extend(Module,
 {
 	ctor: function()
 	{
@@ -193,10 +195,10 @@ var Laser = extend(Module,
 			}));
 		}
 	}
-});
+}),
 
 
-var RocketLauncher = extend(Module,
+RocketLauncher: extend(Module,
 {
 	ctor: function()
 	{
@@ -222,10 +224,10 @@ var RocketLauncher = extend(Module,
 			this.lastShootTime = timestamp;
 		}
 	}
-});
+}),
 
 
-var MissileLauncher = extend(Module,
+MissileLauncher: extend(Module,
 {
 	ctor: function()
 	{
@@ -251,11 +253,11 @@ var MissileLauncher = extend(Module,
 			this.lastShootTime = timestamp;
 		}
 	}
-});
+}),
 
 
 // Drops a bomb with a huge radius that explodes after a fixed delay. Manually activated.
-var BombLauncher = extend(Module,
+BombLauncher: extend(Module,
 {
 	ctor: function()
 	{
@@ -280,4 +282,7 @@ var BombLauncher = extend(Module,
 			this.lastShootTime = timestamp;
 		}
 	}
-});
+})
+
+
+}

@@ -28,7 +28,7 @@ StarYellow: compose(Ship, traits.StraightLineMovement,
 {
 	init: function()
 	{
-		this.equipModule(new PlasmaSprinkler(), 0);
+		this.equipModule(new weapons.PlasmaSprinkler(), 0);
 	},
 
 	hp: 300,
@@ -136,7 +136,7 @@ FencerYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	init: function()
 	{
 		for (var i = 0; i < this.beamCount; ++i) {
-			this.equipModule(new Laser(), i);
+			this.equipModule(new weapons.Laser(), i);
 			this.modules[i].damage = 120;
 			this.modules[i].moduleIdx = i;
 		}
