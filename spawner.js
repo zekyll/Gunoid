@@ -114,7 +114,7 @@ var Spawner = extend(Object,
 
 	standardSpawnParams: function()
 	{
-		var p = game.randomEdgePosition();
+		var p = game.randomPosition();
 		var dest = game.randomPosition().mul(0.9);
 		var dir = dest.sub(p).setlen((0.5 +  Math.random()));
 		return {p: p, dir: dir, faction: 2, lootProbabilityMultiplier: 1};
@@ -122,7 +122,7 @@ var Spawner = extend(Object,
 
 	asteroidSpawnParams: function()
 	{
-		var p = game.randomEdgePosition();
+		var p = game.randomPosition();
 		var dest = game.randomPosition().mul(0.9);
 		var dir = dest.sub(p).setlen((0.2 +  Math.random()));
 		return {p: p, v: dir.setlen(30)};

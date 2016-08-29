@@ -10,13 +10,7 @@ var glext;
 var game =
 {
 	canvas: undefined,
-	areaMinX: -200,
-	areaMaxX: 200,
 	aspectRatio: 16.0 / 10.0,
-	areaMinY: undefined,
-	areaMaxY: undefined,
-	areaWidth: undefined,
-	areaHeight: undefined,
 	areaRadius: 200,
 	camRadius: 180, // Radius of circle that has same area as camera view. In game units.
 	camMovementRadius: 120,
@@ -93,11 +87,6 @@ var game =
 
 	initEmptyWorld: function()
 	{
-		this.areaWidth = this.areaMaxX - this.areaMinX;
-		this.areaHeight = this.areaWidth / this.aspectRatio;
-		this.areaMinY = -0.5 * this.areaHeight;
-		this.areaMaxY = 0.5 * this.areaHeight;
-
 		this.camWidth = Math.sqrt(Math.PI * this.camRadius * this.camRadius * this.aspectRatio);
 		this.camHeight = this.camWidth / this.aspectRatio;
 		this.camPos = new V(0, 0);
@@ -200,8 +189,8 @@ var game =
 				}
 
 				var spawnType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
-				var p = game.randomEdgePosition();
-				var dest = game.randomPosition().mul(0.9);
+				var p = game.randomPosition();
+				var dest = game.randomPosition();
 				var dir = dest.sub(p).setlen((0.5 +  Math.random()));
 				var newSpawn = init(spawnType, {p: p, dir: dir, faction: faction});
 				game.addEntity(newSpawn);
@@ -310,23 +299,12 @@ var game =
 		}
 	},
 
-	randomEdgePosition: function()
-	{
-		// Generate random position choose nearest edge point.
-		var x = this.areaMinX + Math.random() * this.areaWidth;
-		var y = this.areaMinY + Math.random() * this.areaHeight;
-		if (Math.abs(x) < Math.abs(y) + this.areaMaxX - this.areaMaxY)
-			y = (y < 0) ? this.areaMinY : this.areaMaxY;
-		else
-			x = (x < 0) ? this.areaMinX : this.areaMaxX;
-		return new V(x, y);
-	},
-
+	// Returns a uniformly distributed random point inside game area.
 	randomPosition: function()
 	{
-		var x = this.areaMinX + Math.random() * this.areaWidth;
-		var y = this.areaMinY + Math.random() * this.areaHeight;
-		return new V(x, y);
+		var r = Math.sqrt(Math.random()) * this.areaRadius;
+		var angle = Math.random() * 2 * Math.PI;
+		return new V(r * Math.cos(angle), r * Math.sin(angle));
 	},
 
 	checkCollisions: function(timestamp, dt)
@@ -493,7 +471,7 @@ var game =
 		// Game entities.
 		models.resetInstances();
 		models.background.render(new Float32Array([1, 1, 0.7, 1]), this.camPos.mul(0.5), V.UP,
-				1.3 * this.areaWidth / 2);
+				1.3 * this.areaRadius);
 		for (var i = 0; i < this.entities.length; ++i)
 			this.entities[i].render();
 		var projViewMatrix = makeOrthoMatrix(
