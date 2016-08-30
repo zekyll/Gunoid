@@ -267,6 +267,7 @@ var MainMenu = extend(Widget,
 			+ "\n[P]"
 			+ "\n[ESC]"
 			+ "\n[F2]"
+			+ "\n[F3]"
 			));
 		this.instructionsTextLeft.horizontalTextAlign = 0.5;
 		this.addChild("instructionsTextRight", new Text(new Rect(120, 150, 280, 300),
@@ -277,6 +278,7 @@ var MainMenu = extend(Widget,
 			+ "\nPause"
 			+ "\nMenu"
 			+ "\nRestart "
+			+ "\nFPS Display "
 			));
 	},
 });

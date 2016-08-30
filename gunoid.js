@@ -24,6 +24,7 @@ var game =
 	renderTime: 0,
 	stepTime: 0,
 	lastTimestamp: -1,
+	jank: 0,
 	player: undefined,
 	spawner: undefined,
 	time: undefined,
@@ -211,6 +212,7 @@ var game =
 			"Accelerate right": 68,
 			"Activate module": "Mouse Button",
 			"New game": 113,
+			"FPS": 114, // F3
 			"Benchmark": 115,
 			"Pause": 80,
 			"Main Menu": 27, // Esc
@@ -225,6 +227,9 @@ var game =
 		input.registerKeyPressHandler("Pause", function() {
 			if (!self.gui.mainMenu.visible && !self.gui.inventoryScreen.visible)
 				self.paused = !self.paused;
+		});
+		input.registerKeyPressHandler("FPS", function() {
+			self.gui.stats.visible = !self.gui.stats.visible;
 		});
 		input.registerKeyPressHandler("Benchmark", function() {
 			self.initBenchmark();
@@ -506,12 +511,14 @@ var game =
 
 		this.fps = 0.98 * this.fps + 0.02 / this.realdt;
 		this.gui.stats.text = "fps: " + this.fps.toFixed(1);
+		this.jank = 0.99 * this.jank + 0.01 * (this.realdt > 1.5 / this.fps ? 100 : 0);
+		this.gui.stats.text += "  |  jank: " + this.jank.toFixed(1) + "%";
 		this.gui.stats.text += "\nstep: " + this.stepTime.toFixed(2) + "ms";
-		this.gui.stats.text += "\nrender: " + this.renderTime.toFixed(2) + "ms";
+		this.gui.stats.text += "  |  render: " + this.renderTime.toFixed(2) + "ms";
 		var cpu = 0.1 * (this.renderTime + this.stepTime) * this.fps;
 		this.gui.stats.text += "\ncpu: " + cpu.toFixed(1) + "%";
 		if (this.player)
-			this.gui.stats.text += "\ntime: " + this.time.toFixed(1);
+			this.gui.stats.text += "  |  time: " + this.time.toFixed(1);
 
 		if (this.player && this.player.hp <= 0) {
 			fonts.big.setColor(colors.guiText);
