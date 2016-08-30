@@ -10,6 +10,7 @@ var Module = extend(Object,
 	ctor: function()
 	{
 		this.ship = null;
+		this.relativePos = new V(0, 0);
 	},
 
 	equip: function()

@@ -23,12 +23,12 @@ Blaster: extend(Module,
 	step: function(timestamp, dt)
 	{
 		if (timestamp > this.lastShootTime + this.shootInterval) {
-			var targetDir = this.ship.targetp.sub(this.ship.p);
+			var p = this.ship.relativePos(this.relativePos);
+			var targetDir = this.ship.getModuleTargetPos(this).sub(p);
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			var v = targetDir.setlen(this.bulletSpeed);
-			game.addEntity(init(BlasterShot, { p: this.ship.p.clone(), v: v,
-					expire: timestamp + 2, faction: this.ship.faction}));
+			game.addEntity(init(BlasterShot, { p: p, v: v, expire: timestamp + 2, faction: this.ship.faction}));
 			this.lastShootTime = timestamp;
 		}
 	}
@@ -53,14 +53,15 @@ DualBlaster: extend(Module,
 	step: function(timestamp, dt)
 	{
 		if (timestamp > this.lastShootTime + this.shootInterval) {
-			var targetDir = this.ship.targetp.sub(this.ship.p);
+			var p = this.ship.relativePos(this.relativePos);
+			var targetDir = this.ship.getModuleTargetPos(this).sub(p);
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			var sideDir = targetDir.rot90left().setlen(0.5 * this.spread);
 			var v = targetDir.setlen(this.bulletSpeed);
-			game.addEntity(init(BlasterShot, { p: this.ship.p.add(sideDir), v: v.clone(),
+			game.addEntity(init(BlasterShot, { p: p.add(sideDir), v: v.clone(),
 					expire: timestamp + 2, faction: this.ship.faction}));
-			game.addEntity(init(BlasterShot, { p: this.ship.p.sub(sideDir), v: v.clone(),
+			game.addEntity(init(BlasterShot, { p: p.sub(sideDir), v: v.clone(),
 					expire: timestamp + 2, faction: this.ship.faction}));
 			this.lastShootTime = timestamp;
 		}
@@ -88,14 +89,14 @@ SpreadGun: extend(Module,
 	step: function(timestamp, dt)
 	{
 		if (timestamp > this._lastShootTime + this.shootInterval) {
-			var targetDir = this.ship.targetp.sub(this.ship.p);
+			var p = this.ship.relativePos(this.relativePos);
+			var targetDir = this.ship.getModuleTargetPos(this).sub(p);
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			targetDir.rot_(-this.spreadAngle / 2);
 			for (var i = 0; i < this.projectileCount; ++i) {
 				var v = targetDir.setlen(this.projectileSpeed);
-				game.addEntity(init(PlasmaBall, { p: this.ship.p.clone(), v: v,
-						expire: timestamp + 5, faction: this.ship.faction}));
+				game.addEntity(init(PlasmaBall, { p: p, v: v, expire: timestamp + 5, faction: this.ship.faction}));
 				targetDir.rot_(this.spreadAngle / (this.projectileCount - 1));
 			}
 			this._lastShootTime = timestamp;
@@ -122,10 +123,10 @@ PlasmaSprinkler: extend(Module,
 	step: function(timestamp, dt)
 	{
 		if (timestamp > this.lastShootTime + this.shootInterval) {
+			var p = this.ship.relativePos(this.relativePos);
 			this.targetDir.rot_((timestamp - this.lastShootTime) * this.rotateSpeed * this.rotateDir);
 			var v = this.targetDir.setlen(this.projectileSpeed);
-			game.addEntity(init(PlasmaBall, { p: this.ship.p.clone(), v: v, expire: timestamp + 10,
-					faction: this.ship.faction}));
+			game.addEntity(init(PlasmaBall, { p: p, v: v, expire: timestamp + 10, faction: this.ship.faction}));
 			this.lastShootTime = timestamp;
 		}
 	}
@@ -152,14 +153,15 @@ Laser: extend(Module,
 
 	step: function(timestamp, dt)
 	{
-		var targetDir = this.ship.getModuleTargetPos(this).sub_(this.ship.p);
+		var p = this.ship.relativePos(this.relativePos);
+		var targetDir = this.ship.getModuleTargetPos(this).sub_(p);
 		if (targetDir.len() < 0.001)
 			targetDir = new V(0, 1);
 
 		var self = this;
 		//TODO create proper entity class for laser beam.
-		var laserBeamEntity = {faction: this.ship.faction, v: targetDir, p: this.ship.p, radius: 1};
-		var hit = game.findClosestEntityInDirection(this.ship.p, targetDir, function(e) {
+		var laserBeamEntity = {faction: this.ship.faction, v: targetDir, p: p, radius: 1};
+		var hit = game.findClosestEntityInDirection(p, targetDir, function(e) {
 			return e.canCollide && e.canCollide(laserBeamEntity)
 					&& !(e instanceof Projectile) && e.faction !== self.ship.faction;
 		});
@@ -170,15 +172,16 @@ Laser: extend(Module,
 			if (hit.dist <= this.range) {
 				hit.entity.takeDamage(timestamp, this.damage * dt);
 				this.laserEndDistance = hit.dist + 1;
-				this.spawnSparks(this.ship.p.add(targetDir.setlen(hit.dist)), hit.entity.v, timestamp, dt);
+				this.spawnSparks(p.add(targetDir.setlen(hit.dist)), hit.entity.v, timestamp, dt);
 			}
 		}
 	},
 
 	render: function()
 	{
-		var targetDir = this.ship.getModuleTargetPos(this).sub_(this.ship.p);
-		models.line.render(this.color, this.ship.p, targetDir, this.laserEndDistance);
+		var p = this.ship.relativePos(this.relativePos);
+		var targetDir = this.ship.getModuleTargetPos(this).sub_(p);
+		models.line.render(this.color, p.add(targetDir.setlen(4.5)), targetDir, this.laserEndDistance);
 	},
 
 	spawnSparks: function(targetp, targetv, timestamp, dt)
@@ -215,12 +218,12 @@ RocketLauncher: extend(Module,
 	step: function(timestamp, dt)
 	{
 		if (timestamp > this.lastShootTime + this.shootInterval) {
-			var targetDir = this.ship.targetp.sub(this.ship.p);
+			var p = this.ship.relativePos(this.relativePos);
+			var targetDir = this.ship.getModuleTargetPos(this).sub(p);
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			var v = targetDir.setlen(this.projectileSpeed);
-			game.addEntity(init(Rocket, { p: this.ship.p.clone(), v: v, expire: timestamp + 4,
-					faction: this.ship.faction}));
+			game.addEntity(init(Rocket, { p: p, v: v, expire: timestamp + 4, faction: this.ship.faction}));
 			this.lastShootTime = timestamp;
 		}
 	}
@@ -244,11 +247,12 @@ MissileLauncher: extend(Module,
 	step: function(timestamp, dt)
 	{
 		if (timestamp > this.lastShootTime + this.shootInterval) {
-			var targetDir = this.ship.targetp.sub(this.ship.p);
+			var p = this.ship.relativePos(this.relativePos);
+			var targetDir = this.ship.getModuleTargetPos(this).sub(p);
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			var v = targetDir.setlen(this.projectileSpeed);
-			game.addEntity(init(Missile, { p: this.ship.p.clone(), v: v, expire: timestamp + 5,
+			game.addEntity(init(Missile, { p: p, v: v, expire: timestamp + 5,
 					faction: this.ship.faction}));
 			this.lastShootTime = timestamp;
 		}
@@ -274,7 +278,8 @@ BombLauncher: extend(Module,
 	{
 		if (timestamp > this.lastShootTime + this.shootInterval &&
 				input.keyDown("Activate module")) {
-			game.addEntity(init(Grenade, { p: this.ship.p.clone(), v: new V(0, 0),
+			var p = this.ship.relativePos(this.relativePos);
+			game.addEntity(init(Grenade, { p: p, v: new V(0, 0),
 					explosionDamage: 150, explosionRadius: 100,
 					explosionSpeed: 60, explosionForce: 10e6,
 					activationDelay: 1.5,
@@ -285,4 +290,4 @@ BombLauncher: extend(Module,
 })
 
 
-}
+};

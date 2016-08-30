@@ -62,11 +62,18 @@ var Ship = compose(Entity, traits.Movement, traits.Drag, traits.Debris, traits.C
 		return !(other instanceof Ship && other.faction === this.faction);
 	},
 
-	relativePos: function(x, y)
+	relativePosXY: function(x, y)
 	{
 		var forward = this.v.setlenSafe(1);
 		var right = forward.rot90right();
 		return forward.mul_(y).add_(right.mul_(x)).add_(this.p);
+	},
+
+	relativePos: function(relPos)
+	{
+		var forward = this.v.setlenSafe(1);
+		var right = forward.rot90right();
+		return forward.mul_(relPos.y).add_(right.mul_(relPos.x)).add_(this.p);
 	},
 
 	die: function(timestamp)

@@ -94,7 +94,7 @@ Kamikaze: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	render: function()
 	{
 		models.enemyKamikaze.render(this.color, this.p, this.v);
-		models.circle8.render(colors.red, this.relativePos(0, 2.5), V.UP, 0.6);
+		models.circle8.render(colors.red, this.relativePosXY(0, 2.5), V.UP, 0.6);
 	}
 }),
 
@@ -124,7 +124,7 @@ KamikazeYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	render: function()
 	{
 		models.enemyKamikaze.render(this.color, this.p, this.v);
-		models.circle8.render(colors.red, this.relativePos(0, 2.5), V.UP, 0.6);
+		models.circle8.render(colors.red, this.relativePosXY(0, 2.5), V.UP, 0.6);
 	},
 }),
 
@@ -162,7 +162,7 @@ KamikazeOrange: compose(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInC
 			var radius = 4 * Math.sin(10 / (this.attackModeStart + this.attackDelay - game.time + 0.5));
 		else
 			var radius = 1;
-		models.solidCircle8.render(colors.red, this.relativePos(0, -1.9), V.UP, radius);
+		models.solidCircle8.render(colors.red, this.relativePosXY(0, -1.9), V.UP, radius);
 	},
 }),
 
@@ -303,9 +303,9 @@ GunnerGreen: compose(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInClos
 			var dir = this.targetPos.sub(this.p);
 		else
 			var dir = this.v;
-		models.turretSmall.render(colors.enemyGreen2, this.relativePos(0, 0.5), dir);
-		models.flame.render(colors.flameYellow, this.relativePos(-1, -1.5), this.v);
-		models.flame.render(colors.flameYellow, this.relativePos(1, -1.5), this.v);
+		models.turretSmall.render(colors.enemyGreen2, this.relativePosXY(0, 0.5), dir);
+		models.flame.render(colors.flameYellow, this.relativePosXY(-1, -1.5), this.v);
+		models.flame.render(colors.flameYellow, this.relativePosXY(1, -1.5), this.v);
 	},
 
 	fireBullets: function(timestamp, targetp)
@@ -353,7 +353,7 @@ CarrierYellow: compose(Ship, traits.TargetClosestEnemy,
 		var a = targetDir.setlen(this.acceleration);
 		this.v.add_(a.mul(dt));
 
-		this.frontTurretDir.rotToward_(this.frontTurretTargetP.sub(this.relativePos(0, 37.5)), 2 * dt);
+		this.frontTurretDir.rotToward_(this.frontTurretTargetP.sub(this.relativePosXY(0, 37.5)), 2 * dt);
 
 		this.fireBullets(timestamp);
 		this.spawnShips(timestamp);
@@ -363,13 +363,13 @@ CarrierYellow: compose(Ship, traits.TargetClosestEnemy,
 	{
 		models.enemyCarrierYellow.render(this.color, this.p, this.v);
 		for (var i = -1; i <= 1; i += 2) {
-			var turretp = this.relativePos(21.5 * i, 7.5);
+			var turretp = this.relativePosXY(21.5 * i, 7.5);
 			var turretDir = this.targetp.sub(turretp);
 			models.turretMedium.render(colors.enemyYellow2, turretp, turretDir);
-			models.flame.render(colors.flameYellow, this.relativePos(8 * i, -25), this.v, 3);
+			models.flame.render(colors.flameYellow, this.relativePosXY(8 * i, -25), this.v, 3);
 		}
 
-		models.turretMedium.render(colors.enemyYellow2, this.relativePos(0, 37.5), this.frontTurretDir);
+		models.turretMedium.render(colors.enemyYellow2, this.relativePosXY(0, 37.5), this.frontTurretDir);
 	},
 
 	fireBullets: function(timestamp)
@@ -377,7 +377,7 @@ CarrierYellow: compose(Ship, traits.TargetClosestEnemy,
 		if (timestamp > this.lastShootTime + this.shootInterval) {
 			// Side turrets.
 			for (var i = -1; i <= 1; i += 2) {
-				var turretp = this.relativePos(21.5 * i, 7.5);
+				var turretp = this.relativePosXY(21.5 * i, 7.5);
 				var v = this.targetp.sub(this.p);
 				if (v.len() < 0.001)
 					v = new V(0, 1);
@@ -388,7 +388,7 @@ CarrierYellow: compose(Ship, traits.TargetClosestEnemy,
 			}
 
 			// Front turret. Random direction.
-			var turretp = this.relativePos(0, 37.5);
+			var turretp = this.relativePosXY(0, 37.5);
 			var v = this.frontTurretTargetP.sub(turretp);
 			if (v.len() < 0.001)
 				v = new V(0, 1);
@@ -407,7 +407,7 @@ CarrierYellow: compose(Ship, traits.TargetClosestEnemy,
 		if (timestamp > this.lastSpawnTime + this.spawnInterval) {
 			for (var i = -1; i <= 1; i += 2) {
 				game.addEntity(init(enemies.Kamikaze, {
-					p: this.relativePos(20 * i, 30),
+					p: this.relativePosXY(20 * i, 30),
 					dir: this.v.setlenSafe(1),
 					faction: this.faction
 				}));
