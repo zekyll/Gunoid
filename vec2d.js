@@ -168,6 +168,7 @@ V.prototype =
 
 	rotToward_: function(v2, angle)
 	{
+		angle = Math.min(angle, Math.acos(this.dot(v2) / (this.len() * v2.len())));
 		this.rot_(this.cross(v2) > 0 ? angle : -angle);
 		return this;
 	},
