@@ -179,6 +179,7 @@ Laser: extend(Module,
 
 	render: function()
 	{
+		Module.prototype.render.apply(this, arguments);
 		var p = this.ship.relativePos(this.relativePos);
 		var targetDir = this.ship.getModuleTargetPos(this).sub_(p);
 		models.line.render(this.color, p.add(targetDir.setlen(4.5)), targetDir, this.laserEndDistance);

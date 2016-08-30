@@ -13,6 +13,9 @@ var Module = extend(Object,
 		this.relativePos = new V(0, 0);
 	},
 
+	model: null,
+	modelColor: null,
+
 	equip: function()
 	{
 	},
@@ -27,6 +30,10 @@ var Module = extend(Object,
 
 	render: function()
 	{
+		if (this.model) {
+			var targetDir = this.ship.getModuleTargetPos(this).sub_(this.ship.p);
+			this.model.render(this.modelColor, this.ship.relativePos(this.relativePos), targetDir);
+		}
 	},
 });
 
