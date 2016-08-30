@@ -161,13 +161,13 @@ var Spawner = extend(Object,
 		);
 
 		this.addWave(
-			[0, 1, 1, 3, enemies.Destroyer, this.standardSpawnParams, {remaining: 0}],
+			[0, 1, 1, 3, enemies.DestroyerYellow, this.standardSpawnParams, {remaining: 0}],
 			[0, 1, 5, 1, enemies.Star, this.standardSpawnParams, {remaining: 2}],
 			[0, 0.5, 1, 3, Asteroid, this.asteroidSpawnParams, {time: 1}]
 		);
 
 		this.addWave(
-			[0, 8, 3, 2, enemies.Destroyer, this.standardSpawnParams, {remaining: 0}],
+			[0, 8, 3, 2, enemies.DestroyerYellow, this.standardSpawnParams, {remaining: 0}],
 			[0, 1, 8, 1, enemies.Kamikaze, this.standardSpawnParams, {remaining: 2}]
 		);
 
@@ -184,7 +184,7 @@ var Spawner = extend(Object,
 		);
 
 		this.addWave(
-			[0, 8, 2, 2, enemies.Destroyer, this.standardSpawnParams, {remaining: 0}],
+			[0, 8, 2, 2, enemies.DestroyerYellow, this.standardSpawnParams, {remaining: 0}],
 			[0, 2.5, 6, 1, enemies.KamikazeYellow, this.standardSpawnParams, {remaining: 0}]
 		);
 

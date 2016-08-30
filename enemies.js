@@ -217,7 +217,7 @@ FencerYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 }),
 
 
-Destroyer: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
+DestroyerYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 {
 	init: function()
 	{
@@ -233,7 +233,7 @@ Destroyer: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	turnSpeed: 5,
 	shootInterval: 1.5,
 	bulletSpeed: 80,
-	color: colors.enemyOrange,
+	color: colors.enemyYellow,
 
 	step: function(timestamp, dt)
 	{
@@ -242,7 +242,7 @@ Destroyer: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 
 	render: function()
 	{
-		models.enemyDestroyer.render(this.color, this.p, this.v);
+		models.enemyDestroyerYellow.render(this.color, this.p, this.v);
 	},
 
 	fireBullets: function(timestamp)
