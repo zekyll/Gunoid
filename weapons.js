@@ -17,7 +17,7 @@ Blaster: extend(Module,
 	},
 
 	name: "Blaster",
-	modelName: "itemDualBlaster",
+	modelName: "itemBlaster",
 	description: "Basic weapon that fires a single projectile.",
 
 	step: function(timestamp, dt)
