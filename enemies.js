@@ -260,6 +260,49 @@ DestroyerYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget
 }),
 
 
+// Medium sized ship with a slow-aiming laser turret.
+DestroyerOrange: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
+{
+	init: function()
+	{
+		this.lastShootTime = -1;
+		this.equipModule(new weapons.Laser(), 0);
+		this.modules[0].damage = 60;
+		this.modules[0].model = models.turretMedium;
+		this.modules[0].modelColor = colors.enemyOrange2;
+		this.modules[0].relativePos = new V(0, -1);
+		this.turretDir = V.random(100);
+	},
+
+	hp: 1400,
+	m: 70e3,
+	radius: 16,
+	collisionDamage: 20,
+	acceleration: 25,
+	dragCoefficient: 0.05,
+	turnSpeed: 2.5,
+	turretRotateSpeed: 0.9,
+	color: colors.enemyOrange,
+
+	step: function(timestamp, dt)
+	{
+		this.turretDir.rotToward_(this.targetp.sub(this.p), dt * this.turretRotateSpeed);
+	},
+
+	getModuleTargetPos: function(module)
+	{
+		return this.turretDir.add(this.p);
+	},
+
+	render: function()
+	{
+		models.enemyDestroyerOrange.render(this.color, this.p, this.v);
+		models.flame.render(colors.flameYellow, this.relativePosXY(-4, -15.2), this.v, 1.5);
+		models.flame.render(colors.flameYellow, this.relativePosXY(4, -15.2), this.v, 1.5);
+	},
+}),
+
+
 // Fast enemy that gets in close range, stops, and shoots a burst with a blaster weapon.
 GunnerGreen: compose(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInCloseRange,
 {
