@@ -96,7 +96,8 @@ SpreadGun: extend(Module,
 			targetDir.rot_(-this.spreadAngle / 2);
 			for (var i = 0; i < this.projectileCount; ++i) {
 				var v = targetDir.setlen(this.projectileSpeed);
-				game.addEntity(init(PlasmaBall, { p: p, v: v, expire: timestamp + 5, faction: this.ship.faction}));
+				game.addEntity(init(PlasmaBall, { p: p.clone() , v: v, expire: timestamp + 5,
+						faction: this.ship.faction}));
 				targetDir.rot_(this.spreadAngle / (this.projectileCount - 1));
 			}
 			this._lastShootTime = timestamp;
