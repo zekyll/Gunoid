@@ -75,9 +75,9 @@ var game =
 			shaders.init();
 			models.init();
 			var fontFamily = "Verdana, Trebuchet MS, Lucida Sans Unicode, Tahoma, Arial, sans-serif";
-			fonts.add("small", fontFamily, 10);
-			fonts.add("medium", fontFamily, 15);
-			fonts.add("big", fontFamily, 25);
+			fonts.add("small", fontFamily, 9);
+			fonts.add("medium", fontFamily, 14);
+			fonts.add("big", fontFamily, 24);
 			this.initInput();
 			this.initGui();
 			this.startDemo();
