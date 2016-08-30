@@ -112,7 +112,7 @@ PlasmaSprinkler: extend(Module,
 	{
 		Module.call(this);
 		this.lastShootTime = -1;
-		this.targetDir = (new V(0, 1)).rot(2 * Math.PI * Math.random());
+		this.targetDir = V.random(1);
 		this.rotateDir = Math.random() < 0.5 ? 1 : -1;
 	},
 

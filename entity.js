@@ -142,8 +142,7 @@ var Debris = compose(Entity, traits.Movement, traits.Drag, traits.Expire,
 {
 	init: function()
 	{
-		var angle = Math.random() * 2 * Math.PI;
-		this.dir = new V(Math.cos(angle), Math.sin(angle));
+		this.dir = V.random(1);
 		this._fadeSpeed = this.color[3] / (this.expire - game.time);
 	},
 
@@ -367,7 +366,7 @@ var Asteroid = compose(Obstacle,
 		if (!this.hasOwnProperty("m"))
 			this.m = 1000e3 * this.radius * this.radius / 100;
 		this.model = models.asteroid;
-		this.dir = new V(0, 1).rot_(Math.random() * 2 * Math.PI);
+		this.dir = V.random(1);
 	},
 
 	color: colors.asteroid,

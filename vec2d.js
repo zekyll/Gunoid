@@ -181,3 +181,9 @@ V.prototype =
 
 // Unit vector constant.
 V.UP = new V(0, 1);
+
+// Returns a random vector of given length.
+V.random = function(len)
+{
+	return new V(0, len).rot_(Math.random() * 2 * Math.PI);
+};

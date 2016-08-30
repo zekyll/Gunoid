@@ -62,7 +62,7 @@ StarOrange: compose(Ship, traits.StraightLineMovement,
 		for (var i = 0; i < this.childCount; ++i) {
 			game.addEntity(init(enemies.Star, {
 				p: this.p.clone(),
-				dir: (new V(0, 1)).rot_(2 * Math.PI * Math.random()).mul_(0.7 + 0.3 * Math.random()),
+				dir: V.random(1).mul_(0.7 + 0.3 * Math.random()),
 				faction: this.faction
 			}));
 		}
@@ -178,7 +178,7 @@ FencerYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 			this.modules[i].moduleIdx = i;
 		}
 		this.oscillationPhase = Math.random() * 2 * Math.PI;
-		this.laserTargetDir = new V(0, 1000).rot_(Math.random() * 2 * Math.PI);
+		this.laserTargetDir = V.random(1000);
 	},
 
 	range: 400,
@@ -331,7 +331,7 @@ CarrierYellow: compose(Ship, traits.TargetClosestEnemy,
 		this.lastShootTime = -1;
 		this.lastSpawnTime = -1;
 		this.frontTurretTargetP = game.randomPosition();
-		this.frontTurretDir = (new V(0, 1)).rot_(2 * Math.PI * Math.random());
+		this.frontTurretDir = V.random(1);
 	},
 
 	hp: 5000,

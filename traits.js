@@ -196,7 +196,7 @@ Debris:
 			1
 		]);
 		for (var i = 0; i < debrisCount; ++i) {
-			var v = new V(0, 1).rot_(Math.random() * 2 * Math.PI);
+			var v = V.random(1);
 			v.mul_(this.debrisSpeed * (Math.random() + Math.random() + Math.random() - 1.5));
 			v.add_(this.v);
 			var expire = timestamp + (0.3 + Math.random()) * this.debrisExpireTime;

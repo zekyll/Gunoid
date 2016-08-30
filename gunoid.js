@@ -308,8 +308,7 @@ var game =
 	randomPosition: function()
 	{
 		var r = Math.sqrt(Math.random()) * this.areaRadius;
-		var angle = Math.random() * 2 * Math.PI;
-		return new V(r * Math.cos(angle), r * Math.sin(angle));
+		return V.random(r);
 	},
 
 	checkCollisions: function(timestamp, dt)
