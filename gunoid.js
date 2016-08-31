@@ -544,7 +544,11 @@ var game =
 			timestamp *= 0.001;
 			self.realTime = timestamp;
 			self.realdt = (timestamp - self.lastTimestamp);
-			self.dt = self.realdt * self.speed;
+
+			// Limit the maximum step length to 0.1s. This slows down the game when FPS drops below 10fps
+			// and basically pauses it when browser is minimized etc, because requestAnimationFrame
+			// is not being triggered.
+			self.dt = Math.min(self.realdt * self.speed, 0.1);
 
 			if (self.time === null) {
 				self.time = 0;
