@@ -155,7 +155,7 @@ var Spawner = extend(Object,
 		);
 
 		this.addWave(
-			[0, 0.1, 1, 3, Asteroid, this.asteroidSpawnParams, {time: 1}]
+			[0, 0, 1, 7, Asteroid, this.asteroidSpawnParams, {time: 1}]
 		);
 
 		this.addWave(
@@ -170,7 +170,7 @@ var Spawner = extend(Object,
 		this.addWave(
 			[0, 1, 1, 3, enemies.DestroyerYellow, this.standardSpawnParams, {remaining: 0}],
 			[0, 1, 5, 1, enemies.Star, this.standardSpawnParams, {remaining: 2}],
-			[0, 0.5, 1, 3, Asteroid, this.asteroidSpawnParams, {time: 1}]
+			[0, 0, 1, 5, Asteroid, this.asteroidSpawnParams, {time: 1}]
 		);
 
 		this.addWave(
@@ -197,7 +197,7 @@ var Spawner = extend(Object,
 
 		this.addWave(
 			[0, 1.2, 4, 1, enemies.GunnerGreen, this.standardSpawnParams, {remaining: 0}],
-			[0, 0.5, 1, 3, Asteroid, this.asteroidSpawnParams, {time: 1}]
+			[0, 0, 1, 5, Asteroid, this.asteroidSpawnParams, {time: 1}]
 		);
 
 		this.addWave(
@@ -217,7 +217,8 @@ var Spawner = extend(Object,
 		);
 
 		this.addWave(
-			[0, 0.5, 2, 1, enemies.StarYellow, this.standardSpawnParams, {remaining: 0}]
+			[0, 0.5, 2, 1, enemies.StarYellow, this.standardSpawnParams, {remaining: 0}],
+			[0, 0, 1, 5, Asteroid, this.asteroidSpawnParams, {time: 1}]
 		);
 
 		this.addWave(
@@ -234,7 +235,7 @@ var Spawner = extend(Object,
 
 		this.addWave(
 			[0, 0.5, 5, 1, enemies.StarOrange, this.standardSpawnParams, {remaining: 0}],
-			[0, 0.5, 1, 3, Asteroid, this.asteroidSpawnParams, {time: 1}]
+			[0, 0, 1, 5, Asteroid, this.asteroidSpawnParams, {time: 1}]
 		);
 
 		this.addWave(
@@ -242,7 +243,8 @@ var Spawner = extend(Object,
 		);
 
 		this.addWave(
-			[0, 1, 1, 1, enemies.DestroyerOrange, this.standardSpawnParams, {remaining: 0}]
+			[0, 1, 1, 1, enemies.DestroyerOrange, this.standardSpawnParams, {remaining: 0}],
+			[0, 0, 1, 3, Asteroid, this.asteroidSpawnParams, {time: 1}]
 		);
 
 		this.addWave(
@@ -265,7 +267,7 @@ var Spawner = extend(Object,
 
 		this.addWave(
 			[2, 5, 3, 20, enemies.Star, this.standardSpawnParams, {remaining: 3}],
-			[0, 0.5, 1, 3, Asteroid, this.asteroidSpawnParams, {time: 1}]
+			[0, 0, 1, 5, Asteroid, this.asteroidSpawnParams, {time: 1}]
 		);
 
 		this.addWave(

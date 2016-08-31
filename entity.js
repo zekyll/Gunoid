@@ -360,15 +360,16 @@ var Asteroid = compose(Obstacle,
 	init: function()
 	{
 		if (!this.radius)
-			this.radius = 5 + Math.random() * 10;
+			this.radius = 5 + Math.random() * 20;
 		if (!this.hasOwnProperty("hp"))
-			this.hp = 50 * this.radius;
+			this.hp = 100 * this.radius;
 		if (!this.hasOwnProperty("m"))
-			this.m = 1000e3 * this.radius * this.radius / 100;
+			this.m = 100e3 * this.radius * this.radius / 100;
 		this.model = models.asteroid;
 		this.dir = V.random(1);
 	},
 
+	dragCoefficient: 0.001,
 	color: colors.asteroid,
 });
 
