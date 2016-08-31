@@ -62,8 +62,6 @@ function copyShallow(obj)
 // First argument is a "base class", other arguments are mixins/traits.
 function compose(/*arguments*/)
 {
-	//var newProperties = arguments[arguments.length - 1];
-	//var proto = newProperties.init.prototype = Object.create(base.prototype);
 	var proto = Object.create(arguments[0].prototype);
 
 	// Deep copy the traits object.
@@ -115,7 +113,14 @@ function compose(/*arguments*/)
 		}
 	}
 
-	proto.constructor = proto.init;
-	proto.init.prototype = proto;
+	// Make sure we have a uniquely identifiable constructor. We assume that the last "trait" is an
+	// object literal so we can use its init method.
+	if (arguments[arguments.length - 1].hasOwnProperty("init"))
+		proto.constructor = proto.init;
+	else if (proto.init)
+		proto.constructor = function() { proto.init.apply(this, arguments); };
+	else
+		proto.constructor = function() {};
+	proto.constructor.prototype = proto;
 	return proto.constructor;
 }
