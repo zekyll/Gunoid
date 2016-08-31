@@ -59,9 +59,7 @@ var Subwave = extend(Object,
 
 	step: function(timestamp)
 	{
-		if (this.iterationsRemaining === 0)
-			return;
-		while (timestamp > this.lastIterationTime + this.iterationInterval) {
+		while (this.iterationsRemaining > 0 && timestamp > this.lastIterationTime + this.iterationInterval) {
 			for (var i = 0; i < this.spawnsPerIteration; ++i)
 				this.spawn(timestamp, i);
 			--this.iterationsRemaining;
