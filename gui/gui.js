@@ -247,7 +247,7 @@ var MainMenu = extend(Widget,
 		this.addChild("newGameBtn", new Button(new Rect(30, 30, 200, 70), "New Game"));
 		this.newGameBtn.font = fonts.medium;
 		this.newGameBtn.onMouseClick = function() {
-			game.initGameWorld();
+			game.startGame();
 			self.visible = false;
 		};
 

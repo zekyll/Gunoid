@@ -371,3 +371,25 @@ var Asteroid = compose(Obstacle,
 
 	color: colors.asteroid,
 });
+
+
+// Invisible entity that blocks ships.
+// Parameter: p, radius, [innerRadius]
+var InvisibleBarrier = compose(Entity, traits.Movement,
+{
+	hp: 1e99,
+	m: 1e99,
+
+	canCollide: function(other)
+	{
+		return other instanceof Ship;
+	},
+
+	collide: function(timestamp, dt, other)
+	{
+	},
+
+	render: function()
+	{
+	}
+});

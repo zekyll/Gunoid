@@ -99,7 +99,7 @@ var game =
 		this.speed = 1.0;
 	},
 
-	initGameWorld: function()
+	startGame: function()
 	{
 		this.initEmptyWorld();
 		this.player = init(Player, {p: new V(0, 0)});
@@ -108,30 +108,21 @@ var game =
 		this.spawner = new Spawner();
 	},
 
-	initBenchmark: function()
+	startBenchmark: function()
 	{
 		this.initEmptyWorld();
 		this.player = null;
+		this._benchmarkType = ((this._benchmarkType || 0) % 2 + 1);
 
-		var BmSpawner = extend(Spawner,
-		{
-			ctor: function()
-			{
-				Spawner.call(this);
-			},
+		this.addEntity(init(InvisibleBarrier, {p: new V(0, 0), innerRadius: 130, radius: 250}));
+		for (var i = 0; i < 500; ++i) {
+			var prm = {p: this.randomPosition().mul(0.6), dir: V.random(1)};
+			if (this._benchmarkType === 2)
+				prm.canCollide = function() { return true; };
+			this.addEntity(init(enemies.Star, prm));
+		}
 
-			initWaves: function()
-			{
-				function prm()
-				{
-					return {p: game.randomPosition(), dir: new V(0, Math.random() - 0.5)};
-				}
-				this.addWave(
-					[0, 1, 1, 500, enemies.Star, prm, {remaining: 0}]
-				);
-			}
-		});
-		this.spawner = new BmSpawner();
+		this.spawner = { finished: function() { return false; }, step: function() { } };
 	},
 
 	// Starts a demo that battles random AI ships against each other.
@@ -221,7 +212,7 @@ var game =
 		});
 
 		input.registerKeyPressHandler("New game", function() {
-			self.initGameWorld();
+			self.startGame();
 			self.gui.mainMenu.visible = false;
 		});
 		input.registerKeyPressHandler("Pause", function() {
@@ -232,7 +223,7 @@ var game =
 			self.gui.stats.visible = !self.gui.stats.visible;
 		});
 		input.registerKeyPressHandler("Benchmark", function() {
-			self.initBenchmark();
+			self.startBenchmark();
 		});
 		input.registerKeyPressHandler("Main Menu", function() {
 			self.gui.mainMenu.visible = !self.gui.mainMenu.visible;
