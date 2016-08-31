@@ -104,7 +104,6 @@ var game =
 		this.initEmptyWorld();
 		this.player = init(Player, {p: new V(0, 0)});
 		this.addEntity(this.player);
-		this._addNewEntities();
 		this.spawner = new Spawner();
 	},
 
@@ -260,13 +259,15 @@ var game =
 
 	step: function(timestamp, dt)
 	{
-		for (var i = 0; i < this.entities.length; ++i)
-			this.entities[i].step(timestamp, dt);
+		if (dt) {
+			for (var i = 0; i < this.entities.length; ++i)
+				this.entities[i].step(timestamp, dt);
+		}
 
 		this.spawner.step(timestamp);
 		this.checkCollisions(timestamp, dt);
 		this._addNewEntities();
-		this.removeDeadEntities(); // TODO do this first?
+		this.removeDeadEntities();
 
 		this._moveCamera(timestamp, dt);
 	},
@@ -377,19 +378,29 @@ var game =
 		b.p.add_(dp.mul(-e * a.m * invm));
 	},
 
-	findClosestEntity: function(p, filter)
+	// Find entity which matches filter and has shorted distance to given point. With includeNewEntities
+	// also searches entities added during this step.
+	findClosestEntity: function(p, filter, includeNewEntities)
 	{
 		var closestDistSqr = 1e99;
 		var closestEntity = null;
-		for (var i = 0; i < this.entities.length; ++i) {
-			if (filter(this.entities[i])) {
-				var distSqr = p.distSqr(this.entities[i].p);
-				if (distSqr < closestDistSqr) {
-					closestDistSqr = distSqr;
-					closestEntity = this.entities[i];
+
+		function find(entities) {
+			for (var i = 0; i < entities.length; ++i) {
+				if (filter(entities[i])) {
+					var distSqr = p.distSqr(entities[i].p);
+					if (distSqr < closestDistSqr) {
+						closestDistSqr = distSqr;
+						closestEntity = entities[i];
+					}
 				}
 			}
 		}
+
+		find(this.entities);
+		if (includeNewEntities)
+			find(this.newEntities);
+
 		return closestEntity;
 	},
 
@@ -556,6 +567,7 @@ var game =
 
 			if (self.time === null) {
 				self.time = 0;
+				self.step(self.time, 0); // Only does initial spawns.
 			} else {
 				if (!self.paused) {
 					self.time += self.dt;

@@ -82,7 +82,16 @@ var Subwave = extend(Object,
 
 	spawn: function(timestamp, i)
 	{
+		var count = 0;
+		do {
 			var prm = this.spawnParamFunc(timestamp, i);
+			var r = game.findClosestEntity(prm.p, function (e) {
+				return e.canCollide;
+			}, true);
+			var distSqr = r ? r.p.distSqr(prm.p) : 0;
+			++count;
+		} while(distSqr < (50 * 50) && count < 100); //TODO get entity radius?
+
 		var newSpawn = init(this.spawnClass, prm);
 		this.aliveSpawns.push(newSpawn);
 		game.addEntity(newSpawn);
