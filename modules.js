@@ -75,7 +75,7 @@ Shield: extend(Module,
 
 	unequip: function()
 	{
-		delete this.ship.shield;
+		this.ship.shield = null;
 		// Kill the shield entity so it doesn't stay behind.
 		this.shield.hp = 0;
 		this.shield.regen = 0;

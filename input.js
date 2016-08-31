@@ -15,7 +15,7 @@ var input =
 	// Returns true if key for the given binding is down.
 	keyDown: function(bindingName)
 	{
-		return this.keyStates.hasOwnProperty(this.bindings[bindingName]);
+		return this.keyStates[this.bindings[bindingName]];
 	},
 
 	// Set all key bindings at the same time.
@@ -69,7 +69,7 @@ var input =
 
 		function onkeyup(e) {
 			if (self.keyStates[e.keyCode]){
-				delete self.keyStates[e.keyCode];
+				self.keyStates[e.keyCode] = null;
 				var bindingName = self.reverseBindings[e.keyCode];
 				if (self.keyUpHandlers.hasOwnProperty(bindingName)) {
 					self.keyUpHandlers[bindingName]();
