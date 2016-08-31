@@ -354,12 +354,20 @@ var game =
 		var dp = a.p.sub(b.p);
 		var dv = a.v.sub(b.v);
 
+		// Check if collision is inside hollow object.
+		var dist = dp.len();
+		if (a.innerRadius && dist < 0.5 * (a.innerRadius + a.radius))
+			var inside = 1;
+		else if (b.innerRadius && dist < 0.5 * (b.innerRadius + b.radius))
+			var inside = 2;
+		else
+			var inside = 0;
+
 		// Do nothing if objects are already receding.
-		if (dp.dot(dv) > 0)
+		if (dp.dot(dv) * (inside ? -1 : 1) > 0)
 			return;
 
 		// Apply the same momentum change (except opposite direction) to both objects.
-		var dist = dp.len();
 		dp.mul_(1 / dist); // Normalize.
 		var relvn = dp.mul(dv.dot(dp)); // Normal component of relative velocity.
 		var invm = 1 / (a.m + b.m);
@@ -368,7 +376,12 @@ var game =
 
 		// Displace the objects out of each other's range. This prevents an object that is constantly
 		// accelerating toward another from getting closer each step.
-		var e = a.radius + b.radius - dist;
+		if (inside === 1)
+			var e = a.innerRadius - b.radius - dist;
+		else if (inside === 2)
+			var e = b.innerRadius - a.radius - dist;
+		else
+			var e = a.radius + b.radius - dist;
 		a.p.add_(dp.mul(e * b.m * invm));
 		b.p.add_(dp.mul(-e * a.m * invm));
 	},
