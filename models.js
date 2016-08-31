@@ -267,6 +267,7 @@ var models =
 		// Additive blending.
 		this.point.alphaBlend = 2;
 		this.circle16.alphaBlend = 2;
+		this.circle32.alphaBlend = 2;
 	},
 
 	resetInstances: function()
