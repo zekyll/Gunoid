@@ -17,9 +17,9 @@ function DragItem(item, sourceSlot)
 
 
 // Slot for a game item. Supports dragging items from one slot to another.
-var ItemSlot = extend(Widget,
+var ItemSlot = inherit(Widget,
 {
-	ctor: function(area, itemInfoWidget)
+	constructor: function(area, itemInfoWidget)
 	{
 		Widget.call(this, area);
 		this.itemInfoWidget = itemInfoWidget;
@@ -77,9 +77,9 @@ var ItemSlot = extend(Widget,
 
 
 // Customizable grid slot for slots of different types (inventory, equipped modules etc).
-var ItemSlotGrid = extend(Widget,
+var ItemSlotGrid = inherit(Widget,
 {
-	ctor: function(area, rows, columns, itemInfoWidget, slotUpdateMethod, slotPutMethod)
+	constructor: function(area, rows, columns, itemInfoWidget, slotUpdateMethod, slotPutMethod)
 	{
 		Widget.call(this, area);
 
@@ -113,9 +113,9 @@ var ItemSlotGrid = extend(Widget,
 
 
 // Inventory screen.
-var InventoryScreen = extend(Widget,
+var InventoryScreen = inherit(Widget,
 {
-	ctor: function(area)
+	constructor: function(area)
 	{
 		Widget.call(this, area);
 

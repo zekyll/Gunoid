@@ -3,9 +3,9 @@
 
 "use strict";
 
-var Wave = extend(Object,
+var Wave = inherit(Object,
 {
-	ctor: function(subwaves)
+	constructor: function(subwaves)
 	{
 		this.subwaves = subwaves;
 	},
@@ -34,9 +34,9 @@ var Wave = extend(Object,
 });
 
 
-var Subwave = extend(Object,
+var Subwave = inherit(Object,
 {
-	ctor: function(startingDelay, iterationInterval, spawnIterations,
+	constructor: function(startingDelay, iterationInterval, spawnIterations,
 		spawnsPerIteration, spawnClass, spawnParamFunc, completionCondition)
 	{
 		this.startingDelay = startingDelay;
@@ -109,9 +109,9 @@ var Subwave = extend(Object,
 });
 
 
-var Spawner = extend(Object,
+var Spawner = inherit(Object,
 {
-	ctor: function()
+	constructor: function()
 	{
 		this.waves = [];
 		this.currentWaveIndex = -1;

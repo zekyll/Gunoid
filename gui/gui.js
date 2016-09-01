@@ -5,9 +5,9 @@
 
 
 // Base class for all widgets.
-var Widget = extend(Object,
+var Widget = inherit(Object,
 {
-	ctor: function(area, text)
+	constructor: function(area, text)
 	{
 		if (typeof(text) !== "undefined")
 			this.text = text;
@@ -147,9 +147,9 @@ var Widget = extend(Object,
 
 
 // Simple push button widget.
-var Button = extend(Widget,
+var Button = inherit(Widget,
 {
-	ctor: function(area, text)
+	constructor: function(area, text)
 	{
 		Widget.call(this, area, text);
 	},
@@ -193,9 +193,9 @@ var Button = extend(Widget,
 
 
 // Text without background/borders.
-var Text = extend(Widget,
+var Text = inherit(Widget,
 {
-	ctor: function(area, text)
+	constructor: function(area, text)
 	{
 		Widget.call(this, area, text);
 	},
@@ -208,9 +208,9 @@ var Text = extend(Widget,
 
 
 // Rendered model without background/borders
-var Img = extend(Widget,
+var Img = inherit(Widget,
 {
-	ctor: function(area, model)
+	constructor: function(area, model)
 	{
 		Widget.call(this, area, "");
 		this.model = model;
@@ -235,9 +235,9 @@ var Img = extend(Widget,
 
 
 // Main menu.
-var MainMenu = extend(Widget,
+var MainMenu = inherit(Widget,
 {
-	ctor: function(area)
+	constructor: function(area)
 	{
 		Widget.call(this, area);
 
@@ -285,9 +285,9 @@ var MainMenu = extend(Widget,
 
 
 // Displays player's hitpoints.
-var HpBar = extend(Widget,
+var HpBar = inherit(Widget,
 {
-	ctor: function(area)
+	constructor: function(area)
 	{
 		Widget.call(this, area);
 		this.currentHp = 100;
@@ -318,9 +318,9 @@ var HpBar = extend(Widget,
 
 
 // Display wave number for a short duration when it changes.
-var WaveNumberText = extend(Text,
+var WaveNumberText = inherit(Text,
 {
-	ctor: function(area)
+	constructor: function(area)
 	{
 		Text.call(this, area);
 		this.font = fonts.medium;
@@ -345,9 +345,9 @@ var WaveNumberText = extend(Text,
 
 
 // Root GUI widget hat contains all the other widgets.
-var Gui = extend(Widget,
+var Gui = inherit(Widget,
 {
-	ctor: function(width, height)
+	constructor: function(width, height)
 	{
 		Widget.call(this, new Rect(0, 0, width, height));
 		this.pointedWidget = null; // widget that is under cursor.

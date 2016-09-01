@@ -43,9 +43,9 @@ var fonts =
 
 // Font class that renders text using a specific font family and size. Render glyphs using point
 // sprites and a texture atlas that is generated from a 2d canvas.
-var Font = extend(Object,
+var Font = inherit(Object,
 {
-	ctor: function(family, size)
+	constructor: function(family, size)
 	{
 		this.canvas = document.createElement("canvas");
 		this.canvas.width = 1024;

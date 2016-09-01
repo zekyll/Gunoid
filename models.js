@@ -5,9 +5,9 @@
 
 
 // 2D wireframe model that is rendered using instancing. Vertex data consists of a list of lines.
-var  Model = extend(Object,
+var  Model = inherit(Object,
 {
-	ctor:function(vertexData)
+	constructor: function(vertexData)
 	{
 		this.primitiveType = gl.LINES;
 		this.instanceData = new Float32Array(this.instanceSize);
@@ -122,9 +122,9 @@ var  Model = extend(Object,
 
 
 // 2D model based on a triangle list.
-var SolidModel = extend(Model,
+var SolidModel = inherit(Model,
 {
-	ctor: function(vertexData)
+	constructor: function(vertexData)
 	{
 		Model.call(this, vertexData);
 		this.primitiveType = gl.TRIANGLES;
@@ -133,9 +133,9 @@ var SolidModel = extend(Model,
 
 
 // Textured point sprite model.
-var TexturedPointModel = extend(Model,
+var TexturedPointModel = inherit(Model,
 {
-	ctor: function(vertexData, texture)
+	constructor: function(vertexData, texture)
 	{
 		Model.call(this, vertexData);
 		this.primitiveType = gl.POINTS;
@@ -157,9 +157,9 @@ var TexturedPointModel = extend(Model,
 
 
 // Textured 2D model. Vertex data is a triangle list where each vertex has texture coordinates.
-var TexturedModel = extend(Model,
+var TexturedModel = inherit(Model,
 {
-	ctor: function(vertexData, texture)
+	constructor: function(vertexData, texture)
 	{
 		Model.call(this, vertexData);
 		this.primitiveType = gl.TRIANGLES;
