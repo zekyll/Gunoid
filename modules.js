@@ -68,9 +68,8 @@ Shield: extend(Module,
 		param.m = this.ship.m;
 		param.faction = this.ship.faction;
 
-		this.shield = init(ShieldEntity, param);
+		this.shield = game.addEntity(ShieldEntity(param));
 		this.ship.shield = this.shield; // For GUI.
-		game.addEntity(this.shield);
 	},
 
 	unequip: function()

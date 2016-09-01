@@ -28,7 +28,7 @@ Blaster: extend(Module,
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			var v = targetDir.setlen(this.bulletSpeed);
-			game.addEntity(init(BlasterShot, { p: p, v: v, expire: timestamp + 2, faction: this.ship.faction}));
+			game.addEntity(BlasterShot({ p: p, v: v, expire: timestamp + 2, faction: this.ship.faction}));
 			this.lastShootTime = timestamp;
 		}
 	}
@@ -59,9 +59,9 @@ DualBlaster: extend(Module,
 				targetDir = new V(0, 1);
 			var sideDir = targetDir.rot90left().setlen(0.5 * this.spread);
 			var v = targetDir.setlen(this.bulletSpeed);
-			game.addEntity(init(BlasterShot, { p: p.add(sideDir), v: v.clone(),
+			game.addEntity(BlasterShot({ p: p.add(sideDir), v: v.clone(),
 					expire: timestamp + 2, faction: this.ship.faction}));
-			game.addEntity(init(BlasterShot, { p: p.sub(sideDir), v: v.clone(),
+			game.addEntity(BlasterShot({ p: p.sub(sideDir), v: v.clone(),
 					expire: timestamp + 2, faction: this.ship.faction}));
 			this.lastShootTime = timestamp;
 		}
@@ -96,7 +96,7 @@ SpreadGun: extend(Module,
 			targetDir.rot_(-this.spreadAngle / 2);
 			for (var i = 0; i < this.projectileCount; ++i) {
 				var v = targetDir.setlen(this.projectileSpeed);
-				game.addEntity(init(PlasmaBall, { p: p.clone() , v: v, expire: timestamp + 5,
+				game.addEntity(PlasmaBall({ p: p.clone() , v: v, expire: timestamp + 5,
 						faction: this.ship.faction}));
 				targetDir.rot_(this.spreadAngle / (this.projectileCount - 1));
 			}
@@ -127,7 +127,7 @@ PlasmaSprinkler: extend(Module,
 			var p = this.ship.relativePos(this.relativePos);
 			this.targetDir.rot_((timestamp - this.lastShootTime) * this.rotateSpeed * this.rotateDir);
 			var v = this.targetDir.setlen(this.projectileSpeed);
-			game.addEntity(init(PlasmaBall, { p: p, v: v, expire: timestamp + 10, faction: this.ship.faction}));
+			game.addEntity(PlasmaBall({ p: p, v: v, expire: timestamp + 10, faction: this.ship.faction}));
 			this.lastShootTime = timestamp;
 		}
 	}
@@ -192,7 +192,7 @@ Laser: extend(Module,
 			var angle = Math.random() * 2 * Math.PI;
 			var v = new V(Math.cos(angle), Math.sin(angle));
 			v.mul_(this.sparkSpeed * (0.1 + 0.9 * Math.random()));
-			game.addEntity(init(Debris, {
+			game.addEntity(Debris({
 				p: targetp,
 				v: v.add(targetv),
 				expire: timestamp + (0.2 + Math.random()) * this.sparkExpireTime,
@@ -225,7 +225,7 @@ RocketLauncher: extend(Module,
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			var v = targetDir.setlen(this.projectileSpeed);
-			game.addEntity(init(Rocket, { p: p, v: v, expire: timestamp + 4, faction: this.ship.faction}));
+			game.addEntity(Rocket({ p: p, v: v, expire: timestamp + 4, faction: this.ship.faction}));
 			this.lastShootTime = timestamp;
 		}
 	}
@@ -254,7 +254,7 @@ MissileLauncher: extend(Module,
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			var v = targetDir.setlen(this.projectileSpeed);
-			game.addEntity(init(Missile, { p: p, v: v, expire: timestamp + 5,
+			game.addEntity(Missile({ p: p, v: v, expire: timestamp + 5,
 					faction: this.ship.faction}));
 			this.lastShootTime = timestamp;
 		}
@@ -281,7 +281,7 @@ BombLauncher: extend(Module,
 		if (timestamp > this.lastShootTime + this.shootInterval &&
 				input.keyDown("Activate module")) {
 			var p = this.ship.relativePos(this.relativePos);
-			game.addEntity(init(Grenade, { p: p, v: new V(0, 0),
+			game.addEntity(Grenade({ p: p, v: new V(0, 0),
 					explosionDamage: 150, explosionRadius: 100,
 					explosionSpeed: 60, explosionForce: 10e6,
 					activationDelay: 1.5,

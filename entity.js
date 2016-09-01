@@ -244,7 +244,7 @@ var Explosion = compose(Entity, traits.Movement, traits.Drag,
 	_addSecondaryExplosions: function(n)
 	{
 		for (var i = 0; i < n; ++i) {
-			game.addEntity(init(Explosion, {
+			game.addEntity(Explosion({
 				p: this.p.add(new V((Math.random() - 0.5) * 0.3 * this.maxRadius,
 					(Math.random() - 0.5) * 0.3 * this.maxRadius)),
 				v: this.v.add(new V((Math.random() - 0.5) * 0.5 * this.speed,

@@ -170,7 +170,7 @@ ExplodeOnCollision:
 	collide: function(timestamp, dt, other)
 	{
 		if (!this._exploded) {
-			game.addEntity(init(Explosion, { p: this.p.clone(), v: other.v.clone(),
+			game.addEntity(Explosion({ p: this.p.clone(), v: other.v.clone(),
 					maxRadius: this.explosionRadius, speed: this.explosionSpeed,
 					damage: this.explosionDamage, force: this.explosionForce, faction: this.faction }));
 			this._exploded = true;
@@ -200,7 +200,7 @@ Debris:
 			v.mul_(this.debrisSpeed * (Math.random() + Math.random() + Math.random() - 1.5));
 			v.add_(this.v);
 			var expire = timestamp + (0.3 + Math.random()) * this.debrisExpireTime;
-			game.addEntity(init(Debris, { p: this.p.clone(), v: v,
+			game.addEntity(Debris({ p: this.p.clone(), v: v,
 					expire: expire, color: this.color.slice(0)}));
 		}
 	}
@@ -238,7 +238,7 @@ DropLoot:
 			}
 
 			if (lootClass) {
-				game.addEntity(init(lootClass, { p: this.p.clone(), expire: timestamp + 10,
+				game.addEntity(lootClass({ p: this.p.clone(), expire: timestamp + 10,
 						moduleClass: moduleClass}));
 			}
 		}
@@ -253,7 +253,7 @@ ExplodeOnDeath:
 	die: function(timestamp)
 	{
 		if (!this._exploded) {
-			game.addEntity(init(Explosion, { p: this.p.clone(), v: this.v.clone(),
+			game.addEntity(Explosion({ p: this.p.clone(), v: this.v.clone(),
 				maxRadius: this.explosionRadius, speed: this.explosionSpeed,
 				damage: this.explosionDamage, force: this.explosionForce, faction: this.faction }));
 			this._exploded = true;

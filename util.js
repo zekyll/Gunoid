@@ -55,13 +55,6 @@ function getFileExtension(filename)
 	return filename.substr(filename.lastIndexOf('.') + 1);
 }
 
-function init(clsFunc, prm)
-{
-	prm.__proto__ = clsFunc.prototype;
-	clsFunc.call(prm);
-	return prm;
-}
-
 function copyShallow(obj)
 {
 	var ret = {};
@@ -72,7 +65,10 @@ function copyShallow(obj)
 	return ret;
 }
 
-// First argument is a "base class", other arguments are mixins/traits.
+// Creates a new "class" from a base class (first argument) and trait objects. Returns a function for
+// initializing an object of the new type. Traits behave similar to mixins, i.e. the properties are added
+// to the new class. If several traits have a method with the same name, then a new method is created
+// that calls all of them in the order of their priority properties.
 function compose(/*arguments*/)
 {
 	var proto = Object.create(arguments[0].prototype);
@@ -126,14 +122,19 @@ function compose(/*arguments*/)
 		}
 	}
 
-	// Make sure we have a uniquely identifiable constructor. We assume that the last "trait" is an
-	// object literal so we can use its init method.
-	if (arguments[arguments.length - 1].hasOwnProperty("init"))
-		proto.constructor = proto.init;
-	else if (proto.init)
-		proto.constructor = function() { proto.init.apply(this, arguments); };
-	else
-		proto.constructor = function() {};
+	// Create a wrapper for the init function that sets the prototype.
+	if (proto.init) {
+		proto.constructor = function(param) {
+			param.__proto__ = proto;
+			proto.init.call(param);
+			return param;
+		};
+	} else {
+		proto.constructor = function(param) {
+			param.__proto__ = proto;
+			return param;
+		};
+	}
 	proto.constructor.prototype = proto;
 	return proto.constructor;
 }

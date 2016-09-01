@@ -60,7 +60,7 @@ StarOrange: compose(Ship, traits.StraightLineMovement,
 	die: function(timestamp)
 	{
 		for (var i = 0; i < this.childCount; ++i) {
-			game.addEntity(init(enemies.Star, {
+			game.addEntity(enemies.Star({
 				p: this.p.clone(),
 				dir: V.random(1).mul_(0.7 + 0.3 * Math.random()),
 				faction: this.faction
@@ -252,7 +252,7 @@ DestroyerYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget
 			if (v.len() < 0.001)
 				v = new V(0, 1);
 			v.setlen_(this.bulletSpeed);
-			game.addEntity(init(BlasterShot, {p: this.p.clone(), v: v,
+			game.addEntity(BlasterShot({p: this.p.clone(), v: v,
 					expire: timestamp + 10, faction: this.faction}));
 			this.lastShootTime = timestamp;
 		}
@@ -358,7 +358,7 @@ GunnerGreen: compose(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInClos
 			if (v.len() < 0.001)
 				v = new V(0, 1);
 			v.setlen_(this.bulletSpeed);
-			game.addEntity(init(BlasterShot, {p: this.p.clone(), v: v,
+			game.addEntity(BlasterShot({p: this.p.clone(), v: v,
 					expire: timestamp + 10, faction: this.faction}));
 			this.lastShootTime = timestamp;
 		}
@@ -426,7 +426,7 @@ CarrierYellow: compose(Ship, traits.TargetClosestEnemy,
 					v = new V(0, 1);
 				v.setlen_(this.bulletSpeed);
 				var expire = this.p.dist(this.targetp) / this.bulletSpeed;
-				game.addEntity(init(Grenade, {p: turretp, v: v,
+				game.addEntity(Grenade({p: turretp, v: v,
 						expire: timestamp + expire, faction: this.faction}));
 			}
 
@@ -437,7 +437,7 @@ CarrierYellow: compose(Ship, traits.TargetClosestEnemy,
 				v = new V(0, 1);
 			v.setlen_(this.bulletSpeed);
 			var expire = turretp.dist(this.frontTurretTargetP) / this.bulletSpeed;
-			game.addEntity(init(Grenade, {p: turretp, v: v,
+			game.addEntity(Grenade({p: turretp, v: v,
 					expire: timestamp + expire, faction: this.faction}));
 			this.frontTurretTargetP = game.randomPosition();
 
@@ -449,7 +449,7 @@ CarrierYellow: compose(Ship, traits.TargetClosestEnemy,
 	{
 		if (timestamp > this.lastSpawnTime + this.spawnInterval) {
 			for (var i = -1; i <= 1; i += 2) {
-				game.addEntity(init(enemies.Kamikaze, {
+				game.addEntity(enemies.Kamikaze({
 					p: this.relativePosXY(20 * i, 30),
 					dir: this.v.setlenSafe(1),
 					faction: this.faction

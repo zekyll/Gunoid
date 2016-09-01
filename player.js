@@ -5,10 +5,8 @@
 
 var Player = compose(Ship,
 {
-	init: function() // p
+	init: function()
 	{
-		this.v = new V(0, 0),
-		Ship.call(this);
 		this.targetp = new V(0, 1);
 		this.modules = new Array(3);
 		this.inventory = new Array(40);
@@ -38,7 +36,7 @@ var Player = compose(Ship,
 	die: function(timestamp)
 	{
 		for (var i = 0; i < 5; ++i) {
-			game.addEntity(init(Explosion, {
+			game.addEntity(Explosion({
 				p: this.p.add(new V(-20 + Math.random() * 40, -20 + Math.random() * 40)),
 				v: this.v.clone(),
 				maxRadius: 80 + Math.random() * 40,

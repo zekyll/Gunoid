@@ -102,8 +102,7 @@ var game =
 	startGame: function()
 	{
 		this.initEmptyWorld();
-		this.player = init(Player, {p: new V(0, 0)});
-		this.addEntity(this.player);
+		this.player = this.addEntity(Player({p: new V(0, 0), v: new V(0, 0)}));
 		this.spawner = new Spawner();
 	},
 
@@ -113,12 +112,12 @@ var game =
 		this.player = null;
 		this._benchmarkType = ((this._benchmarkType || 0) % 2 + 1);
 
-		this.addEntity(init(InvisibleBarrier, {p: new V(0, 0), innerRadius: 130, radius: 250}));
+		this.addEntity(InvisibleBarrier({p: new V(0, 0), innerRadius: 130, radius: 250}));
 		for (var i = 0; i < 500; ++i) {
 			var prm = {p: this.randomPosition().mul(0.6), dir: V.random(1)};
 			if (this._benchmarkType === 2)
 				prm.canCollide = function() { return true; };
-			this.addEntity(init(enemies.Star, prm));
+			this.addEntity(enemies.Star(prm));
 		}
 
 		this.spawner = { finished: function() { return false; }, step: function() { } };
@@ -140,7 +139,7 @@ var game =
 			var prm = {p: p, v: new V(0, 0), radius: radius, m: 1e99, hp: 1e99, _ringAsteroid: true,
 				canCollide: function(other) { return !other._ringAsteroid; }
 			};
-			game.addEntity(init(Asteroid, prm));
+			game.addEntity(Asteroid(prm));
 		}
 
 		this.spawner = {
@@ -162,7 +161,7 @@ var game =
 						this._spawnNewShip(i);
 				}
 				if (obstacleCount < 10) {
-					game.addEntity(init(Asteroid, { p: game.randomPosition(), _roid: true }));
+					game.addEntity(Asteroid({ p: game.randomPosition(), _roid: true }));
 				}
 			},
 
@@ -183,8 +182,7 @@ var game =
 				var p = game.randomPosition();
 				var dest = game.randomPosition();
 				var dir = dest.sub(p).setlen((0.5 +  Math.random()));
-				var newSpawn = init(spawnType, {p: p, dir: dir, faction: faction});
-				game.addEntity(newSpawn);
+				var newSpawn = game.addEntity(spawnType({p: p, dir: dir, faction: faction}));
 				newSpawn.hp = Math.sqrt(newSpawn.hp) * 10; // Nerf bigger ships.
 			},
 		};
@@ -444,9 +442,10 @@ var game =
 		return closestEntity ? { entity: closestEntity, dist: closestDist} : null;
 	},
 
-	addEntity: function(newEntity)
+	addEntity: function(entity)
 	{
-		this.newEntities.push(newEntity);
+		this.newEntities.push(entity);
+		return entity;
 	},
 
 	_addNewEntities: function()

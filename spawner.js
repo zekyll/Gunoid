@@ -92,9 +92,8 @@ var Subwave = extend(Object,
 			++count;
 		} while(distSqr < (50 * 50) && count < 100); //TODO get entity radius?
 
-		var newSpawn = init(this.spawnClass, prm);
+		var newSpawn = game.addEntity(this.spawnClass(prm));
 		this.aliveSpawns.push(newSpawn);
-		game.addEntity(newSpawn);
 	},
 
 	checkAliveSpawns: function()
