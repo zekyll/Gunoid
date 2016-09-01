@@ -6,7 +6,7 @@
 var weapons = {
 
 
-Blaster: compose(Module,
+Blaster: extend(Module,
 {
 	init: function()
 	{
@@ -34,7 +34,7 @@ Blaster: compose(Module,
 }),
 
 
-DualBlaster: compose(Module,
+DualBlaster: extend(Module,
 {
 	init: function()
 	{
@@ -68,7 +68,7 @@ DualBlaster: compose(Module,
 
 
 // Shoots multiple projectiles in a wide angle.
-SpreadGun: compose(Module,
+SpreadGun: extend(Module,
 {
 	init: function()
 	{
@@ -103,7 +103,7 @@ SpreadGun: compose(Module,
 }),
 
 
-PlasmaSprinkler: compose(Module,
+PlasmaSprinkler: extend(Module,
 {
 	init: function()
 	{
@@ -130,7 +130,7 @@ PlasmaSprinkler: compose(Module,
 }),
 
 
-Laser: compose(Module,
+Laser: extend(Module,
 {
 	name: "Laser",
 	modelName: "itemLaser",
@@ -193,7 +193,7 @@ Laser: compose(Module,
 }),
 
 
-RocketLauncher: compose(Module,
+RocketLauncher: extend(Module,
 {
 	init: function()
 	{
@@ -221,7 +221,7 @@ RocketLauncher: compose(Module,
 }),
 
 
-MissileLauncher: compose(Module,
+MissileLauncher: extend(Module,
 {
 	init: function()
 	{
@@ -251,7 +251,7 @@ MissileLauncher: compose(Module,
 
 
 // Drops a bomb with a huge radius that explodes after a fixed delay. Manually activated.
-BombLauncher: compose(Module,
+BombLauncher: extend(Module,
 {
 	init: function()
 	{

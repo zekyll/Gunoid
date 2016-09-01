@@ -7,7 +7,7 @@
 var enemies = {
 
 
-Star: compose(Ship, traits.StraightLineMovement,
+Star: extend(Ship, traits.StraightLineMovement,
 {
 	hp: 60,
 	m: 5e3,
@@ -24,7 +24,7 @@ Star: compose(Ship, traits.StraightLineMovement,
 }),
 
 
-StarYellow: compose(Ship, traits.StraightLineMovement,
+StarYellow: extend(Ship, traits.StraightLineMovement,
 {
 	init: function()
 	{
@@ -46,7 +46,7 @@ StarYellow: compose(Ship, traits.StraightLineMovement,
 }),
 
 
-StarOrange: compose(Ship, traits.StraightLineMovement,
+StarOrange: extend(Ship, traits.StraightLineMovement,
 {
 	hp: 200,
 	m: 20e3,
@@ -76,7 +76,7 @@ StarOrange: compose(Ship, traits.StraightLineMovement,
 
 
 // Flies towards player and explodes on contact.
-Kamikaze: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
+Kamikaze: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 		traits.ExplodeOnDeath, traits.DieOnEnemyCollision,
 {
 	hp: 80,
@@ -100,7 +100,7 @@ Kamikaze: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 
 
 // Flies towards target and explodes on contact. Has a proximity shield.
-KamikazeYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
+KamikazeYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 		traits.ExplodeOnDeath, traits.DieOnEnemyCollision,
 {
 	init: function()
@@ -130,7 +130,7 @@ KamikazeYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 
 
 // Flies to close range and explodes after delay.
-KamikazeOrange: compose(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInCloseRange,
+KamikazeOrange: extend(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInCloseRange,
 		traits.ExplodeOnDeath,
 {
 	hp: 200,
@@ -168,7 +168,7 @@ KamikazeOrange: compose(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInC
 
 
 // Slow rotating enemy with four lasers.
-FencerYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
+FencerYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 {
 	init: function()
 	{
@@ -217,7 +217,7 @@ FencerYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 }),
 
 
-DestroyerYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
+DestroyerYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 {
 	init: function()
 	{
@@ -261,7 +261,7 @@ DestroyerYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget
 
 
 // Medium sized ship with a slow-aiming laser turret.
-DestroyerOrange: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
+DestroyerOrange: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 {
 	init: function()
 	{
@@ -304,7 +304,7 @@ DestroyerOrange: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget
 
 
 // Fast enemy that gets in close range, stops, and shoots a burst with a blaster weapon.
-GunnerGreen: compose(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInCloseRange,
+GunnerGreen: extend(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInCloseRange,
 {
 	init: function()
 	{
@@ -367,7 +367,7 @@ GunnerGreen: compose(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInClos
 
 
 // Launcher small ships and shoots 3 grenade launchers at regular intervals.
-CarrierYellow: compose(Ship, traits.TargetClosestEnemy,
+CarrierYellow: extend(Ship, traits.TargetClosestEnemy,
 {
 	init: function()
 	{

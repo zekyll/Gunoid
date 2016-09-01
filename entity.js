@@ -6,7 +6,7 @@
 
 // Base class for all game entities.
 // Input: hp
-var Entity = compose(Object,
+var Entity = extend(Object,
 {
 	init: function()
 	{
@@ -38,7 +38,7 @@ var Entity = compose(Object,
 
 // Base class for ships.
 // Input: p, v/dir, hp
-var Ship = compose(Entity, traits.Movement, traits.Drag, traits.Debris, traits.CollisionDamage, traits.DropLoot,
+var Ship = extend(Entity, traits.Movement, traits.Drag, traits.Debris, traits.CollisionDamage, traits.DropLoot,
 {
 	init: function()
 	{
@@ -138,7 +138,7 @@ var Ship = compose(Entity, traits.Movement, traits.Drag, traits.Debris, traits.C
 
 // Small non-collidable objects that
 // Required parameters: p, v, color
-var Debris = compose(Entity, traits.Movement, traits.Drag, traits.Expire,
+var Debris = extend(Entity, traits.Movement, traits.Drag, traits.Expire,
 {
 	init: function()
 	{
@@ -163,7 +163,7 @@ var Debris = compose(Entity, traits.Movement, traits.Drag, traits.Expire,
 
 // Expanding circular explosion that deals damage to ships and pushes them back.
 // Input: p, v, maxRadius, speed, damage, force, faction
-var Explosion = compose(Entity, traits.Movement, traits.Drag,
+var Explosion = extend(Entity, traits.Movement, traits.Drag,
 {
 	init: function()
 	{
@@ -261,7 +261,7 @@ var Explosion = compose(Entity, traits.Movement, traits.Drag,
 // Shield that blocks incoming enemy projectiles. The shield takes damage and regenerates hitpoints over time.
 // If it reaches 0 hp, it doesn't die but becomes inactive. It can activate again by regenerating.
 // Input: p, radius
-var ShieldEntity = compose(Entity, traits.CollisionDamage,
+var ShieldEntity = extend(Entity, traits.CollisionDamage,
 {
 	init: function()
 	{
@@ -322,7 +322,7 @@ var ShieldEntity = compose(Entity, traits.CollisionDamage,
 
 // A solid object that can collide with anything.
 // Input: p, radius, model, dir, color
-var Obstacle = compose(Entity, traits.Movement, traits.Drag, traits.Debris, traits.CollisionDamage,
+var Obstacle = extend(Entity, traits.Movement, traits.Drag, traits.Debris, traits.CollisionDamage,
 {
 	hp: 1e9,
 	m: 1e9,
@@ -344,7 +344,7 @@ var Obstacle = compose(Entity, traits.Movement, traits.Drag, traits.Debris, trai
 
 // Destructible rock.
 // Input: p
-var Asteroid = compose(Obstacle,
+var Asteroid = extend(Obstacle,
 {
 	init: function()
 	{
@@ -365,7 +365,7 @@ var Asteroid = compose(Obstacle,
 
 // Invisible entity that blocks ships.
 // Parameter: p, radius, [innerRadius]
-var InvisibleBarrier = compose(Entity, traits.Movement,
+var InvisibleBarrier = extend(Entity, traits.Movement,
 {
 	hp: 1e99,
 	m: 1e99,

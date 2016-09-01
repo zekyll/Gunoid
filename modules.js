@@ -5,7 +5,7 @@
 
 
 // Base class for modules.
-var Module = compose(Object, traits.HasAttributes,
+var Module = extend(Object, traits.HasAttributes,
 {
 	init: function()
 	{
@@ -43,7 +43,7 @@ var modules = {
 
 
 // Shield module.
-Shield: compose(Module,
+Shield: extend(Module,
 {
 	init: function()
 	{

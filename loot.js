@@ -6,7 +6,7 @@
 
 // Baseclass for collectable objects.
 // Parameters: p, model
-var Loot = compose(Entity, traits.Expire,
+var Loot = extend(Entity, traits.Expire,
 {
 	hp: 1,
 	expire: 1e9,
@@ -42,7 +42,7 @@ var Loot = compose(Entity, traits.Expire,
 
 // Restores hitpoints.
 // Parameters: p
-var RepairKit = compose(Loot,
+var RepairKit = extend(Loot,
 {
 	init: function() // p
 	{
@@ -61,7 +61,7 @@ var RepairKit = compose(Loot,
 
 // Contains a module that can be equipped by player's ship.
 // Parameters: p, moduleClass
-var LootModule = compose(Loot,
+var LootModule = extend(Loot,
 {
 	init: function()
 	{

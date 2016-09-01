@@ -3,7 +3,7 @@
 
 "use strict";
 
-var Player = compose(Ship,
+var Player = extend(Ship,
 {
 	init: function()
 	{

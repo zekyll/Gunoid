@@ -57,7 +57,7 @@ function copyShallow(obj)
 // initializing an object of the new type. Traits behave similar to mixins, i.e. the properties are added
 // to the new class. If several traits have a method with the same name, then a new method is created
 // that calls all of them in the order of their priority properties.
-function compose(/*arguments*/)
+function extend(/*arguments*/)
 {
 	var proto = Object.create(arguments[0].prototype);
 

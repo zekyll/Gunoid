@@ -5,7 +5,7 @@
 
 
 // Base class for projectiles.
-var Projectile = compose(Entity, traits.Movement, traits.Expire,
+var Projectile = extend(Entity, traits.Movement, traits.Expire,
 {
 	init: function() // p, v
 	{
@@ -23,7 +23,7 @@ var Projectile = compose(Entity, traits.Movement, traits.Expire,
 });
 
 
-var BlasterShot = compose(Projectile, traits.CollisionDamage, traits.ExplodeOnCollision,
+var BlasterShot = extend(Projectile, traits.CollisionDamage, traits.ExplodeOnCollision,
 {
 	radius: 1,
 	collisionDamage: 30,
@@ -38,7 +38,7 @@ var BlasterShot = compose(Projectile, traits.CollisionDamage, traits.ExplodeOnCo
 });
 
 
-var PlasmaBall = compose(Projectile, traits.CollisionDamage, traits.ExplodeOnCollision,
+var PlasmaBall = extend(Projectile, traits.CollisionDamage, traits.ExplodeOnCollision,
 {
 	radius: 3,
 	collisionDamage: 30,
@@ -53,7 +53,7 @@ var PlasmaBall = compose(Projectile, traits.CollisionDamage, traits.ExplodeOnCol
 });
 
 
-var Missile = compose(Projectile, traits.Drag, traits.TargetClosestEnemy, traits.ExplodeOnCollision,
+var Missile = extend(Projectile, traits.Drag, traits.TargetClosestEnemy, traits.ExplodeOnCollision,
 		traits.ExplodeOnDeath,
 {
 	radius: 2,
@@ -86,7 +86,7 @@ var Missile = compose(Projectile, traits.Drag, traits.TargetClosestEnemy, traits
 });
 
 
-var Rocket = compose(Projectile, traits.Drag, traits.ExplodeOnCollision, traits.ExplodeOnDeath,
+var Rocket = extend(Projectile, traits.Drag, traits.ExplodeOnCollision, traits.ExplodeOnDeath,
 		traits.StraightLineMovement,
 {
 	radius: 2,
@@ -106,7 +106,7 @@ var Rocket = compose(Projectile, traits.Drag, traits.ExplodeOnCollision, traits.
 
 
 // Flies in straight line and explodes after a delay.
-var Grenade = compose(Projectile, traits.ExplodeOnCollision, traits.ExplodeOnDeath,
+var Grenade = extend(Projectile, traits.ExplodeOnCollision, traits.ExplodeOnDeath,
 {
 	init: function()
 	{
