@@ -534,6 +534,8 @@ var game =
 		if (this.player)
 			this.gui.stats.text += "  |  time: " + this.time.toFixed(1);
 
+		this.gui.waveNumberText.update(this.spawner.currentWaveIndex, timestamp);
+
 		if (this.player && this.player.hp <= 0) {
 			fonts.big.setColor(colors.guiText);
 			fonts.big.addText("YOUR SHIP WAS DESTROYED!\nPress F2 to start a new game", 0, 250, 1000, 200, 0.5);

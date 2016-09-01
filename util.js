@@ -12,6 +12,19 @@ function makeOrthoMatrix(left, top, right, bottom)
 		]);
 }
 
+
+// Smoothstep.
+function smoothStep(t, t1, t2, v1, v2) {
+	if (t < t1)
+		return v1;
+	else if (t < t2) {
+		var x = (t - t1) / (t2 - t1);
+		return v1 + (3 * x * x - 2 * x * x * x) * (v2 - v1);
+	} else
+		return v2;
+}
+
+
 // Creates a new prototype by extending base object with new properties. Method named "ctor" is used
 // as a constructor function and extend returns a reference to it.
 function extend(base, derived)

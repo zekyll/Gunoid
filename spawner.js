@@ -151,10 +151,7 @@ var Spawner = extend(Object,
 	{
 		// Asteroid ring.
 		this.addWave(
-			[0, 0.05, 1, 30, Asteroid, this.asteroidRingParams, {remaining: 30}]
-		);
-
-		this.addWave(
+			[0, 0, 1, 30, Asteroid, this.asteroidRingParams, {time: 1}],
 			[0, 0, 1, 7, Asteroid, this.asteroidSpawnParams, {time: 1}]
 		);
 

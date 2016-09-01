@@ -317,6 +317,33 @@ var HpBar = extend(Widget,
 });
 
 
+// Display wave number for a short duration when it changes.
+var WaveNumberText = extend(Text,
+{
+	ctor: function(area)
+	{
+		Text.call(this, area);
+		this.font = fonts.medium;
+		this.textColor = this.textColor.slice(0); // Copy because we modify the color.
+		this.waveNumber = null;
+		this.lastWaveChange = -1e99;
+	},
+
+	horizontalTextAlign: 0.5,
+
+	update: function(waveNumber, t)
+	{
+		this.textColor[3] = smoothStep(t - this.lastWaveChange, 2, 4, 1, 0);
+		if (waveNumber !== this.waveNumber) {
+			this.text = waveNumber ? "Wave " + waveNumber : "";
+			this.textColor[3] = 1;
+			this.waveNumber = waveNumber;
+			this.lastWaveChange = t;
+		}
+	}
+});
+
+
 // Root GUI widget hat contains all the other widgets.
 var Gui = extend(Widget,
 {
@@ -347,6 +374,9 @@ var Gui = extend(Widget,
 		// Inventory screen.
 		this.addChild("inventoryScreen", new InventoryScreen(new Rect(300, 100, 900, 500)));
 		this.inventoryScreen.visible = false;
+
+		// Wave
+		this.addChild("waveNumberText", new WaveNumberText(new Rect(300, 5, 700, 100)));
 	},
 
 	selfVisible: false,

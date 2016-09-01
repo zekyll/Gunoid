@@ -212,20 +212,9 @@ var Explosion = compose(Entity, traits.Movement, traits.Drag,
 
 	render: function()
 	{
-		// Smoothstep.
-		function smooth(t, t1, t2, v1, v2) {
-			if (t < t1)
-				return v1;
-			else if (t < t2) {
-				var x = (t - t1) / (t2 - t1);
-				return v1 + (3 * x * x - 2 * x * x * x) * (v2 - v1);
-			} else
-				return v2;
-		}
-
 		// Render three sprites of different sizes.
 		var n = 3;
-		var alpha = smooth(this.phase, 0.9, 1 + this.fadeTime, 0.9, 0);
+		var alpha = smoothStep(this.phase, 0.9, 1 + this.fadeTime, 0.9, 0);
 		for (var i = 0; i < 3; ++i) {
 			var r = (n - i) / n;
 
