@@ -71,7 +71,7 @@ var LootModule = compose(Loot,
 
 	pickup: function(ship)
 	{
-		var module = new this.moduleClass();
+		var module = this.moduleClass();
 		return ship.pickupItem(module);
 	}
 });

@@ -125,12 +125,14 @@ function compose(/*arguments*/)
 	// Create a wrapper for the init function that sets the prototype.
 	if (proto.init) {
 		proto.constructor = function(param) {
+			param = param || {};
 			param.__proto__ = proto;
 			proto.init.call(param);
 			return param;
 		};
 	} else {
 		proto.constructor = function(param) {
+			param = param || {};
 			param.__proto__ = proto;
 			return param;
 		};

@@ -6,16 +6,15 @@
 var weapons = {
 
 
-Blaster: extend(Module,
+Blaster: compose(Module,
 {
-	ctor: function()
+	init: function()
 	{
-		Module.call(this);
-		this.shootInterval = 0.2;
 		this.lastShootTime = -1;
-		this.bulletSpeed = 300;
 	},
 
+	shootInterval: 0.2,
+	bulletSpeed: 300,
 	name: "Blaster",
 	modelName: "itemBlaster",
 	description: "Basic weapon that fires a single projectile.",
@@ -35,16 +34,15 @@ Blaster: extend(Module,
 }),
 
 
-DualBlaster: extend(Module,
+DualBlaster: compose(Module,
 {
-	ctor: function()
+	init: function()
 	{
-		Module.call(this);
-		this.shootInterval = 0.2;
 		this.lastShootTime = -1;
-		this.bulletSpeed = 300;
 	},
 
+	shootInterval: 0.2,
+	bulletSpeed: 300,
 	name: "Dual Blaster",
 	modelName: "itemDualBlaster",
 	description: "Fires two projectiles.",
@@ -70,11 +68,10 @@ DualBlaster: extend(Module,
 
 
 // Shoots multiple projectiles in a wide angle.
-SpreadGun: extend(Module,
+SpreadGun: compose(Module,
 {
-	ctor: function()
+	init: function()
 	{
-		Module.call(this);
 		this._lastShootTime = -1;
 	},
 
@@ -106,11 +103,10 @@ SpreadGun: extend(Module,
 }),
 
 
-PlasmaSprinkler: extend(Module,
+PlasmaSprinkler: compose(Module,
 {
-	ctor: function()
+	init: function()
 	{
-		Module.call(this);
 		this.lastShootTime = -1;
 		this.targetDir = V.random(1);
 		this.rotateDir = Math.random() < 0.5 ? 1 : -1;
@@ -134,13 +130,8 @@ PlasmaSprinkler: extend(Module,
 }),
 
 
-Laser: extend(Module,
+Laser: compose(Module,
 {
-	ctor: function()
-	{
-		Module.call(this);
-	},
-
 	name: "Laser",
 	modelName: "itemLaser",
 	description: "High-energy beam that deals damage over time.",
@@ -180,7 +171,6 @@ Laser: extend(Module,
 
 	render: function()
 	{
-		Module.prototype.render.apply(this, arguments);
 		var p = this.ship.relativePos(this.relativePos);
 		var targetDir = this.ship.getModuleTargetPos(this).sub_(p);
 		models.line.render(this.color, p.add(targetDir.setlen(4.5)), targetDir, this.laserEndDistance);
@@ -203,19 +193,18 @@ Laser: extend(Module,
 }),
 
 
-RocketLauncher: extend(Module,
+RocketLauncher: compose(Module,
 {
-	ctor: function()
+	init: function()
 	{
-		Module.call(this);
-		this.shootInterval = 1;
 		this.lastShootTime = -1;
-		this.projectileSpeed = 5;
 	},
 
+	projectileSpeed: 5,
 	name: "Rocket Launcher",
 	modelName: "itemRocketLauncher",
 	description: "Launches rockets that fly straight and explode on contact.",
+	shootInterval: 1,
 
 	step: function(timestamp, dt)
 	{
@@ -232,19 +221,18 @@ RocketLauncher: extend(Module,
 }),
 
 
-MissileLauncher: extend(Module,
+MissileLauncher: compose(Module,
 {
-	ctor: function()
+	init: function()
 	{
-		Module.call(this);
-		this.shootInterval = 1;
 		this.lastShootTime = -1;
-		this.projectileSpeed = 50;
 	},
 
 	name: "Missile Launcher",
 	modelName: "itemMissileLauncher",
 	description: "Launches seeking missiles that target the closest enemy ship.",
+	shootInterval: 1,
+	projectileSpeed: 50,
 
 	step: function(timestamp, dt)
 	{
@@ -263,18 +251,17 @@ MissileLauncher: extend(Module,
 
 
 // Drops a bomb with a huge radius that explodes after a fixed delay. Manually activated.
-BombLauncher: extend(Module,
+BombLauncher: compose(Module,
 {
-	ctor: function()
+	init: function()
 	{
-		Module.call(this);
-		this.shootInterval = 10;
 		this.lastShootTime = -1;
 	},
 
 	name: "Bomb Launcher",
 	modelName: "itemBombLauncher",
 	description: "Launches bombs that explode after a delay.\nManually activated.\nCooldown: 10 seconds.",
+	shootInterval: 10,
 
 	step: function(timestamp, dt)
 	{

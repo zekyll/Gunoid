@@ -5,9 +5,9 @@
 
 
 // Base class for modules.
-var Module = extend(Object,
+var Module = compose(Object,
 {
-	ctor: function()
+	init: function()
 	{
 		this.ship = null;
 		this.relativePos = new V(0, 0);
@@ -42,14 +42,11 @@ var modules = {
 
 
 // Shield module.
-Shield: extend(Module,
+Shield: compose(Module,
 {
-	ctor: function(shieldParam)
+	init: function()
 	{
-		Module.call(this);
-		if (shieldParam)
-			this.shieldParam = copyShallow(shieldParam);
-		else
+		if (!this.shieldParam)
 			this.shieldParam = {radius: 15, maxHp: 50, regen: 2, regenDelay: 5, inactiveRegenDelay: 5};
 	},
 

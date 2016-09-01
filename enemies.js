@@ -28,7 +28,7 @@ StarYellow: compose(Ship, traits.StraightLineMovement,
 {
 	init: function()
 	{
-		this.equipModule(new weapons.PlasmaSprinkler(), 0);
+		this.equipModule(weapons.PlasmaSprinkler(), 0);
 	},
 
 	hp: 300,
@@ -106,7 +106,7 @@ KamikazeYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	init: function()
 	{
 		var shieldParam = {radius: 70, maxHp: 1e3, regen: 1e3, regenDelay: 0, inactiveRegenDelay: 2};
-		this.equipModule(new modules.Shield(shieldParam), 0);
+		this.equipModule(modules.Shield({ shieldParam: shieldParam}), 0);
 	},
 
 	hp: 120,
@@ -173,7 +173,7 @@ FencerYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	init: function()
 	{
 		for (var i = 0; i < this.beamCount; ++i) {
-			this.equipModule(new weapons.Laser(), i);
+			this.equipModule(weapons.Laser(), i);
 			this.modules[i].damage = 120;
 			this.modules[i].moduleIdx = i;
 		}
@@ -266,7 +266,7 @@ DestroyerOrange: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget
 	init: function()
 	{
 		this.lastShootTime = -1;
-		this.equipModule(new weapons.Laser(), 0);
+		this.equipModule(weapons.Laser(), 0);
 		this.modules[0].damage = 60;
 		this.modules[0].model = models.turretMedium;
 		this.modules[0].modelColor = colors.enemyOrange2;
