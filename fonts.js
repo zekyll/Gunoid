@@ -98,7 +98,7 @@ var Font = extend(Object,
 
 		for (var i = 0; i < text.length; ++i) {
 			// Handle line change. Using a loop instead of "if" to handle empty lines.
-			while (i === lineEnd) {
+			while (i === lineEnd && i < text.length) {
 				// Skip line separator.
 				if (text.charCodeAt(i) === 32 || text.charCodeAt(i) === 10)
 					++i;
@@ -112,6 +112,9 @@ var Font = extend(Object,
 				lineLength = this._getNextLineLength(text, i, areaWidth);
 				lineEnd = i + lineLength;
 			}
+
+			if (i >= text.length)
+				break;
 
 			// Get glyph dimensions.
 			var charCode = text.charCodeAt(i);
