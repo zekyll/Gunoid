@@ -174,7 +174,7 @@ FencerYellow: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	{
 		for (var i = 0; i < this.beamCount; ++i) {
 			this.equipModule(weapons.Laser(), i);
-			this.modules[i].damage = 120;
+			this.modules[i].damageOverTime = 120;
 			this.modules[i].moduleIdx = i;
 		}
 		this.oscillationPhase = Math.random() * 2 * Math.PI;
@@ -267,7 +267,7 @@ DestroyerOrange: compose(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget
 	{
 		this.lastShootTime = -1;
 		this.equipModule(weapons.Laser(), 0);
-		this.modules[0].damage = 60;
+		this.modules[0].damageOverTime = 60;
 		this.modules[0].model = models.turretMedium;
 		this.modules[0].modelColor = colors.enemyOrange2;
 		this.modules[0].relativePos = new V(0, -1);

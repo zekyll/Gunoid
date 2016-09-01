@@ -1,16 +1,17 @@
 
-/* global game, Ship, ShieldEntity */
+/* global game, Ship, ShieldEntity, traits */
 
 "use strict";
 
 
 // Base class for modules.
-var Module = compose(Object,
+var Module = compose(Object, traits.HasAttributes,
 {
 	init: function()
 	{
 		this.ship = null;
 		this.relativePos = new V(0, 0);
+		this.recalculateAttributes();
 	},
 
 	model: null,

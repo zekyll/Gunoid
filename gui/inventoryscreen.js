@@ -41,8 +41,10 @@ var ItemSlot = extend(Widget,
 
 	onMouseEnter: function()
 	{
-		if (this.item && this.itemInfoWidget)
-			this.itemInfoWidget.text = this.item.name + "\n" + this.item.description;
+		if (this.item && this.itemInfoWidget) {
+			this.itemInfoWidget.text = this.item.name + "\n" + this.item.description
+					+ "\n" + this.item.attributesText();
+		}
 	},
 
 	onMouseLeave: function()

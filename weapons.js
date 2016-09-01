@@ -14,7 +14,7 @@ Blaster: compose(Module,
 	},
 
 	shootInterval: 0.2,
-	bulletSpeed: 300,
+	projectileSpeed: 300,
 	name: "Blaster",
 	modelName: "itemBlaster",
 	description: "Basic weapon that fires a single projectile.",
@@ -26,7 +26,7 @@ Blaster: compose(Module,
 			var targetDir = this.ship.getModuleTargetPos(this).sub(p);
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
-			var v = targetDir.setlen(this.bulletSpeed);
+			var v = targetDir.setlen(this.projectileSpeed);
 			game.addEntity(BlasterShot({ p: p, v: v, expire: timestamp + 2, faction: this.ship.faction}));
 			this.lastShootTime = timestamp;
 		}
@@ -42,7 +42,7 @@ DualBlaster: compose(Module,
 	},
 
 	shootInterval: 0.2,
-	bulletSpeed: 300,
+	projectileSpeed: 300,
 	name: "Dual Blaster",
 	modelName: "itemDualBlaster",
 	description: "Fires two projectiles.",
@@ -56,7 +56,7 @@ DualBlaster: compose(Module,
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			var sideDir = targetDir.rot90left().setlen(0.5 * this.spread);
-			var v = targetDir.setlen(this.bulletSpeed);
+			var v = targetDir.setlen(this.projectileSpeed);
 			game.addEntity(BlasterShot({ p: p.add(sideDir), v: v.clone(),
 					expire: timestamp + 2, faction: this.ship.faction}));
 			game.addEntity(BlasterShot({ p: p.sub(sideDir), v: v.clone(),
@@ -136,7 +136,7 @@ Laser: compose(Module,
 	modelName: "itemLaser",
 	description: "High-energy beam that deals damage over time.",
 	range: 200,
-	damage: 300, // Per second.
+	damageOverTime: 300, // Per second.
 	color: colors.laser,
 	sparkColor: colors.flameYellow,
 	sparkSpeed: 20,
@@ -162,7 +162,7 @@ Laser: compose(Module,
 		this.laserEndDistance = this.range;
 		if (hit) {
 			if (hit.dist <= this.range) {
-				hit.entity.takeDamage(timestamp, this.damage * dt);
+				hit.entity.takeDamage(timestamp, this.damageOverTime * dt);
 				this.laserEndDistance = hit.dist + 1;
 				this.spawnSparks(p.add(targetDir.setlen(hit.dist)), hit.entity.v, timestamp, dt);
 			}
