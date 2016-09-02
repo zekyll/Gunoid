@@ -52,7 +52,7 @@ var Font = inherit(Object,
 		this.canvas.height = 1024;
 		this.family = family;
 		this.textSize = size;
-		this.textColor = colors.white;
+		this.textColors = [colors.white];
 		this.lineHeight = 0;
 		this.vertexData = new Float32Array(this.vertexSize); // Initial capacity 1 vertex.
 		this.vertexCount = 0;
@@ -64,6 +64,7 @@ var Font = inherit(Object,
 
 	vertexSize: 14,
 	logicalWidth: 1000,
+	maxColorCode: 8,
 	maxCodePoint: 127, // Only support Ascii for now.
 
 	// Remove all text instances.
@@ -95,6 +96,7 @@ var Font = inherit(Object,
 		var y = top;
 		var lineLength = this._getNextLineLength(text, 0, areaWidth);
 		var lineEnd = lineLength;
+		var currentColorIdx = 0; // Start with default color.
 
 		for (var i = 0; i < text.length; ++i) {
 			// Handle line change. Using a loop instead of "if" to handle empty lines.
@@ -116,8 +118,14 @@ var Font = inherit(Object,
 			if (i >= text.length)
 				break;
 
-			// Get glyph dimensions.
+			// Change color if code point is a color code.
 			var charCode = text.charCodeAt(i);
+			if (charCode <= this.maxColorCode) {
+				currentColorIdx = charCode;
+				continue;
+			}
+
+			// Get glyph dimensions.
 			var texLeft = this.charData[4 * charCode + 0];
 			var texTop = this.charData[4 * charCode + 1];
 			var texWidth = this.charData[4 * charCode + 2];
@@ -128,7 +136,8 @@ var Font = inherit(Object,
 			var cutoffy = 1.0; //TODO find out actual height of the glyphs.
 
 			this._addVertex(x + 0.5 * height, y + 0.5 * height, width, height,
-					texLeft, texTop, texWidth * height / width, texHeight, cutoffx, cutoffy);
+					texLeft, texTop, texWidth * height / width, texHeight,
+					cutoffx, cutoffy, this.textColors[currentColorIdx]);
 			x += width;
 		}
 
@@ -177,10 +186,11 @@ var Font = inherit(Object,
 		gl.disable(gl.BLEND);
 	},
 
-	// Set font color.
-	setColor: function(textColor)
+	// Set font color. Multiple colors can be set with different index (up to 8), and the color
+	// can be chosen using color codes in the text (code points 0-8). 0 is the default color.
+	setColor: function(textColor, idx)
 	{
-		this.textColor = textColor;
+		this.textColors[idx || 0] = textColor;
 	},
 
 	// Notify the font about main canvas being resized, so that text size can be scaled.
@@ -219,7 +229,8 @@ var Font = inherit(Object,
 		var x = 0;
 
 		for (var c = 0; c < this.maxCodePoint; ++c) {
-			var charWidth = ctx.measureText(String.fromCharCode(c)).width;
+			// Use 0 width glyphs for code points corresponding to our color codes (0-8).
+			var charWidth = c > this.maxColorCode ? ctx.measureText(String.fromCharCode(c)).width : 0;
 			if (x + charWidth > this.canvas.width) {
 				x = 0;
 				y += this.lineHeight + 1; // Leave one pixel between glyphs to avoid artifacts.
@@ -260,7 +271,7 @@ var Font = inherit(Object,
 		}
 	},
 
-	_addVertex: function(x, y, width, height, u, v, texScaleU, texScaleV, texCutoffX, texCutoffY)
+	_addVertex: function(x, y, width, height, u, v, texScaleU, texScaleV, texCutoffX, texCutoffY, color)
 	{
 		var offset = this.vertexCount * this.vertexSize;
 		if (offset + this.vertexSize > this.vertexData.length)
@@ -276,10 +287,10 @@ var Font = inherit(Object,
 		this.vertexData[offset + 7] = texScaleV;
 		this.vertexData[offset + 8] = texCutoffX;
 		this.vertexData[offset + 9] = texCutoffY;
-		this.vertexData[offset + 10] = this.textColor[0];
-		this.vertexData[offset + 11] = this.textColor[1];
-		this.vertexData[offset + 12] = this.textColor[2];
-		this.vertexData[offset + 13] = this.textColor[3];
+		this.vertexData[offset + 10] = color[0];
+		this.vertexData[offset + 11] = color[1];
+		this.vertexData[offset + 12] = color[2];
+		this.vertexData[offset + 13] = color[3];
 		++this.vertexCount;
 	},
 

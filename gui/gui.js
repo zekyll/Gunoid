@@ -52,7 +52,12 @@ var Widget = inherit(Object,
 					this.area.width(), this.area.height());
 		}
 		if (this.text) {
-			this.font.setColor(this.textColor);
+			if (this.textColor instanceof Array) {
+				for (var i = 0; i < this.textColor.length; ++i)
+					this.font.setColor(this.textColor[i], i);
+			} else {
+				this.font.setColor(this.textColor);
+			}
 			this.font.addText(this.text, absoluteTopLeft.x + this.horizontalMargin,
 					absoluteTopLeft.y + this.verticalMargin, this.area.width() - 2 * this.horizontalMargin,
 					this.area.height() - 2 * this.verticalMargin, this.horizontalTextAlign);
