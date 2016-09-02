@@ -45,20 +45,20 @@ var modules = {
 // Shield module.
 Shield: extend(Module,
 {
-	init: function()
-	{
-		if (!this.shieldParam)
-			this.shieldParam = {radius: 15, maxHp: 50, regen: 2, regenDelay: 5, inactiveRegenDelay: 5};
-	},
-
 	name: "Shield",
 	modelName: "itemShield",
 	description: "Generates a shield that blocks incoming projectiles.",
+	shieldRadius: 15,
+	shieldMaxHp: 50,
+	shieldRegen: 2,
+	shieldRegenDelay: 5,
+	shieldInactiveRegenDelay: 5,
 
 	// Creates the actual shield entity that handles collisions.
 	equip: function()
 	{
-		var param = copyShallow(this.shieldParam);
+		var param = { radius: this.shieldRadius, maxHp: this.shieldMaxHp, regen: this.shieldRegen,
+				regenDelay: this.shieldRegenDelay, inactiveRegenDelay: this.shieldInactiveRegenDelay};
 		// We can link the shield position/movement with the ship because it has no movement handling
 		// of its own. However we gotta be careful to never create new p/v vector for either entity.
 		param.p = this.ship.p; // No clone()!

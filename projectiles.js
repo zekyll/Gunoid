@@ -5,12 +5,13 @@
 
 
 // Base class for projectiles.
-var Projectile = extend(Entity, traits.Movement, traits.Expire,
+var Projectile = extend(Entity, traits.Movement, traits.Expire, traits.HasAttributes,
 {
 	init: function() // p, v
 	{
 		if (!this.color)
 			this.color = this.faction === 1 ? colors.projectile : colors.enemyProjectile;
+		this.recalculateAttributes();
 	},
 
 	hp: 1,

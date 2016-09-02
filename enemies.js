@@ -105,8 +105,9 @@ KamikazeYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 {
 	init: function()
 	{
-		var shieldParam = {radius: 70, maxHp: 1e3, regen: 1e3, regenDelay: 0, inactiveRegenDelay: 2};
-		this.equipModule(modules.Shield({ shieldParam: shieldParam}), 0);
+		var param = {shieldRadius: 70, shieldMaxHp: 1e3, shieldRegen: 1e3,
+				shieldRegenDelay: 0, shieldInactiveRegenDelay: 2};
+		this.equipModule(modules.Shield(param), 0);
 	},
 
 	hp: 120,
