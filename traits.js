@@ -1,5 +1,5 @@
 
-/* global game, Ship, Explosion, LootModule */
+/* global game, Ship, Explosion, LootModule, RepairKit, modules, weapons */
 
 "use strict";
 
@@ -215,31 +215,35 @@ DropLoot:
 	{
 		if (this.faction === 2) {
 			var rnd = Math.random() / this.lootProbabilityMultiplier;
-			var lootClass = LootModule;
-			var moduleClass = undefined;
+			var lootClass = undefined;
+			var module = undefined;
 			if ((rnd -= 0.06) < 0) {
-				lootClass = RepairKit
-			} else if ((rnd -= 0.01) < 0) {
-				moduleClass = weapons.RocketLauncher;
-			} else if ((rnd -= 0.01) < 0) {
-				moduleClass = weapons.MissileLauncher;
-			} else if ((rnd -= 0.01) < 0) {
-				moduleClass = weapons.Laser;
-			} else if ((rnd -= 0.01) < 0) {
-				moduleClass = weapons.DualBlaster;
-			} else if ((rnd -= 0.01) < 0) {
-				moduleClass = weapons.BombLauncher;
-			} else if ((rnd -= 0.01) < 0) {
-				moduleClass = weapons.SpreadGun;
-			} else if ((rnd -= 0.01) < 0) {
-				moduleClass = modules.Shield;
+				lootClass = RepairKit;
 			} else {
-				lootClass = null;
+				var moduleClass = undefined;
+				for (var modClassName in modules) {
+					// Use modelName property to detect if a module is droppable.
+					if (modules[modClassName].prototype.modelName && (rnd -= 0.01) < 0) {
+						lootClass = LootModule;
+						moduleClass = modules[modClassName];
+						break;
+					}
+				}
+				if (!moduleClass) {
+					for (var modClassName in weapons) {
+						if (weapons[modClassName].prototype.modelName && (rnd -= 0.01) < 0) {
+							lootClass = LootModule;
+							moduleClass = weapons[modClassName];
+							break;
+						}
+					}
+				}
+				if (moduleClass)
+					module = moduleClass();
 			}
 
 			if (lootClass) {
-				game.addEntity(lootClass({ p: this.p.clone(), expire: timestamp + 10,
-						moduleClass: moduleClass}));
+				game.addEntity(lootClass({ p: this.p.clone(), expire: timestamp + 10, module: module}));
 			}
 		}
 	}
