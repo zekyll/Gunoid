@@ -37,4 +37,11 @@ var colors =
 	guiBackground: new Float32Array([0.05, 0.15, 0.05, 0.6]),
 	guiBorder: new Float32Array([0.3, 0.7, 0.2, 1.0]),
 	guiDisabledBorder: new Float32Array([0.2, 0.4, 0.2, 1.0]),
+
+	// Attributes
+	attribute: new Float32Array([0.70, 0.80, 1, 1]),
+	attributeValue: new Float32Array([1, 1, 1, 1]),
+	positiveBonus: new Float32Array([0, 1, 0, 1]),
+	negativeBonus: new Float32Array([1, 0, 0, 1]),
+	neutralBonus: new Float32Array([1, 1, 0, 1]),
 };

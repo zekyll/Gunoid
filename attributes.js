@@ -60,6 +60,7 @@ var attributes =
 	"Shield Radius": {
 		property: "shieldRadius",
 		simpleName: "Radius",
+		positiveBonusType: 2, // Neutral
 	},
 
 	"Shield regeneration": {
@@ -72,6 +73,7 @@ var attributes =
 		property: "shieldRegenDelay",
 		simpleName: "Regeneration delay",
 		decimals: 1,
+		positiveBonusType: 1, // Negative
 	},
 };
 
@@ -153,7 +155,7 @@ traits.HasAttributes =
 		return result;
 	},
 
-	// Returns the text for a single attribute, e.g. "Rate of fire: 1.2 (+20%)".
+	// Returns a color formatted text for a single attribute, e.g. "Rate of fire: 1.2 (+20%)".
 	_getAttributeText: function(attrName)
 	{
 		var attr = attributes[attrName];
@@ -174,14 +176,26 @@ traits.HasAttributes =
 			value = attr.displayValue(value);
 		}
 
-		var text = (attr.simpleName || attrName) + ": ";
+		var text = "\u0002" + (attr.simpleName || attrName) + ": \u0003";
 		if (value !== baseValue) {
-			text += value.toFixed(attr.decimals || 0);
-			text += " (+" + Math.round(100 * this.bonuses[attrName]) + "%)\n";
+			text += value.toFixed(attr.decimals || 0) + " ";
+			text += this._getBonusColor(attr, value, baseValue);
+			text += (value > baseValue ? "(+" : "(") + Math.round(100 * this.bonuses[attrName]) + "%)\u0000\n";
 		} else {
-			text += value.toFixed(attr.decimals || 0) + "\n";
+			text += value.toFixed(attr.decimals || 0) + "\u0000\n";
 		}
 
 		return text;
 	},
+
+	// Returns a color code depending on whether a bonus is considered positive, neutral or negative.
+	_getBonusColor: function(attr, value, baseValue)
+	{
+		if (!attr.positiveBonusType)
+			return value > baseValue ? "\u0004" : "\u0005";
+		else if (attr.positiveBonusType === 1)
+			return value < baseValue ? "\u0004" : "\u0005";
+		else
+			return "\u0006";
+	}
 };

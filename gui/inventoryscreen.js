@@ -42,8 +42,8 @@ var ItemSlot = inherit(Widget,
 	onMouseEnter: function()
 	{
 		if (this.item && this.itemInfoWidget) {
-			this.itemInfoWidget.text = this.item.name + "\n" + this.item.description
-					+ "\n" + this.item.attributesText();
+			this.itemInfoWidget.text = this.item.name + " \u0001 " + this.item.description
+					+ "\n\u0000" + this.item.attributesText();
 		}
 	},
 
@@ -122,6 +122,8 @@ var InventoryScreen = inherit(Widget,
 		// Item description/stats.
 		this.addChild("itemInfo", new Text(new Rect(250, 250, 580, 380), 4, 8));
 		this.itemInfo.borderColor = colors.guiBorder;
+		this.itemInfo.textColor = [colors.guiText, colors.gray, colors.attribute,
+				colors.attributeValue, colors.positiveBonus, colors.negativeBonus, colors.neutralBonus];
 
 		// Inventory.
 		var slotPut = function(item) {
