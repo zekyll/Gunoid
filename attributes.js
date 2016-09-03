@@ -8,46 +8,54 @@ var attributes =
 	"Damage per second": {
 		property: "damageOverTime",
 		unit: "hp/s",
+		maxBonus: 0.5
 	},
 
 	"Projectile count": {
 		property: "projectileCount",
 		simpleName: "Projectiles",
+		maxBonus: 0.5
 	},
 
 	"Projectile damage": {
 		property: "collisionDamage",
 		category: "projectile",
-		simpleName: "Damage"
+		simpleName: "Damage",
+		maxBonus: 0.5
 	},
 
 	"Projectile explosion damage": {
 		property: "explosionDamage",
 		category: "projectile",
-		simpleName: "Explosion damage"
+		simpleName: "Explosion damage",
+		maxBonus: 0.5
 	},
 
 	"Projectile explosion radius": {
 		property: "explosionRadius",
 		category: "projectile",
 		simpleName: "Explosion radius",
+		maxBonus: 0.5,
 		filter: function(o) { return o.explosionDamage; }
 	},
 
 	"Projectile speed": {
 		property: "projectileSpeed",
 		unit: "m/s",
+		maxBonus: 0.3
 	},
 
 	"Range": {
 		property: "range",
 		unit: "m",
+		maxBonus: 0.5
 	},
 
 	"Rate of fire": {
 		property: "shootInterval",
-		decimals: 2,
 		unit: "/ s",
+		decimals: 2,
+		maxBonus: 0.5,
 		displayValue: function(value) { return 1 / value; },
 		applyBonus: function(value, bonus) { return value / (1 + bonus); }
 	},
@@ -55,18 +63,21 @@ var attributes =
 	"Shield hit points": {
 		property: "shieldMaxHp",
 		simpleName: "Hit points",
+		maxBonus: 1.0,
 	},
 
 	"Shield Radius": {
 		property: "shieldRadius",
 		simpleName: "Radius",
 		positiveBonusType: 2, // Neutral
+		maxBonus: 0.3
 	},
 
 	"Shield regeneration": {
 		property: "shieldRegen",
 		simpleName: "Regeneration",
 		decimals: 1,
+		maxBonus: 2
 	},
 
 	"Shield regeneration delay": {
@@ -74,6 +85,7 @@ var attributes =
 		simpleName: "Regeneration delay",
 		decimals: 1,
 		positiveBonusType: 1, // Negative
+		maxBonus: 0.4
 	},
 };
 

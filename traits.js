@@ -1,5 +1,5 @@
 
-/* global game, Ship, Explosion, LootModule, RepairKit, modules, weapons */
+/* global game, Ship, Explosion, LootModule, RepairKit, modules, weapons, attributes */
 
 "use strict";
 
@@ -239,14 +239,36 @@ DropLoot:
 					}
 				}
 				if (moduleClass)
-					module = moduleClass();
+					module = moduleClass({bonuses: this._getRandomBonuses(moduleClass)});
 			}
 
 			if (lootClass) {
 				game.addEntity(lootClass({ p: this.p.clone(), expire: timestamp + 10, module: module}));
 			}
 		}
-	}
+	},
+
+	_getRandomBonuses: function(moduleClass)
+	{
+		var bonuses = {};
+		var attrNames = moduleClass.prototype.getAttributeNames();
+		for (var i = 0; i < Math.min(2, attrNames.length); ++i) {
+			var attrIdx = Math.floor(Math.random() * attrNames.length);
+
+			// Don't allow same bonus twice.
+			if (bonuses[attrNames[attrIdx]]) {
+				--i;
+				continue;
+			}
+
+			var attr = attributes[attrNames[attrIdx]];
+			var bonusSize = attr.maxBonus * (Math.random() + Math.random()) * 0.5;
+			if (Math.random() < 0.25)
+				bonusSize *= -0.5;
+			bonuses[attrNames[attrIdx]] = bonusSize;
+		}
+		return bonuses;
+	},
 },
 
 
