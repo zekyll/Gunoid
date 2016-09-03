@@ -37,7 +37,7 @@ V.prototype =
 
 	addMul: function(rhs, c)
 	{
-		return new V(rhs.x + this.x * c, rhs.y + this.y * c);
+		return new V(this.x + rhs.x * c, this.y + rhs.y * c);
 	},
 
 	addMul_: function(rhs, c)
