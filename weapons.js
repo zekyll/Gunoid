@@ -3,91 +3,20 @@
 
 "use strict";
 
-var weapons = {
+
+var weapontraits = {
 
 
-Blaster: extend(Module,
+// Input shootInterval, projectileSpeed, projectileExpire, [spreadAngle, spread]
+ProjectileWeapon:
 {
 	init: function()
 	{
-		this.lastShootTime = -1;
+		this._lastShootTime = -1e99;
 	},
 
-	name: "Blaster",
-	modelName: "itemBlaster",
-	description: "Basic weapon that fires a single projectile.",
-	shootInterval: 0.2,
-	projectileSpeed: 300,
-	projectileClass: BlasterShot,
-	proxyAttributeCategory: "projectile", // Add attributes for projectile dmg etc.
-
-	step: function(timestamp, dt)
-	{
-		if (timestamp > this.lastShootTime + this.shootInterval) {
-			var p = this.ship.relativePos(this.relativePos);
-			var targetDir = this.ship.getModuleTargetPos(this).sub(p);
-			if (targetDir.len() < 0.001)
-				targetDir = new V(0, 1);
-			var v = targetDir.setlen(this.projectileSpeed);
-			game.addEntity(BlasterShot({ p: p, v: v, expire: timestamp + 2, faction: this.ship.faction,
-					bonuses: this.totalBonuses}));
-			this.lastShootTime = timestamp;
-		}
-	}
-}),
-
-
-DualBlaster: extend(Module,
-{
-	init: function()
-	{
-		this.lastShootTime = -1;
-	},
-
-	name: "Dual Blaster",
-	modelName: "itemDualBlaster",
-	description: "Fires two projectiles.",
-	shootInterval: 0.2,
-	projectileSpeed: 300,
-	spread: 6,
-	projectileClass: BlasterShot,
-	proxyAttributeCategory: "projectile",
-
-	step: function(timestamp, dt)
-	{
-		if (timestamp > this.lastShootTime + this.shootInterval) {
-			var p = this.ship.relativePos(this.relativePos);
-			var targetDir = this.ship.getModuleTargetPos(this).sub(p);
-			if (targetDir.len() < 0.001)
-				targetDir = new V(0, 1);
-			var sideDir = targetDir.rot90left().setlen(0.5 * this.spread);
-			var v = targetDir.setlen(this.projectileSpeed);
-			game.addEntity(BlasterShot({ p: p.add(sideDir), v: v.clone(),
-					expire: timestamp + 2, faction: this.ship.faction, bonuses: this.totalBonuses}));
-			game.addEntity(BlasterShot({ p: p.sub(sideDir), v: v.clone(),
-					expire: timestamp + 2, faction: this.ship.faction, bonuses: this.totalBonuses}));
-			this.lastShootTime = timestamp;
-		}
-	}
-}),
-
-
-// Shoots multiple projectiles in a wide angle.
-SpreadGun: extend(Module,
-{
-	init: function()
-	{
-		this._lastShootTime = -1;
-	},
-
-	shootInterval: 1.0,
-	projectileSpeed: 200,
-	projectileCount: 7,
-	name: "Spread Gun",
-	modelName: "itemSpreadGun",
-	description: "Shoots multiple projectiles in a wide angle.",
-	spreadAngle: 90 / 360 * (2 * Math.PI),
-	projectileClass: PlasmaBall,
+	spreadAngle: 0,
+	spread: 0,
 	proxyAttributeCategory: "projectile",
 
 	step: function(timestamp, dt)
@@ -98,15 +27,68 @@ SpreadGun: extend(Module,
 			if (targetDir.len() < 0.001)
 				targetDir = new V(0, 1);
 			targetDir.rot_(-this.spreadAngle / 2);
-			for (var i = 0; i < Math.round(this.projectileCount); ++i) {
+			var projectileCount = this.projectileCount || 1;
+			var sideDir = targetDir.rot90left().setlen_(1);
+			var sideDistance = -this.spread / 2;
+			for (var i = 0; i < Math.round(projectileCount); ++i) {
 				var v = targetDir.setlen(this.projectileSpeed);
-				game.addEntity(PlasmaBall({ p: p.clone() , v: v, expire: timestamp + 5,
+				game.addEntity(this.projectileClass({
+						p: p.addMul(sideDir, sideDistance), v: v,
+						expire: timestamp + this.projectileExpire,
 						faction: this.ship.faction, bonuses: this.totalBonuses}));
-				targetDir.rot_(this.spreadAngle / (this.projectileCount - 1));
+				targetDir.rot_(this.spreadAngle / (projectileCount - 1));
+				sideDistance += this.spread / (projectileCount - 1);
 			}
 			this._lastShootTime = timestamp;
 		}
 	}
+}
+
+
+};
+
+
+var weapons = {
+
+
+Blaster: extend(Module, weapontraits.ProjectileWeapon,
+{
+	name: "Blaster",
+	modelName: "itemBlaster",
+	description: "Basic weapon that fires a single projectile.",
+	shootInterval: 0.2,
+	projectileSpeed: 300,
+	projectileExpire: 2,
+	projectileClass: BlasterShot
+}),
+
+
+DualBlaster: extend(Module, weapontraits.ProjectileWeapon,
+{
+	name: "Dual Blaster",
+	modelName: "itemDualBlaster",
+	description: "Fires two projectiles.",
+	shootInterval: 0.2,
+	projectileSpeed: 300,
+	projectileExpire: 2,
+	projectileCount: 2,
+	spread: 6,
+	projectileClass: BlasterShot,
+}),
+
+
+// Shoots multiple projectiles in a wide angle.
+SpreadGun: extend(Module, weapontraits.ProjectileWeapon,
+{
+	name: "Spread Gun",
+	modelName: "itemSpreadGun",
+	description: "Shoots multiple projectiles in a wide angle.",
+	shootInterval: 1.0,
+	projectileSpeed: 200,
+	projectileCount: 7,
+	projectileExpire: 5,
+	spreadAngle: 90 / 360 * (2 * Math.PI),
+	projectileClass: PlasmaBall
 }),
 
 
@@ -203,38 +185,19 @@ Laser: extend(Module,
 }),
 
 
-RocketLauncher: extend(Module,
+RocketLauncher: extend(Module, weapontraits.ProjectileWeapon,
 {
-	init: function()
-	{
-		this.lastShootTime = -1;
-	},
-
-	projectileSpeed: 5,
 	name: "Rocket Launcher",
 	modelName: "itemRocketLauncher",
 	description: "Launches rockets that fly straight and explode on contact.",
 	shootInterval: 1,
-	projectileClass: Rocket,
-	proxyAttributeCategory: "projectile",
-
-	step: function(timestamp, dt)
-	{
-		if (timestamp > this.lastShootTime + this.shootInterval) {
-			var p = this.ship.relativePos(this.relativePos);
-			var targetDir = this.ship.getModuleTargetPos(this).sub(p);
-			if (targetDir.len() < 0.001)
-				targetDir = new V(0, 1);
-			var v = targetDir.setlen(this.projectileSpeed);
-			game.addEntity(Rocket({ p: p, v: v, expire: timestamp + 4, faction: this.ship.faction,
-					bonuses: this.totalBonuses}));
-			this.lastShootTime = timestamp;
-		}
-	}
+	projectileSpeed: 5,
+	projectileExpire: 4,
+	projectileClass: Rocket
 }),
 
 
-MissileLauncher: extend(Module,
+MissileLauncher: extend(Module, weapontraits.ProjectileWeapon,
 {
 	init: function()
 	{
@@ -246,22 +209,8 @@ MissileLauncher: extend(Module,
 	description: "Launches seeking missiles that target the closest enemy ship.",
 	shootInterval: 1,
 	projectileSpeed: 50,
+	projectileExpire: 5,
 	projectileClass: Missile,
-	proxyAttributeCategory: "projectile",
-
-	step: function(timestamp, dt)
-	{
-		if (timestamp > this.lastShootTime + this.shootInterval) {
-			var p = this.ship.relativePos(this.relativePos);
-			var targetDir = this.ship.getModuleTargetPos(this).sub(p);
-			if (targetDir.len() < 0.001)
-				targetDir = new V(0, 1);
-			var v = targetDir.setlen(this.projectileSpeed);
-			game.addEntity(Missile({ p: p, v: v, expire: timestamp + 5,
-					faction: this.ship.faction, bonuses: this.totalBonuses}));
-			this.lastShootTime = timestamp;
-		}
-	}
 }),
 
 
