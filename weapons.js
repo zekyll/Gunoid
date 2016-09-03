@@ -275,9 +275,9 @@ BombLauncher: extend(Module,
 
 	name: "Bomb Launcher",
 	modelName: "itemBombLauncher",
-	description: "Launches bombs that explode after a delay.\nManually activated.",
+	description: "Launches bombs that explode after a delay. Manually activated.",
 	shootInterval: 10,
-	projectileClass: Grenade,
+	projectileClass: Bomb,
 	proxyAttributeCategory: "projectile",
 
 	step: function(timestamp, dt)
@@ -285,10 +285,7 @@ BombLauncher: extend(Module,
 		if (timestamp > this.lastShootTime + this.shootInterval &&
 				input.keyDown("Activate module")) {
 			var p = this.ship.relativePos(this.relativePos);
-			game.addEntity(Grenade({ p: p, v: new V(0, 0),
-					explosionDamage: 150, explosionRadius: 100,
-					explosionSpeed: 60, explosionForce: 10e6,
-					activationDelay: 1.5,
+			game.addEntity(Bomb({ p: p, v: new V(0, 0),
 					expire: timestamp + 0, faction: this.ship.faction, bonuses: this.totalBonuses}));
 			this.lastShootTime = timestamp;
 		}

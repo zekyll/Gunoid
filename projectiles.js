@@ -137,3 +137,14 @@ var Grenade = extend(Projectile, traits.ExplodeOnCollision, traits.ExplodeOnDeat
 		models.circle8.render(this.color, this.p, this.v, this.radius);
 	}
 });
+
+
+// Bigger version of grenade.
+var Bomb = extend(Grenade,
+{
+	explosionDamage: 150,
+	activationDelay: 1.5,
+	explosionRadius: 100,
+	explosionSpeed: 60,
+	explosionForce: 10e6,
+});
