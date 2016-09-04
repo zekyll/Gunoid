@@ -10,23 +10,23 @@ var Wave = inherit(Object,
 		this.subwaves = subwaves;
 	},
 
-	start: function(timestamp)
+	start: function(t)
 	{
 		for (var i = 0; i < this.subwaves.length; ++i)
-			this.subwaves[i].start(timestamp);
+			this.subwaves[i].start(t);
 	},
 
-	step: function(timestamp)
+	step: function(t)
 	{
 		for (var i = 0; i < this.subwaves.length; ++i)
-			this.subwaves[i].step(timestamp);
+			this.subwaves[i].step(t);
 	},
 
 	// Wave is completed if all the subwaves are completed.
-	isCompleted: function(timestamp)
+	isCompleted: function(t)
 	{
 		for (var i = 0; i < this.subwaves.length; ++i) {
-			if (!this.subwaves[i].isCompleted(timestamp))
+			if (!this.subwaves[i].isCompleted(t))
 				return false;
 		}
 		return true;
@@ -51,23 +51,23 @@ var Subwave = inherit(Object,
 		this.startTime = undefined;
 	},
 
-	start: function(timestamp)
+	start: function(t)
 	{
-		this.startTime = timestamp;
-		this.lastIterationTime = timestamp + this.startingDelay - this.iterationInterval;
+		this.startTime = t;
+		this.lastIterationTime = t + this.startingDelay - this.iterationInterval;
 	},
 
-	step: function(timestamp)
+	step: function(t)
 	{
-		while (this.iterationsRemaining > 0 && timestamp > this.lastIterationTime + this.iterationInterval) {
+		while (this.iterationsRemaining > 0 && t > this.lastIterationTime + this.iterationInterval) {
 			for (var i = 0; i < this.spawnsPerIteration; ++i)
-				this.spawn(timestamp, i);
+				this.spawn(t, i);
 			--this.iterationsRemaining;
 			this.lastIterationTime += this.iterationInterval;
 		}
 	},
 
-	isCompleted: function(timestamp)
+	isCompleted: function(t)
 	{
 		if (!this.completionCondition)
 			return true;
@@ -76,15 +76,15 @@ var Subwave = inherit(Object,
 					&& this.checkAliveSpawns() <= this.completionCondition.remaining;
 		}
 		if ("time" in this.completionCondition)
-			return timestamp > this.startTime + this.completionCondition.time;
+			return t > this.startTime + this.completionCondition.time;
 		return true;
 	},
 
-	spawn: function(timestamp, i)
+	spawn: function(t, i)
 	{
 		var count = 0;
 		do {
-			var prm = this.spawnParamFunc(timestamp, i);
+			var prm = this.spawnParamFunc(t, i);
 			var r = game.findClosestEntity(prm.p, function (e) {
 				return e.canCollide;
 			}, true);
@@ -122,7 +122,7 @@ var Spawner = inherit(Object,
 	{
 		var p = game.randomPosition();
 		var dest = game.randomPosition().mul(0.9);
-		var dir = dest.sub(p).setlen((0.5 +  Math.random()));
+		var dir = dest.sub(p).setLen((0.5 +  Math.random()));
 		return {p: p, dir: dir, faction: 2, lootProbabilityMultiplier: 1};
 	},
 
@@ -130,8 +130,8 @@ var Spawner = inherit(Object,
 	{
 		var p = game.randomPosition();
 		var dest = game.randomPosition().mul(0.9);
-		var dir = dest.sub(p).setlen((0.2 +  Math.random()));
-		return {p: p, v: dir.setlen(30)};
+		var dir = dest.sub(p).setLen((0.2 +  Math.random()));
+		return {p: p, v: dir.setLen(30)};
 	},
 
 	asteroidRingParams: function(t, i)
@@ -285,16 +285,16 @@ var Spawner = inherit(Object,
 		this.waves.push(new Wave(subwaves));
 	},
 
-	step: function(timestamp)
+	step: function(t)
 	{
 		if (this.finished())
 			return;
-		while (this.currentWaveIndex === -1 || this.waves[this.currentWaveIndex].isCompleted(timestamp)) {
+		while (this.currentWaveIndex === -1 || this.waves[this.currentWaveIndex].isCompleted(t)) {
 			if (++this.currentWaveIndex >= this.waves.length)
 				return;
-			this.waves[this.currentWaveIndex].start(timestamp);
+			this.waves[this.currentWaveIndex].start(t);
 		}
-		this.waves[this.currentWaveIndex].step(timestamp);
+		this.waves[this.currentWaveIndex].step(t);
 	},
 
 	finished: function()

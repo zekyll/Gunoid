@@ -86,7 +86,7 @@ var attributes =
 		maxBonus: 1.0,
 	},
 
-	"Shield Radius": {
+	"Shield radius": {
 		property: "shieldRadius",
 		simpleName: "Radius",
 		positiveBonusType: 2, // Neutral

@@ -14,9 +14,9 @@ var Loot = extend(Entity, traits.Expire,
 	faction: 1,
 	color: colors.loot,
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
-		var timeLeft = this.expire - timestamp;
+		var timeLeft = this.expire - t;
 		this.blinkState = timeLeft > 3 ? 1 : Math.floor(timeLeft * 5) % 2;
 	},
 
@@ -25,7 +25,7 @@ var Loot = extend(Entity, traits.Expire,
 		return other.faction === this.faction && other instanceof Ship;
 	},
 
-	collide: function(timestamp, dt, other)
+	collide: function(t, dt, other)
 	{
 		if (this.pickup(other))
 			this.hp = 0;

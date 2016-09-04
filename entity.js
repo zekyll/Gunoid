@@ -17,7 +17,7 @@ var Entity = extend(Object,
 	faction: 0, // Neutral faction.
 	staticVars: { idCounter: 0 },
 
-	takeDamage: function(timestamp, damage)
+	takeDamage: function(t, damage)
 	{
 		// Initializes damage amount for other traits.
 		this.damageTaken = damage;
@@ -26,12 +26,12 @@ var Entity = extend(Object,
 {
 	priority: 100, // After everything else.
 
-	takeDamage: function(timestamp, damage)
+	takeDamage: function(t, damage)
 	{
 		// Death check.
 		this.hp -= this.damageTaken;
 		if (this.hp <= 0 && this.die)
-			this.die(timestamp);
+			this.die(t);
 	},
 });
 
@@ -49,11 +49,11 @@ var Ship = extend(Entity, traits.Movement, traits.Drag, traits.Debris, traits.Co
 	dragCoefficient: 0,
 	collisionDamage: 10,
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
 		for (var i = 0; i < this.modules.length; ++i) {
 			if (this.modules[i])
-				this.modules[i].step(timestamp, dt);
+				this.modules[i].step(t, dt);
 		}
 	},
 
@@ -64,19 +64,19 @@ var Ship = extend(Entity, traits.Movement, traits.Drag, traits.Debris, traits.Co
 
 	relativePosXY: function(x, y)
 	{
-		var forward = (this.dir ? this.dir.clone() : this.v.setlenSafe(1));
+		var forward = (this.dir ? this.dir.clone() : this.v.setLenSafe(1));
 		var right = forward.rot90right();
 		return forward.mul_(y).add_(right.mul_(x)).add_(this.p);
 	},
 
 	relativePos: function(relPos)
 	{
-		var forward = (this.dir ? this.dir.clone() : this.v.setlenSafe(1));
+		var forward = (this.dir ? this.dir.clone() : this.v.setLenSafe(1));
 		var right = forward.rot90right();
 		return forward.mul_(relPos.y).add_(right.mul_(relPos.x)).add_(this.p);
 	},
 
-	die: function(timestamp)
+	die: function(t)
 	{
 		for (var i = 0; i < this.modules.length; ++i) {
 			if (this.modules[i])
@@ -117,7 +117,7 @@ var Ship = extend(Entity, traits.Movement, traits.Drag, traits.Debris, traits.Co
 	// Get target position for specific module. This can be overriden to give each weapon a different target.
 	getModuleTargetPos: function(module)
 	{
-		return this.targetp.clone();
+		return this.targetPos.clone();
 	},
 
 	render: function()
@@ -131,7 +131,7 @@ var Ship = extend(Entity, traits.Movement, traits.Drag, traits.Debris, traits.Co
 	_deaccelerate: function(dt, deaccel)
 	{
 		var vlen = this.v.len();
-		this.a.set_(this.v).setlen_(-Math.min(deaccel, (vlen - 1e-3) / dt)); // Prevent zero velocity.
+		this.a.set_(this.v).setLen_(-Math.min(deaccel, (vlen - 1e-3) / dt)); // Prevent zero velocity.
 	}
 });
 
@@ -149,7 +149,7 @@ var Debris = extend(Entity, traits.Movement, traits.Drag, traits.Expire,
 	hp: 1,
 	dragCoefficient: 0.05,
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
 		this.color[3] -= this._fadeSpeed * dt;
 	},
@@ -184,7 +184,7 @@ var Explosion = extend(Entity, traits.Movement, traits.Drag,
 	startRadius: 2,
 	fadeTime: 0.3,
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
 		this.phase += this.c * dt;
 		if (this.phase < 1) {
@@ -201,11 +201,11 @@ var Explosion = extend(Entity, traits.Movement, traits.Drag,
 				&& other.faction !== this.faction && this.phase < 1;
 	},
 
-	collide: function(timestamp, dt, other)
+	collide: function(t, dt, other)
 	{
-		other.v.add_(other.p.sub(this.p).setlen_(dt * this.force / other.m));
+		other.v.add_(other.p.sub(this.p).setLen_(dt * this.force / other.m));
 		if (!this.hitEntities[other.id]) {
-			other.takeDamage(timestamp, this.damage);
+			other.takeDamage(t, this.damage);
 			this.hitEntities[other.id] = true;
 		}
 	},
@@ -282,10 +282,10 @@ var ShieldEntity = extend(Entity, traits.CollisionDamage,
 	maxBlockRadius: 3,
 	collisionDamage: 10,
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
 		var delay = this._active ? this.regenDelay : this.inactiveRegenDelay;
-		if (timestamp - this._lastDamageTime >= delay) {
+		if (t - this._lastDamageTime >= delay) {
 			this.hp = Math.min(this.maxHp, this.hp + this.regen * dt);
 			this._active = true;
 		}
@@ -297,10 +297,10 @@ var ShieldEntity = extend(Entity, traits.CollisionDamage,
 		return this._active && other.radius <= this.maxBlockRadius && this.p.sub(other.p).dot(other.v) >= 0;
 	},
 
-	takeDamage: function(timestamp, damage)
+	takeDamage: function(t, damage)
 	{
 		// Prevent the shield from taking lethal damage. Instead we just deactivate it.
-		this._lastDamageTime = timestamp;
+		this._lastDamageTime = t;
 		if (this.hp - damage < 1e-3) {
 			this.damageTaken = this.hp - 1e-3;
 			this._active = false;
@@ -375,7 +375,7 @@ var InvisibleBarrier = extend(Entity, traits.Movement,
 		return other instanceof Ship;
 	},
 
-	collide: function(timestamp, dt, other)
+	collide: function(t, dt, other)
 	{
 	},
 

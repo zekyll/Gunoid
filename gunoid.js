@@ -68,7 +68,7 @@ var game =
 		window.onresize = resizeCanvas;
 		resizeCanvas();
 
-		this.initWebGL();
+		this._initWebGL();
 
 		if (gl) {
 			gl.clearColor(0.10, 0.0, 0.25, 1.0);
@@ -79,14 +79,14 @@ var game =
 			fonts.add("small", fontFamily, 9);
 			fonts.add("medium", fontFamily, 14);
 			fonts.add("big", fontFamily, 24);
-			this.initInput();
-			this.initGui();
+			this._initInput();
+			this._initGui();
 			this.startDemo();
-			this.requestFrame();
+			this._requestFrame();
 		}
 	},
 
-	initEmptyWorld: function()
+	_initEmptyWorld: function()
 	{
 		this.camWidth = Math.sqrt(Math.PI * this.camRadius * this.camRadius * this.aspectRatio);
 		this.camHeight = this.camWidth / this.aspectRatio;
@@ -101,14 +101,14 @@ var game =
 
 	startGame: function()
 	{
-		this.initEmptyWorld();
+		this._initEmptyWorld();
 		this.player = this.addEntity(Player({p: new V(0, 0), v: new V(0, 0)}));
 		this.spawner = new Spawner();
 	},
 
 	startBenchmark: function()
 	{
-		this.initEmptyWorld();
+		this._initEmptyWorld();
 		this.player = null;
 		this._benchmarkType = ((this._benchmarkType || 0) % 2 + 1);
 
@@ -126,7 +126,7 @@ var game =
 	// Starts a demo that battles random AI ships against each other.
 	startDemo: function()
 	{
-		this.initEmptyWorld();
+		this._initEmptyWorld();
 		this.player = null;
 		this.speed = 0.5;
 
@@ -181,14 +181,14 @@ var game =
 				var spawnType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
 				var p = game.randomPosition();
 				var dest = game.randomPosition();
-				var dir = dest.sub(p).setlen((0.5 +  Math.random()));
+				var dir = dest.sub(p).setLen((0.5 +  Math.random()));
 				var newSpawn = game.addEntity(spawnType({p: p, dir: dir, faction: faction}));
 				newSpawn.hp = Math.sqrt(newSpawn.hp) * 10; // Nerf bigger ships.
 			},
 		};
 	},
 
-	initInput: function()
+	_initInput: function()
 	{
 		var self = this;
 
@@ -235,7 +235,7 @@ var game =
 		});
 	},
 
-	initGui: function()
+	_initGui: function()
 	{
 		this.gui = new Gui(1000.0, 1000.0 / this.aspectRatio);
 
@@ -255,22 +255,22 @@ var game =
 		});
 	},
 
-	step: function(timestamp, dt)
+	_step: function(t, dt)
 	{
 		if (dt) {
 			for (var i = 0; i < this.entities.length; ++i)
-				this.entities[i].step(timestamp, dt);
+				this.entities[i].step(t, dt);
 		}
 
-		this.spawner.step(timestamp);
-		this.checkCollisions(timestamp, dt);
+		this.spawner.step(t);
+		this._checkCollisions(t, dt);
 		this._addNewEntities();
-		this.removeDeadEntities();
+		this._removeDeadEntities();
 
-		this._moveCamera(timestamp, dt);
+		this._moveCamera(t, dt);
 	},
 
-	removeDeadEntities: function()
+	_removeDeadEntities: function()
 	{
 		for (var i = 0; i < this.entities.length; ++i) {
 			var distSqr = this.entities[i].p.lenSqr();
@@ -301,7 +301,7 @@ var game =
 		return V.random(r);
 	},
 
-	checkCollisions: function(timestamp, dt)
+	_checkCollisions: function(t, dt)
 	{
 		for (var i = 0; i < this.entities.length; ++i) {
 			if (!this.entities[i].canCollide)
@@ -319,9 +319,9 @@ var game =
 
 				if (distSqr < collisionDistance * collisionDistance) {
 					if (!this._isInside(this.entities[i], this.entities[j])) {
-						this.entities[i].collide(timestamp, dt, this.entities[j]);
-						this.entities[j].collide(timestamp, dt, this.entities[i]);
-						this.collide(this.entities[i], this.entities[j]);
+						this.entities[i].collide(t, dt, this.entities[j]);
+						this.entities[j].collide(t, dt, this.entities[i]);
+						this._collide(this.entities[i], this.entities[j]);
 					}
 				}
 			}
@@ -336,7 +336,7 @@ var game =
 	},
 
 	// Simulates a perfectly elastic collision between 2 objects.
-	collide: function(a, b)
+	_collide: function(a, b)
 	{
 		if (!a.m || !b.m)
 			return;
@@ -406,7 +406,7 @@ var game =
 	{
 		var closestDist = 1e99;
 		var closestEntity = null;
-		dir = dir.setlen(1);
+		dir = dir.setLen(1);
 		for (var i = 0; i < this.entities.length; ++i) {
 			if (filter(this.entities[i])) {
 				var relativePos = this.entities[i].p.sub(p);
@@ -457,7 +457,7 @@ var game =
 		this.newEntities = [];
 	},
 
-	initWebGL: function()
+	_initWebGL: function()
 	{
 		gl = null;
 
@@ -480,7 +480,7 @@ var game =
 		}
 	},
 
-	render: function(timestamp, dt)
+	_render: function(t, dt)
 	{
 		++this.frameCounter;
 
@@ -498,10 +498,10 @@ var game =
 		models.renderInstances(projViewMatrix);
 
 		// GUI.
-		this.renderGui(timestamp, dt);
+		this._renderGui(t, dt);
 	},
 
-	renderGui: function(timestamp, dt)
+	_renderGui: function(t, dt)
 	{
 		this.gui.hpBar.visible = !!this.player;
 		this.gui.shieldBar.visible = !!this.player && !!this.player.shield;
@@ -518,7 +518,7 @@ var game =
 
 		fonts.resetAll();
 		models.resetInstances();
-		this.gui.render(new V(0, 0), timestamp, dt);
+		this.gui.render(new V(0, 0), t, dt);
 		var projViewMatrix = makeOrthoMatrix(0, 0, this.gui.area.width(), this.gui.area.height());
 		models.renderInstances(projViewMatrix);
 
@@ -533,7 +533,7 @@ var game =
 		if (this.player)
 			this.gui.stats.text += "  |  time: " + this.time.toFixed(1);
 
-		this.gui.waveNumberText.update(this.spawner.currentWaveIndex, timestamp);
+		this.gui.waveNumberText.update(this.spawner.currentWaveIndex, t);
 
 		if (this.player && this.player.hp <= 0) {
 			fonts.big.setColor(colors.guiText);
@@ -548,18 +548,18 @@ var game =
 		fonts.renderAll();
 	},
 
-	requestFrame: function()
+	_requestFrame: function()
 	{
 		var self = this;
-		window.requestAnimationFrame(function(timestamp) {
+		window.requestAnimationFrame(function(t) {
 			if (!textures.loaded()) {
-				self.requestFrame();
+				self._requestFrame();
 				return;
 			}
 
-			timestamp *= 0.001;
-			self.realTime = timestamp;
-			self.realdt = (timestamp - self.lastTimestamp);
+			t *= 0.001;
+			self.realTime = t;
+			self.realdt = (t - self.lastTimestamp);
 
 			// Limit the maximum step length to 0.1s. This slows down the game when FPS drops below 10fps
 			// and basically pauses it when browser is minimized etc, because requestAnimationFrame
@@ -568,12 +568,12 @@ var game =
 
 			if (self.time === null) {
 				self.time = 0;
-				self.step(self.time, 0); // Only does initial spawns.
+				self._step(self.time, 0); // Only does initial spawns.
 			} else {
 				if (!self.paused) {
 					self.time += self.dt;
 					var startt = performance.now();
-					self.step(self.time, self.dt);
+					self._step(self.time, self.dt);
 					self.stepTime = 0.9 * self.stepTime + 0.1 * (performance.now() - startt);
 				} else {
 					self.stepTime = 0;
@@ -581,11 +581,11 @@ var game =
 			}
 
 			var startt = performance.now();
-			self.render(self.time, self.dt);
+			self._render(self.time, self.dt);
 			self.renderTime = 0.9 * self.renderTime + 0.1 * (performance.now() - startt);
 
-			self.requestFrame();
-			self.lastTimestamp = timestamp;
+			self._requestFrame();
+			self.lastTimestamp = t;
 		});
 	},
 
@@ -609,35 +609,34 @@ var game =
 
 		if (this.player) {
 			// Average of player position, cursor position and position extrapolated from velocity.
-			var targetp = this.player.p.clone();
-			targetp.add_(this.player.targetp);
-			targetp.add_(this.player.p).add_(this.player.v); // Position after 1s.
-			targetp.mul_(1/3);
+			var targetPos = this.player.p.clone();
+			targetPos.add_(this.player.targetPos);
+			targetPos.add_(this.player.p).add_(this.player.v); // Position after 1s.
+			targetPos.mul_(1/3);
 
 			// Clamp camera distance from center using a smooth function.
-			var targetp2 = targetp.clone();
-			targetp2.y *= this.aspectRatio;
-			var len = targetp2.len();
-			var len2 = smoothClamp(len, this.areaRadius, this.camMovementRadius);
-			targetp.setlenSafe_(1).mul_(len2);
+			var targetPos2 = targetPos.clone();
+			targetPos2.y *= this.aspectRatio;
+			var len = smoothClamp(targetPos2.len(), this.areaRadius, this.camMovementRadius);
+			targetPos.setLenSafe_(1).mul_(len);
 
 			// Make actual camera position approach target position exponentially.
-			this.camPos.add_(targetp.sub_(this.camPos).mul_(dt * 1.3));
+			this.camPos.add_(targetPos.sub_(this.camPos).mul_(dt * 1.3));
 			this.camPos.add_(this.player.v.mul(0.2 * dt));
 		} else {
 			// Calculate average of all ship positions.
-			var targetp = new V(0, 0);
+			var targetPos = new V(0, 0);
 			var count = 1; // Start from 1 in case of no ships. Also weighting towards center.
 			for (var i = 0; i < this.entities.length; ++i) {
 				if (this.entities[i] instanceof Ship) {
-					targetp.add_(this.entities[i].p);
+					targetPos.add_(this.entities[i].p);
 					++count;
 				}
 			}
-			targetp.mul_(1 / count);
+			targetPos.mul_(1 / count);
 
 			// Exponential approach.
-			this.camPos.add_(targetp.sub_(this.camPos).mul_(dt * 0.4));
+			this.camPos.add_(targetPos.sub_(this.camPos).mul_(dt * 0.4));
 		}
 	}
 };

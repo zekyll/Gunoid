@@ -40,7 +40,7 @@ var Widget = inherit(Object,
 	},
 
 	// Renders the widget itself without children.
-	renderSelf: function(offset, timestamp, dt)
+	renderSelf: function(offset, t, dt)
 	{
 		var absoluteTopLeft = this.area.topLeft.add(offset);
 		if (this.backgroundColor[3] > 0) {
@@ -65,17 +65,17 @@ var Widget = inherit(Object,
 	},
 
 	// Renders the widget and its children.
-	render: function(offset, timestamp, dt)
+	render: function(offset, t, dt)
 	{
 		if (!this.visible)
 			return;
 
 		if (this.selfVisible)
-			this.renderSelf(offset, timestamp, dt);
+			this.renderSelf(offset, t, dt);
 
 		var absoluteTopLeft = this.area.topLeft.add(offset);
 		for (var i = 0; i < this.children.length; ++i)
-			this.children[i].render(absoluteTopLeft, timestamp, dt);
+			this.children[i].render(absoluteTopLeft, t, dt);
 	},
 
 	// Event handlers.
@@ -226,7 +226,7 @@ var Img = inherit(Widget,
 	modelScaling: 1,
 	modelColor: colors.white,
 
-	renderSelf: function(offset, timestamp, dt)
+	renderSelf: function(offset, t, dt)
 	{
 		Widget.prototype.renderSelf.apply(this, arguments);
 
@@ -311,7 +311,7 @@ var HpBar = inherit(Widget,
 		this.text = "" + Math.round(this.currentHp) + " / " + Math.round(this.maxHp);
 	},
 
-	renderSelf: function(offset, timestamp, dt)
+	renderSelf: function(offset, t, dt)
 	{
 		Widget.prototype.renderSelf.apply(this, arguments);
 		var absoluteTopLeft = this.area.topLeft.add(offset);
@@ -431,7 +431,7 @@ var Gui = inherit(Widget,
 		}
 	},
 
-	render: function(offset, timestamp, dt)
+	render: function(offset, t, dt)
 	{
 		Widget.prototype.render.apply(this, arguments);
 

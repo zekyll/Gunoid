@@ -26,7 +26,7 @@ var Module = extend(Object, traits.HasAttributes,
 	{
 	},
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
 	},
 
@@ -90,7 +90,7 @@ RepairModule: extend(Module,
 	description: "Restore's hit points over time.",
 	repairSpeed: 0.5,
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
 		this.ship.hp = Math.min(this.ship.hp + dt * this.repairSpeed, this.ship.maxHp);
 	}

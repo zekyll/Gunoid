@@ -28,7 +28,7 @@ var ItemSlot = inherit(Widget,
 
 	moduleIconSize: 11, // In game coordinates.
 
-	renderSelf: function(offset, timestamp, dt)
+	renderSelf: function(offset, t, dt)
 	{
 		Widget.prototype.renderSelf.apply(this, arguments);
 

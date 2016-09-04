@@ -12,22 +12,22 @@ ProjectileWeapon:
 {
 	init: function()
 	{
-		this._lastShootTime = -1e99;
+		this.lastShootTime = -1e99;
 	},
 
 	spreadAngle: 0,
 	spread: 0,
 	proxyAttributeCategory: "projectile",
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
-		if (timestamp > this._lastShootTime + this.shootInterval) {
-			this.shoot(timestamp);
-			this._lastShootTime = timestamp;
+		if (t > this.lastShootTime + this.shootInterval) {
+			this.shoot(t);
+			this.lastShootTime = t;
 		}
 	},
 
-	shoot: function(timestamp)
+	shoot: function(t)
 	{
 		var p = this.ship.relativePos(this.relativePos);
 		var targetDir = this.ship.getModuleTargetPos(this).sub(p);
@@ -35,13 +35,13 @@ ProjectileWeapon:
 			targetDir = new V(0, 1);
 		targetDir.rot_(-this.spreadAngle / 2);
 		var projectileCount = this.projectileCount || 1;
-		var sideDir = targetDir.rot90left().setlen_(1);
+		var sideDir = targetDir.rot90left().setLen_(1);
 		var sideDistance = -this.spread / 2;
 		for (var i = 0; i < Math.round(projectileCount); ++i) {
-			var v = targetDir.setlen(this.projectileSpeed);
+			var v = targetDir.setLen(this.projectileSpeed);
 			game.addEntity(this.projectileClass({
 					p: p.addMul(sideDir, sideDistance), v: v,
-					expire: timestamp + this.projectileExpire,
+					expire: t + this.projectileExpire,
 					faction: this.ship.faction, bonuses: this.totalBonuses}));
 			targetDir.rot_(this.spreadAngle / (projectileCount - 1));
 			sideDistance += this.spread / (projectileCount - 1);
@@ -108,7 +108,7 @@ Cannon: extend(Module, weapontraits.ProjectileWeapon,
 	kickback: 30e6,
 	projectileClass: CannonShot,
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
 		if (this._kickbackAccel) {
 			this.ship.v.addMul_(this._kickbackAccel, dt);
@@ -116,11 +116,11 @@ Cannon: extend(Module, weapontraits.ProjectileWeapon,
 		}
 	},
 
-	shoot: function(timestamp)
+	shoot: function(t)
 	{
 		var p = this.ship.relativePos(this.relativePos);
 		var targetDir = this.ship.getModuleTargetPos(this).sub(p);
-		this._kickbackAccel = targetDir.setlen(-this.kickback / this.ship.m);
+		this._kickbackAccel = targetDir.setLen(-this.kickback / this.ship.m);
 	}
 }),
 
@@ -141,15 +141,15 @@ PlasmaSprinkler: extend(Module,
 	projectileClass: PlasmaBall,
 	proxyAttributeCategory: "projectile",
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
-		if (timestamp > this.lastShootTime + this.shootInterval) {
+		if (t > this.lastShootTime + this.shootInterval) {
 			var p = this.ship.relativePos(this.relativePos);
-			this.targetDir.rot_((timestamp - this.lastShootTime) * this.rotateSpeed * this.rotateDir);
-			var v = this.targetDir.setlen(this.projectileSpeed);
-			game.addEntity(PlasmaBall({ p: p, v: v, expire: timestamp + 10, faction: this.ship.faction,
+			this.targetDir.rot_((t - this.lastShootTime) * this.rotateSpeed * this.rotateDir);
+			var v = this.targetDir.setLen(this.projectileSpeed);
+			game.addEntity(PlasmaBall({ p: p, v: v, expire: t + 10, faction: this.ship.faction,
 					bonuses: this.totalBonuses}));
-			this.lastShootTime = timestamp;
+			this.lastShootTime = t;
 		}
 	}
 }),
@@ -168,7 +168,7 @@ Laser: extend(Module,
 	sparkExpireTime: 0.7,
 	sparkSpawnRate: 20,
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
 		var p = this.ship.relativePos(this.relativePos);
 		var targetDir = this.ship.getModuleTargetPos(this).sub_(p);
@@ -187,9 +187,9 @@ Laser: extend(Module,
 		this.laserEndDistance = this.range;
 		if (hit) {
 			if (hit.dist <= this.range) {
-				hit.entity.takeDamage(timestamp, this.damageOverTime * dt);
+				hit.entity.takeDamage(t, this.damageOverTime * dt);
 				this.laserEndDistance = hit.dist + 1;
-				this.spawnSparks(p.add(targetDir.setlen(hit.dist)), hit.entity.v, timestamp, dt);
+				this.spawnSparks(p.add(targetDir.setLen(hit.dist)), hit.entity.v, t, dt);
 			}
 		}
 	},
@@ -198,19 +198,19 @@ Laser: extend(Module,
 	{
 		var p = this.ship.relativePos(this.relativePos);
 		var targetDir = this.ship.getModuleTargetPos(this).sub_(p);
-		models.line.render(this.color, p.add(targetDir.setlen(4.5)), targetDir, this.laserEndDistance);
+		models.line.render(this.color, p.add(targetDir.setLen(4.5)), targetDir, this.laserEndDistance);
 	},
 
-	spawnSparks: function(targetp, targetv, timestamp, dt)
+	spawnSparks: function(targetPos, targetVel, t, dt)
 	{
 		if (Math.random() < this.sparkSpawnRate * dt) {
 			var angle = Math.random() * 2 * Math.PI;
 			var v = new V(Math.cos(angle), Math.sin(angle));
 			v.mul_(this.sparkSpeed * (0.1 + 0.9 * Math.random()));
 			game.addEntity(Debris({
-				p: targetp,
-				v: v.add(targetv),
-				expire: timestamp + (0.2 + Math.random()) * this.sparkExpireTime,
+				p: targetPos,
+				v: v.add(targetVel),
+				expire: t + (0.2 + Math.random()) * this.sparkExpireTime,
 				color: this.sparkColor.slice(0)
 			}));
 		}
@@ -262,14 +262,14 @@ BombLauncher: extend(Module,
 	projectileClass: Bomb,
 	proxyAttributeCategory: "projectile",
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
-		if (timestamp > this.lastShootTime + this.shootInterval &&
+		if (t > this.lastShootTime + this.shootInterval &&
 				input.keyDown("Activate module")) {
 			var p = this.ship.relativePos(this.relativePos);
 			game.addEntity(Bomb({ p: p, v: new V(0, 0),
-					expire: timestamp + 0, faction: this.ship.faction, bonuses: this.totalBonuses}));
-			this.lastShootTime = timestamp;
+					expire: t + 0, faction: this.ship.faction, bonuses: this.totalBonuses}));
+			this.lastShootTime = t;
 		}
 	}
 })

@@ -12,26 +12,26 @@ var traits = {
 // Output: a
 StraightLineMovement:
 {
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
-		this.a.set_(this.v).setlenSafe_(this.acceleration);
+		this.a.set_(this.v).setLenSafe_(this.acceleration);
 	}
 },
 
 
 // AI targeting trait that targets closest enemy after one has died.
 // Input: [target]
-// Output: targetp, [target]
+// Output: targetPos, [target]
 TargetClosestEnemy:
 {
 	priority: -10,
 
 	init: function()
 	{
-		this.targetp = new V(0, 0);
+		this.targetPos = new V(0, 0);
 	},
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
 		// Find target if we don't have isn't one.
 		var self = this;
@@ -41,36 +41,36 @@ TargetClosestEnemy:
 			});
 		}
 
-		// Always set targetp even if no target.
+		// Always set targetPos even if no target.
 		if (this.target)
-			this.targetp.set_(this.target.p);
+			this.targetPos.set_(this.target.p);
 		else
-			this.targetp.setxy_(0, 0);
+			this.targetPos.setxy_(0, 0);
 	}
 },
 
 
 
-// Input: p, v, targetp, acceleration, proximity, breakAcceleration, attackLength
+// Input: p, v, targetPos, acceleration, proximity, breakAcceleration, attackLength
 // Output: attackMode, attackModeStart, moving
 StopAndAttackInCloseRange:
 {
 	priority: -5,
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
 		if (this.attackMode) {
 			this._deaccelerate(dt, this.breakAcceleration);
-			if (timestamp - this.attackModeStart >= this.attackLength) {
+			if (t - this.attackModeStart >= this.attackLength) {
 				this.attackMode = false;
 			}
 		} else {
-			this.a.set_(this.targetp).sub_(this.p).setlen_(1).add_(this.v.setlen(1));
-			this.a.setlen_(this.acceleration);
-			var distSqr = this.p.distSqr(this.targetp);
+			this.a.set_(this.targetPos).sub_(this.p).setLen_(1).add_(this.v.setLen(1));
+			this.a.setLen_(this.acceleration);
+			var distSqr = this.p.distSqr(this.targetPos);
 			if (distSqr < this.proximity * this.proximity) {
 				this.attackMode = true;
-				this.attackModeStart = timestamp;
+				this.attackModeStart = t;
 			}
 		}
 	}
@@ -78,24 +78,24 @@ StopAndAttackInCloseRange:
 
 
 // Accelerates toward target. Turning has some "inertia" determined by turnSpeed.
-// Input: p, v, targetp, acceleration, turnSpeed
+// Input: p, v, targetPos, acceleration, turnSpeed
 // Output: a
 FlyTowardTarget:
 {
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
 		// Use different algo if the entity has rotational physics enabled.
 		if (this.hasOwnProperty("rotv")) {
-			var targetDir = this.targetp.sub(this.p);
+			var targetDir = this.targetPos.sub(this.p);
 			var angle = Math.acos(this.dir.dot(targetDir) / targetDir.len());
 			// Slow down rotation below ~30 degrees to prevent oscillation.
 			var accel = Math.min(1, 2 * angle) * this.maxRotationalAcceleration;
 			this.rota = this.dir.cross(targetDir) > 0 ? accel : -accel;
 			this.a.set_(this.dir).mul_(this.acceleration);
 		} else {
-			this.a.set_(this.targetp).sub_(this.p).setlenSafe_(1);
-			this.a.add_(this.v.setlenSafe(this.turnSpeed));
-			this.a.setlenSafe_(this.acceleration);
+			this.a.set_(this.targetPos).sub_(this.p).setLenSafe_(1);
+			this.a.add_(this.v.setLenSafe(this.turnSpeed));
+			this.a.setLenSafe_(this.acceleration);
 		}
 	}
 },
@@ -121,7 +121,7 @@ Movement:
 		}
 	},
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
 		this.v.addMul_(this.a, dt);
 		this.p.addMul_(this.v, dt);
@@ -151,10 +151,10 @@ AngularMomentum:
 		this.maxRotationalAcceleration = this._rotDragCoefficient * this.turnSpeed;
 		if (!this.dir)
 			this.dir = new V(0, 1);
-		this.dir.setlenSafe_(1);
+		this.dir.setLenSafe_(1);
 	},
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
 		this.rotv += this.rota * dt;
 		this.rotv -= this._rotDragCoefficient * this.rotv * dt;
@@ -184,20 +184,20 @@ Drag:
 // Input: collisionDamage
 CollisionDamage:
 {
-	collide: function(timestamp, dt, other)
+	collide: function(t, dt, other)
 	{
 		if (other.faction !== this.faction)
-			other.takeDamage(timestamp, this.collisionDamage);
+			other.takeDamage(t, this.collisionDamage);
 	}
 },
 
 // Self destructs when collides with an enemy ship.
 DieOnEnemyCollision:
 {
-	collide: function(timestamp, dt, other)
+	collide: function(t, dt, other)
 	{
 		if (other instanceof Ship && other.faction !== this.faction)
-			this.takeDamage(timestamp, this.hp);
+			this.takeDamage(t, this.hp);
 	},
 },
 
@@ -205,7 +205,7 @@ DieOnEnemyCollision:
 // Input: p, explosionRadius, explosionSpeed, [explosionDamage, explosionForce]
 ExplodeOnCollision:
 {
-	collide: function(timestamp, dt, other)
+	collide: function(t, dt, other)
 	{
 		if (!this._exploded) {
 			game.addEntity(Explosion({ p: this.p.clone(), v: other.v.clone(),
@@ -224,7 +224,7 @@ Debris:
 	debrisSpeed: 50,
 	debrisExpireTime: 3,
 
-	die: function(timestamp)
+	die: function(t)
 	{
 		var debrisCount = 3 + this.radius * this.radius / 10;
 		var color = new Float32Array([
@@ -237,7 +237,7 @@ Debris:
 			var v = V.random(1);
 			v.mul_(this.debrisSpeed * (Math.random() + Math.random() + Math.random() - 1.5));
 			v.add_(this.v);
-			var expire = timestamp + (0.3 + Math.random()) * this.debrisExpireTime;
+			var expire = t + (0.3 + Math.random()) * this.debrisExpireTime;
 			game.addEntity(Debris({ p: this.p.clone(), v: v,
 					expire: expire, color: this.color.slice(0)}));
 		}
@@ -249,7 +249,7 @@ Debris:
 // Input: p, lootProbabilityMultiplier
 DropLoot:
 {
-	die: function(timestamp)
+	die: function(t)
 	{
 		if (this.faction === 2) {
 			var rnd = Math.random() / this.lootProbabilityMultiplier;
@@ -281,7 +281,7 @@ DropLoot:
 			}
 
 			if (lootClass) {
-				game.addEntity(lootClass({ p: this.p.clone(), expire: timestamp + 10, module: module}));
+				game.addEntity(lootClass({ p: this.p.clone(), expire: t + 10, module: module}));
 			}
 		}
 	},
@@ -314,7 +314,7 @@ DropLoot:
 // Input: p, v, explosionRadius, explosionSpeed, [explosionDamage, explosionForce,]
 ExplodeOnDeath:
 {
-	die: function(timestamp)
+	die: function(t)
 	{
 		if (!this._exploded) {
 			game.addEntity(Explosion({ p: this.p.clone(), v: this.v.clone(),
@@ -329,10 +329,10 @@ ExplodeOnDeath:
 // Input: expire
 Expire:
 {
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
-		if (timestamp > this.expire)
-			this.takeDamage(timestamp, this.hp);
+		if (t > this.expire)
+			this.takeDamage(t, this.hp);
 	}
 },
 
@@ -344,7 +344,7 @@ DamageReduction:
 {
 	damageReduction: 0,
 
-	takeDamage: function(timestamp, damage)
+	takeDamage: function(t, damage)
 	{
 		this.damageTaken -= this.damageTaken * Math.min(this.damageReduction, 0.90);
 	},

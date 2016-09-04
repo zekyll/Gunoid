@@ -115,24 +115,24 @@ V.prototype =
 		return dx * dx + dy * dy;
 	},
 
-	setlen: function(newLen)
+	setLen: function(newLen)
 	{
 		return this.mul(newLen / this.len());
 	},
 
-	setlen_: function(newLen)
+	setLen_: function(newLen)
 	{
 		this.mul_(newLen / this.len());
 		return this;
 	},
 
-	setlenSafe: function(newLen)
+	setLenSafe: function(newLen)
 	{
 		var len = this.len();
 		return len === 0 ? new V(0, newLen) : this.mul(newLen / len);
 	},
 
-	setlenSafe_: function(newLen)
+	setLenSafe_: function(newLen)
 	{
 		var len = this.len();
 		return len === 0 ? this.setxy_(0, newLen) : this.mul_(newLen / len);

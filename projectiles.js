@@ -82,18 +82,18 @@ var Missile = extend(Projectile, traits.Drag, traits.TargetClosestEnemy, traits.
 	acceleration: 400,
 	dragCoefficient: 0.05,
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
 		var accelDir;
 		if (this.target) {
 			var targetDir = this.target.p.sub(this.p);
-			var e = this.v.rot90left().setlen(1);
+			var e = this.v.rot90left().setLen(1);
 			var targetDirE = e.dot(targetDir);
-			accelDir = e.mul(targetDirE).setlen(1).add(this.v.setlen(2));
+			accelDir = e.mul(targetDirE).setLen(1).add(this.v.setLen(2));
 		} else {
 			accelDir = this.v;
 		}
-		this.a = accelDir.setlen(this.acceleration);
+		this.a = accelDir.setLen(this.acceleration);
 	},
 
 	render: function()
@@ -139,9 +139,9 @@ var Grenade = extend(Projectile, traits.ExplodeOnCollision, traits.ExplodeOnDeat
 	explosionSpeed: 20,
 	explosionForce: 6e6,
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
-		if (this.expire - timestamp <= this.activationDelay) {
+		if (this.expire - t <= this.activationDelay) {
 			this.v.setxy_(0, 0);
 			this.radius += dt * this.growSpeed;
 		}

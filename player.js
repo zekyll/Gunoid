@@ -7,7 +7,7 @@ var Player = extend(Ship, traits.DamageReduction,
 {
 	init: function()
 	{
-		this.targetp = new V(0, 1);
+		this.targetPos = new V(0, 1);
 		this.modules = new Array(3);
 		this.inventory = new Array(40);
 		this.pickupItem(new weapons.Blaster());
@@ -23,18 +23,18 @@ var Player = extend(Ship, traits.DamageReduction,
 	color: colors.player,
 	collisionDamage: 1,
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
-		this.targetp.x = game.camPos.x + game.camWidth * (input.relativeCursorX - 0.5);
-		this.targetp.y = game.camPos.y - game.camHeight * (input.relativeCursorY - 0.5);
+		this.targetPos.x = game.camPos.x + game.camWidth * (input.relativeCursorX - 0.5);
+		this.targetPos.y = game.camPos.y - game.camHeight * (input.relativeCursorY - 0.5);
 
 		this.a.setxy_((input.keyDown("Accelerate right") & 1) - (input.keyDown("Accelerate left") & 1),
 				(input.keyDown("Accelerate up") & 1) - (input.keyDown("Accelerate down") & 1));
 		if (this.a.len() > 0)
-			this.a.setlen_(this.acceleration);
+			this.a.setLen_(this.acceleration);
 	},
 
-	die: function(timestamp)
+	die: function(t)
 	{
 		for (var i = 0; i < 5; ++i) {
 			game.addEntity(Explosion({
@@ -70,7 +70,7 @@ var Player = extend(Ship, traits.DamageReduction,
 
 	render: function()
 	{
-		var targetDir = this.targetp.sub(this.p);
+		var targetDir = this.targetPos.sub(this.p);
 		models.ship.render(this.color, this.p, targetDir);
 	},
 });

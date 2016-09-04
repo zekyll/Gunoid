@@ -57,7 +57,7 @@ StarOrange: extend(Ship, traits.StraightLineMovement,
 	childCount: 12,
 	color: colors.enemyOrange,
 
-	die: function(timestamp)
+	die: function(t)
 	{
 		for (var i = 0; i < this.childCount; ++i) {
 			game.addEntity(enemies.Star({
@@ -150,10 +150,10 @@ KamikazeOrange: extend(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInCl
 	explosionForce: 30e6,
 	color: colors.enemyOrange,
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
-		if (this.attackMode && timestamp - this.attackModeStart > this.attackDelay)
-			this.takeDamage(timestamp, this.hp); // Explodes on death.
+		if (this.attackMode && t - this.attackModeStart > this.attackDelay)
+			this.takeDamage(t, this.hp); // Explodes on death.
 	},
 
 	render: function()
@@ -195,10 +195,10 @@ FencerYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	oscillationSpeed: 2,
 	color: colors.enemyYellow,
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
 		this.laserTargetDir.rot_(this.beamRotateSpeed * dt);
-		var range = (0.5 * Math.sin(timestamp * this.oscillationSpeed + this.oscillationPhase) + 0.5) * this.range;
+		var range = (0.5 * Math.sin(t * this.oscillationSpeed + this.oscillationPhase) + 0.5) * this.range;
 		for (var i = 0; i < this.beamCount; ++i) {
 			if (this.modules[i]) //TODO do all death handling after step() so modules don't unequip during step?
 				this.modules[i].range = range;
@@ -317,9 +317,9 @@ DestroyerOrange: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	turretRotateSpeed: 0.9,
 	color: colors.enemyOrange,
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
-		this.turretDir.rotToward_(this.targetp.sub(this.p), dt * this.turretRotateSpeed);
+		this.turretDir.rotToward_(this.targetPos.sub(this.p), dt * this.turretRotateSpeed);
 	},
 
 	getModuleTargetPos: function(module)
@@ -342,7 +342,7 @@ GunnerGreen: extend(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInClose
 	init: function()
 	{
 		this.lastShootTime = -1e99;
-		this.targetPos = undefined;
+		this.fixedTargetPos = undefined;
 	},
 
 	hp: 100,
@@ -358,25 +358,25 @@ GunnerGreen: extend(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInClose
 	attackDelay: 0.4,
 	color: colors.enemyGreen,
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
 		if (this.attackMode) {
-			var attackLength = timestamp - this.attackModeStart;
+			var attackLength = t - this.attackModeStart;
 			if (attackLength >= this.attackDelay) {
-				if (!this.targetPos)
-					this.targetPos = this.targetp.clone();
-				this.fireBullets(timestamp, this.targetPos);
+				if (!this.fixedTargetPos)
+					this.fixedTargetPos = this.targetPos.clone();
+				this.fireBullets(t, this.fixedTargetPos);
 			}
 		} else {
-			this.targetPos = null;
+			this.fixedTargetPos = null;
 		}
 	},
 
 	render: function()
 	{
 		models.enemyGunnerGreen.render(this.color, this.p, this.v);
-		if (this.targetPos)
-			var dir = this.targetPos.sub(this.p);
+		if (this.fixedTargetPos)
+			var dir = this.fixedTargetPos.sub(this.p);
 		else
 			var dir = this.v;
 		models.turretSmall.render(colors.enemyGreen2, this.relativePosXY(0, 0.5), dir);
@@ -384,16 +384,16 @@ GunnerGreen: extend(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInClose
 		models.flame.render(colors.flameYellow, this.relativePosXY(1, -1.5), this.v);
 	},
 
-	fireBullets: function(timestamp, targetp)
+	fireBullets: function(t, targetPos)
 	{
-		if (timestamp > this.lastShootTime + this.shootInterval) {
-			var v = targetp.sub(this.p);
+		if (t > this.lastShootTime + this.shootInterval) {
+			var v = targetPos.sub(this.p);
 			if (v.len() < 0.001)
 				v = new V(0, 1);
-			v.setlen_(this.bulletSpeed);
+			v.setLen_(this.bulletSpeed);
 			game.addEntity(BlasterShot({p: this.p.clone(), v: v,
-					expire: timestamp + 10, faction: this.faction}));
-			this.lastShootTime = timestamp;
+					expire: t + 10, faction: this.faction}));
+			this.lastShootTime = t;
 		}
 	}
 }),
@@ -418,15 +418,16 @@ CarrierYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget, t
 	dragCoefficient: 0.1,
 	shootInterval: 2,
 	bulletSpeed: 80,
+	turnSpeed: 0.2,
 	color: colors.enemyYellow,
 	spawnInterval: 2,
 
-	step: function(timestamp, dt)
+	step: function(t, dt)
 	{
 		this.frontTurretDir.rotToward_(this.frontTurretTargetP.sub(this.relativePosXY(0, 37.5)), 2 * dt);
 
-		this.fireBullets(timestamp);
-		this.spawnShips(timestamp);
+		this.fireBullets(t);
+		this.spawnShips(t);
 	},
 
 	render: function()
@@ -434,7 +435,7 @@ CarrierYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget, t
 		models.enemyCarrierYellow.render(this.color, this.p, this.dir);
 		for (var i = -1; i <= 1; i += 2) {
 			var turretp = this.relativePosXY(21.5 * i, 7.5);
-			var turretDir = this.targetp.sub(turretp);
+			var turretDir = this.targetPos.sub(turretp);
 			models.turretMedium.render(colors.enemyYellow2, turretp, turretDir);
 			models.flame.render(colors.flameYellow, this.relativePosXY(8 * i, -25), this.dir, 3);
 		}
@@ -442,19 +443,19 @@ CarrierYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget, t
 		models.turretMedium.render(colors.enemyYellow2, this.relativePosXY(0, 37.5), this.frontTurretDir);
 	},
 
-	fireBullets: function(timestamp)
+	fireBullets: function(t)
 	{
-		if (timestamp > this.lastShootTime + this.shootInterval) {
+		if (t > this.lastShootTime + this.shootInterval) {
 			// Side turrets.
 			for (var i = -1; i <= 1; i += 2) {
 				var turretp = this.relativePosXY(21.5 * i, 7.5);
-				var v = this.targetp.sub(this.p);
+				var v = this.targetPos.sub(this.p);
 				if (v.len() < 0.001)
 					v = new V(0, 1);
-				v.setlen_(this.bulletSpeed);
-				var expire = this.p.dist(this.targetp) / this.bulletSpeed;
+				v.setLen_(this.bulletSpeed);
+				var expire = this.p.dist(this.targetPos) / this.bulletSpeed;
 				game.addEntity(Grenade({p: turretp, v: v,
-						expire: timestamp + expire, faction: this.faction}));
+						expire: t + expire, faction: this.faction}));
 			}
 
 			// Front turret. Random direction.
@@ -462,19 +463,19 @@ CarrierYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget, t
 			var v = this.frontTurretTargetP.sub(turretp);
 			if (v.len() < 0.001)
 				v = new V(0, 1);
-			v.setlen_(this.bulletSpeed);
+			v.setLen_(this.bulletSpeed);
 			var expire = turretp.dist(this.frontTurretTargetP) / this.bulletSpeed;
 			game.addEntity(Grenade({p: turretp, v: v,
-					expire: timestamp + expire, faction: this.faction}));
+					expire: t + expire, faction: this.faction}));
 			this.frontTurretTargetP = game.randomPosition();
 
-			this.lastShootTime = timestamp;
+			this.lastShootTime = t;
 		}
 	},
 
-	spawnShips: function(timestamp)
+	spawnShips: function(t)
 	{
-		if (timestamp > this.lastSpawnTime + this.spawnInterval) {
+		if (t > this.lastSpawnTime + this.spawnInterval) {
 			for (var i = -1; i <= 1; i += 2) {
 				game.addEntity(enemies.Kamikaze({
 					p: this.relativePosXY(20 * i, 30),
@@ -482,7 +483,7 @@ CarrierYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget, t
 					faction: this.faction
 				}));
 			}
-			this.lastSpawnTime = timestamp;
+			this.lastSpawnTime = t;
 		}
 	},
 }),
