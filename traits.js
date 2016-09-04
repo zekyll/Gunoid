@@ -84,9 +84,19 @@ FlyTowardTarget:
 {
 	step: function(timestamp, dt)
 	{
-		this.a.set_(this.targetp).sub_(this.p).setlenSafe_(1);
-		this.a.add_(this.v.setlenSafe(this.turnSpeed));
-		this.a.setlenSafe_(this.acceleration);
+		// Use different algo if the entity has rotational physics enabled.
+		if (this.hasOwnProperty("rotv")) {
+			var targetDir = this.targetp.sub(this.p);
+			var angle = Math.acos(this.dir.dot(targetDir) / targetDir.len());
+			// Slow down rotation below ~30 degrees to prevent oscillation.
+			var accel = Math.min(1, 2 * angle) * this.maxRotationalAcceleration;
+			this.rota = this.dir.cross(targetDir) > 0 ? accel : -accel;
+			this.a.set_(this.dir).mul_(this.acceleration);
+		} else {
+			this.a.set_(this.targetp).sub_(this.p).setlenSafe_(1);
+			this.a.add_(this.v.setlenSafe(this.turnSpeed));
+			this.a.setlenSafe_(this.acceleration);
+		}
 	}
 },
 
@@ -122,6 +132,34 @@ Movement:
 	{
 		return Math.sqrt(this.acceleration / this.dragCoefficient);
 	}
+},
+
+
+// Simulates rotational momentum and acceleration.
+// Input: [dir, rotv, rota]
+// Output: dir, rotv, maxRotationalAcceleration
+AngularMomentum:
+{
+	priority: 55, // We want this executed after AI etc.
+	_rotDragCoefficient: 4.0,
+
+	init: function()
+	{
+		this.rotv = 0;
+		this.rota = 0;
+		// Calculate maximum acceleration to match the turnSpeed.
+		this.maxRotationalAcceleration = this._rotDragCoefficient * this.turnSpeed;
+		if (!this.dir)
+			this.dir = new V(0, 1);
+		this.dir.setlenSafe_(1);
+	},
+
+	step: function(timestamp, dt)
+	{
+		this.rotv += this.rota * dt;
+		this.rotv -= this._rotDragCoefficient * this.rotv * dt;
+		this.dir.rot_(this.rotv * dt);
+	},
 },
 
 

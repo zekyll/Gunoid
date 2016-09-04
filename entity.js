@@ -64,14 +64,14 @@ var Ship = extend(Entity, traits.Movement, traits.Drag, traits.Debris, traits.Co
 
 	relativePosXY: function(x, y)
 	{
-		var forward = this.v.setlenSafe(1);
+		var forward = (this.dir ? this.dir.clone() : this.v.setlenSafe(1));
 		var right = forward.rot90right();
 		return forward.mul_(y).add_(right.mul_(x)).add_(this.p);
 	},
 
 	relativePos: function(relPos)
 	{
-		var forward = this.v.setlenSafe(1);
+		var forward = (this.dir ? this.dir.clone() : this.v.setlenSafe(1));
 		var right = forward.rot90right();
 		return forward.mul_(relPos.y).add_(right.mul_(relPos.x)).add_(this.p);
 	},

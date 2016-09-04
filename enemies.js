@@ -219,7 +219,7 @@ FencerYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 
 
 // Rotates towards enemy and shoots cannon with low rate of fire.
-DestroyerGreen: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
+DestroyerGreen: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget, traits.AngularMomentum,
 {
 	init: function()
 	{
@@ -238,22 +238,30 @@ DestroyerGreen: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	m: 20e3,
 	radius: 10,
 	collisionDamage: 15,
-	acceleration: 25,
+	acceleration: 30,
 	dragCoefficient: 0.1,
-	turnSpeed: 1,
+	turnSpeed: 2,
 	color: colors.enemyGreen,
 	level: 2,
 
+	getModuleTargetPos: function(module)
+	{
+		// Always shoots forward.
+		return this.p.add(this.dir);
+	},
+
 	render: function()
 	{
-		models.enemyDestroyerGreen.render(this.color, this.p, this.v);
-		models.flame.render(colors.flameYellow, this.relativePosXY(-7.9, -8.4), this.v, 1.5);
-		models.flame.render(colors.flameYellow, this.relativePosXY(7.9, -8.4), this.v, 1.5);
+		models.enemyDestroyerGreen.render(this.color, this.p, this.dir);
+		if (this.rota < 0.5 * this.maxRotationalAcceleration)
+			models.flame.render(colors.flameYellow, this.relativePosXY(-7.9, -8.4), this.dir, 1.5);
+		if (this.rota > -0.5 * this.maxRotationalAcceleration)
+			models.flame.render(colors.flameYellow, this.relativePosXY(7.9, -8.4), this.dir, 1.5);
 	},
 }),
 
 
-DestroyerYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
+DestroyerYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget, traits.AngularMomentum,
 {
 	init: function()
 	{
@@ -266,7 +274,7 @@ DestroyerYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	collisionDamage: 15,
 	acceleration: 14,
 	dragCoefficient: 0.1,
-	turnSpeed: 5,
+	turnSpeed: 0.3,
 	shootInterval: 1.5,
 	bulletSpeed: 80,
 	color: colors.enemyYellow,
@@ -278,7 +286,7 @@ DestroyerYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 
 	render: function()
 	{
-		models.enemyDestroyerYellow.render(this.color, this.p, this.v);
+		models.enemyDestroyerYellow.render(this.color, this.p, this.dir);
 	},
 
 	fireBullets: function(timestamp)
@@ -297,11 +305,10 @@ DestroyerYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 
 
 // Medium sized ship with a slow-aiming laser turret.
-DestroyerOrange: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
+DestroyerOrange: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget, traits.AngularMomentum,
 {
 	init: function()
 	{
-		this.lastShootTime = -1;
 		this.equipModule(weapons.Laser(), 0);
 		this.modules[0].damageOverTime = 60;
 		this.modules[0].model = models.turretMedium;
@@ -314,9 +321,9 @@ DestroyerOrange: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	m: 70e3,
 	radius: 16,
 	collisionDamage: 20,
-	acceleration: 25,
+	acceleration: 20,
 	dragCoefficient: 0.05,
-	turnSpeed: 2.5,
+	turnSpeed: 0.4,
 	turretRotateSpeed: 0.9,
 	color: colors.enemyOrange,
 
@@ -332,9 +339,9 @@ DestroyerOrange: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 
 	render: function()
 	{
-		models.enemyDestroyerOrange.render(this.color, this.p, this.v);
-		models.flame.render(colors.flameYellow, this.relativePosXY(-4, -15.2), this.v, 1.5);
-		models.flame.render(colors.flameYellow, this.relativePosXY(4, -15.2), this.v, 1.5);
+		models.enemyDestroyerOrange.render(this.color, this.p, this.dir);
+		models.flame.render(colors.flameYellow, this.relativePosXY(-4, -15.2), this.dir, 1.5);
+		models.flame.render(colors.flameYellow, this.relativePosXY(4, -15.2), this.dir, 1.5);
 	},
 }),
 
@@ -403,7 +410,7 @@ GunnerGreen: extend(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInClose
 
 
 // Launcher small ships and shoots 3 grenade launchers at regular intervals.
-CarrierYellow: extend(Ship, traits.TargetClosestEnemy,
+CarrierYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget, traits.AngularMomentum,
 {
 	init: function()
 	{
@@ -426,12 +433,6 @@ CarrierYellow: extend(Ship, traits.TargetClosestEnemy,
 
 	step: function(timestamp, dt)
 	{
-		var targetDir = this.targetp.sub(this.p).setlen(1);
-		targetDir.add_(this.v.setlen(5));
-		targetDir.add_(new V(0,0).sub(this.p).setlen(1));
-		var a = targetDir.setlen(this.acceleration);
-		this.v.add_(a.mul(dt));
-
 		this.frontTurretDir.rotToward_(this.frontTurretTargetP.sub(this.relativePosXY(0, 37.5)), 2 * dt);
 
 		this.fireBullets(timestamp);
@@ -440,12 +441,12 @@ CarrierYellow: extend(Ship, traits.TargetClosestEnemy,
 
 	render: function()
 	{
-		models.enemyCarrierYellow.render(this.color, this.p, this.v);
+		models.enemyCarrierYellow.render(this.color, this.p, this.dir);
 		for (var i = -1; i <= 1; i += 2) {
 			var turretp = this.relativePosXY(21.5 * i, 7.5);
 			var turretDir = this.targetp.sub(turretp);
 			models.turretMedium.render(colors.enemyYellow2, turretp, turretDir);
-			models.flame.render(colors.flameYellow, this.relativePosXY(8 * i, -25), this.v, 3);
+			models.flame.render(colors.flameYellow, this.relativePosXY(8 * i, -25), this.dir, 3);
 		}
 
 		models.turretMedium.render(colors.enemyYellow2, this.relativePosXY(0, 37.5), this.frontTurretDir);
@@ -487,7 +488,7 @@ CarrierYellow: extend(Ship, traits.TargetClosestEnemy,
 			for (var i = -1; i <= 1; i += 2) {
 				game.addEntity(enemies.Kamikaze({
 					p: this.relativePosXY(20 * i, 30),
-					dir: this.v.setlenSafe(1),
+					dir: this.dir.clone(),
 					faction: this.faction
 				}));
 			}
