@@ -206,6 +206,7 @@ var game =
 			"Main Menu": 27, // Esc
 			"Inventory": 9, // Tab
 			"Demo": 79, // O
+			"Shift": 16,
 		});
 
 		input.registerKeyPressHandler("New game", function() {

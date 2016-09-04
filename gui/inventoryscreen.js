@@ -73,6 +73,13 @@ var ItemSlot = inherit(Widget,
 				dragObject.sourceSlot.put(replacedItem);
 		}
 	},
+
+	onMouseClick: function(p)
+	{
+		if (input.keyDown("Shift")) {
+			this.put(null);
+		}
+	},
 });
 
 
