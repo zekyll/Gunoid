@@ -10,7 +10,8 @@ var Module = extend(Object, traits.HasAttributes,
 	init: function()
 	{
 		this.ship = null;
-		this.relativePos = new V(0, 0);
+		if (!this.relativePos)
+			this.relativePos = new V(0, 0);
 		this.recalculateAttributes();
 	},
 

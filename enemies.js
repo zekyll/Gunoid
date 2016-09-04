@@ -224,7 +224,7 @@ DestroyerGreen: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget, 
 	init: function()
 	{
 		this.equipModule(weapons.Cannon({
-			relativePos: new V(0, 7),
+			relativePos: new V(0, 10),
 			bonuses: {
 				"Rate of fire": -0.6,
 				"Projectile damage": -0.9,
@@ -247,7 +247,7 @@ DestroyerGreen: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget, 
 	getModuleTargetPos: function(module)
 	{
 		// Always shoots forward.
-		return this.p.add(this.dir);
+		return this.p.addMul(this.dir, 100);
 	},
 
 	render: function()
@@ -265,6 +265,16 @@ DestroyerYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 {
 	init: function()
 	{
+		this.equipModule(weapons.Blaster({
+			bonuses: {
+				"Rate of fire": -0.85,
+				"Projectile speed": -0.7
+			},
+			model: models.turretMedium,
+			modelColor: colors.enemyYellow2,
+			projectileExpire: 10
+		}), 0);
+
 		this.lastShootTime = -1;
 	},
 
@@ -275,32 +285,12 @@ DestroyerYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	acceleration: 14,
 	dragCoefficient: 0.1,
 	turnSpeed: 0.3,
-	shootInterval: 1.5,
-	bulletSpeed: 80,
 	color: colors.enemyYellow,
-
-	step: function(timestamp, dt)
-	{
-		this.fireBullets(timestamp);
-	},
 
 	render: function()
 	{
 		models.enemyDestroyerYellow.render(this.color, this.p, this.dir);
 	},
-
-	fireBullets: function(timestamp)
-	{
-		if (timestamp > this.lastShootTime + this.shootInterval) {
-			var v = this.targetp.sub(this.p);
-			if (v.len() < 0.001)
-				v = new V(0, 1);
-			v.setlen_(this.bulletSpeed);
-			game.addEntity(BlasterShot({p: this.p.clone(), v: v,
-					expire: timestamp + 10, faction: this.faction}));
-			this.lastShootTime = timestamp;
-		}
-	}
 }),
 
 
