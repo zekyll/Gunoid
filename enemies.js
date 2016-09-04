@@ -141,7 +141,7 @@ KamikazeOrange: extend(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInCl
 	dragCoefficient: 0.04,
 	turnSpeed: 4,
 	breakAcceleration: 400,
-	attackLength: 1e9,
+	attackLength: 1e99,
 	proximity: 40,
 	attackDelay: 1.2,
 	explosionRadius: 100,
@@ -275,7 +275,7 @@ DestroyerYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 			projectileExpire: 10
 		}), 0);
 
-		this.lastShootTime = -1;
+		this.lastShootTime = -1e99;
 	},
 
 	hp: 600,
@@ -341,7 +341,7 @@ GunnerGreen: extend(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInClose
 {
 	init: function()
 	{
-		this.lastShootTime = -1;
+		this.lastShootTime = -1e99;
 		this.targetPos = undefined;
 	},
 
@@ -404,8 +404,8 @@ CarrierYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget, t
 {
 	init: function()
 	{
-		this.lastShootTime = -1;
-		this.lastSpawnTime = -1;
+		this.lastShootTime = -1e99;
+		this.lastSpawnTime = -1e99;
 		this.frontTurretTargetP = game.randomPosition();
 		this.frontTurretDir = V.random(1);
 	},

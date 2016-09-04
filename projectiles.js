@@ -15,7 +15,7 @@ var Projectile = extend(Entity, traits.Movement, traits.Expire, traits.HasAttrib
 	},
 
 	hp: 1,
-	expire: 1e9,
+	expire: 1e99,
 	attributeCategory: "projectile",
 
 	canCollide: function(other)

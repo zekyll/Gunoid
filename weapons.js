@@ -129,7 +129,7 @@ PlasmaSprinkler: extend(Module,
 {
 	init: function()
 	{
-		this.lastShootTime = -1;
+		this.lastShootTime = -1e99;
 		this.targetDir = V.random(1);
 		this.rotateDir = Math.random() < 0.5 ? 1 : -1;
 	},
@@ -234,7 +234,7 @@ MissileLauncher: extend(Module, weapontraits.ProjectileWeapon,
 {
 	init: function()
 	{
-		this.lastShootTime = -1;
+		this.lastShootTime = -1e99;
 	},
 
 	name: "Missile Launcher",
@@ -252,7 +252,7 @@ BombLauncher: extend(Module,
 {
 	init: function()
 	{
-		this.lastShootTime = -1;
+		this.lastShootTime = -1e99;
 	},
 
 	name: "Bomb Launcher",

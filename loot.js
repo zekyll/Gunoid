@@ -9,7 +9,7 @@
 var Loot = extend(Entity, traits.Expire,
 {
 	hp: 1,
-	expire: 1e9,
+	expire: 1e99,
 	radius: 5,
 	faction: 1,
 	color: colors.loot,

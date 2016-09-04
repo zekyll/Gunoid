@@ -179,7 +179,7 @@ var Explosion = extend(Entity, traits.Movement, traits.Drag,
 
 	force: 0,
 	damage: 0,
-	hp: 1e9,
+	hp: 1e99,
 	dragCoefficient: 0.05,
 	startRadius: 2,
 	fadeTime: 0.3,
@@ -274,8 +274,8 @@ var ShieldEntity = extend(Entity, traits.CollisionDamage,
 		this._lastDamageTime = 0;
 	},
 
-	maxHp: 1e9, //TODO Infinity?
-	m: 1e9,
+	maxHp: 1e99,
+	m: 1e99,
 	regen: 0,
 	regenDelay: 0,
 	inactiveRegenDelay: 0,
@@ -324,8 +324,8 @@ var ShieldEntity = extend(Entity, traits.CollisionDamage,
 // Input: p, radius, model, dir, color
 var Obstacle = extend(Entity, traits.Movement, traits.Drag, traits.Debris, traits.CollisionDamage,
 {
-	hp: 1e9,
-	m: 1e9,
+	hp: 1e99,
+	m: 1e99,
 	color: colors.asteroid,
 	dragCoefficient: 0.02,
 	collisionDamage: 1,
