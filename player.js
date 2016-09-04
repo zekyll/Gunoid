@@ -14,6 +14,7 @@ var Player = extend(Ship,
 	},
 
 	hp: 100,
+	maxHp: 100,
 	m: 10e3,
 	radius: 7,
 	faction: 1,

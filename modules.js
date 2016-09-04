@@ -25,7 +25,7 @@ var Module = extend(Object, traits.HasAttributes,
 	{
 	},
 
-	step: function()
+	step: function(timestamp, dt)
 	{
 	},
 
@@ -78,6 +78,21 @@ Shield: extend(Module,
 		this.shield.regen = 0;
 		this.shield = null;
 	},
+}),
+
+
+// Repairs ship over time.
+RepairModule: extend(Module,
+{
+	name: "Repair module",
+	modelName: "itemRepairModule",
+	description: "Restore's hit points over time.",
+	repairSpeed: 0.5,
+
+	step: function(timestamp, dt)
+	{
+		this.ship.hp = Math.min(this.ship.hp + dt * this.repairSpeed, this.ship.maxHp);
+	}
 }),
 
 

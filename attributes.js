@@ -60,6 +60,12 @@ var attributes =
 		applyBonus: function(value, bonus) { return value / (1 + bonus); }
 	},
 
+	"Repair speed": {
+		property: "repairSpeed",
+		decimals: 1,
+		maxBonus: 2
+	},
+
 	"Shield hit points": {
 		property: "shieldMaxHp",
 		simpleName: "Hit points",
