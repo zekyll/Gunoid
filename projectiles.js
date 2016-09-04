@@ -25,6 +25,21 @@ var Projectile = extend(Entity, traits.Movement, traits.Expire, traits.HasAttrib
 });
 
 
+var CannonShot = extend(Projectile, traits.CollisionDamage, traits.ExplodeOnCollision,
+{
+	radius: 2,
+	collisionDamage: 500,
+	m: 200,
+	explosionRadius: 6,
+	explosionSpeed: 20,
+
+	render: function()
+	{
+		models.blasterShot.render(this.color, this.p, this.v, 2);
+	}
+});
+
+
 var BlasterShot = extend(Projectile, traits.CollisionDamage, traits.ExplodeOnCollision,
 {
 	radius: 1,

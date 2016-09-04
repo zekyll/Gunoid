@@ -11,6 +11,13 @@ var attributes =
 		maxBonus: 0.5
 	},
 
+	"Kickback": {
+		property: "kickback",
+		positiveBonusType: 1, // Negative
+		maxBonus: 0.5,
+		displayValue: function(value) { return value * 1e-6; }
+	},
+
 	"Projectile count": {
 		property: "projectileCount",
 		simpleName: "Projectiles",

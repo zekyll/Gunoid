@@ -1,5 +1,5 @@
 
-/* global Ship, game, models, V, colors, modules, Explosion, traits, Grenade */
+/* global Ship, game, models, V, colors, modules, Explosion, traits, Grenade, weapons */
 
 "use strict";
 
@@ -215,6 +215,41 @@ FencerYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	{
 		models.enemyFencerYellow.render(this.color, this.p, this.laserTargetDir);
 	}
+}),
+
+
+// Rotates towards enemy and shoots cannon with low rate of fire.
+DestroyerGreen: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
+{
+	init: function()
+	{
+		this.equipModule(weapons.Cannon({
+			relativePos: new V(0, 7),
+			bonuses: {
+				"Rate of fire": -0.6,
+				"Projectile damage": -0.9,
+				"Projectile speed": -0.3,
+				"Kickback": -0.5,
+			}
+		}), 0);
+	},
+
+	hp: 400,
+	m: 20e3,
+	radius: 10,
+	collisionDamage: 15,
+	acceleration: 25,
+	dragCoefficient: 0.1,
+	turnSpeed: 1,
+	color: colors.enemyGreen,
+	level: 2,
+
+	render: function()
+	{
+		models.enemyDestroyerGreen.render(this.color, this.p, this.v);
+		models.flame.render(colors.flameYellow, this.relativePosXY(-7.9, -8.4), this.v, 1.5);
+		models.flame.render(colors.flameYellow, this.relativePosXY(7.9, -8.4), this.v, 1.5);
+	},
 }),
 
 

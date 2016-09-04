@@ -22,24 +22,29 @@ ProjectileWeapon:
 	step: function(timestamp, dt)
 	{
 		if (timestamp > this._lastShootTime + this.shootInterval) {
-			var p = this.ship.relativePos(this.relativePos);
-			var targetDir = this.ship.getModuleTargetPos(this).sub(p);
-			if (targetDir.len() < 0.001)
-				targetDir = new V(0, 1);
-			targetDir.rot_(-this.spreadAngle / 2);
-			var projectileCount = this.projectileCount || 1;
-			var sideDir = targetDir.rot90left().setlen_(1);
-			var sideDistance = -this.spread / 2;
-			for (var i = 0; i < Math.round(projectileCount); ++i) {
-				var v = targetDir.setlen(this.projectileSpeed);
-				game.addEntity(this.projectileClass({
-						p: p.addMul(sideDir, sideDistance), v: v,
-						expire: timestamp + this.projectileExpire,
-						faction: this.ship.faction, bonuses: this.totalBonuses}));
-				targetDir.rot_(this.spreadAngle / (projectileCount - 1));
-				sideDistance += this.spread / (projectileCount - 1);
-			}
+			this.shoot(timestamp);
 			this._lastShootTime = timestamp;
+		}
+	},
+
+	shoot: function(timestamp)
+	{
+		var p = this.ship.relativePos(this.relativePos);
+		var targetDir = this.ship.getModuleTargetPos(this).sub(p);
+		if (targetDir.len() < 0.001)
+			targetDir = new V(0, 1);
+		targetDir.rot_(-this.spreadAngle / 2);
+		var projectileCount = this.projectileCount || 1;
+		var sideDir = targetDir.rot90left().setlen_(1);
+		var sideDistance = -this.spread / 2;
+		for (var i = 0; i < Math.round(projectileCount); ++i) {
+			var v = targetDir.setlen(this.projectileSpeed);
+			game.addEntity(this.projectileClass({
+					p: p.addMul(sideDir, sideDistance), v: v,
+					expire: timestamp + this.projectileExpire,
+					faction: this.ship.faction, bonuses: this.totalBonuses}));
+			targetDir.rot_(this.spreadAngle / (projectileCount - 1));
+			sideDistance += this.spread / (projectileCount - 1);
 		}
 	}
 }
@@ -89,6 +94,34 @@ SpreadGun: extend(Module, weapontraits.ProjectileWeapon,
 	projectileExpire: 5,
 	spreadAngle: 90 / 360 * (2 * Math.PI),
 	projectileClass: PlasmaBall
+}),
+
+
+Cannon: extend(Module, weapontraits.ProjectileWeapon,
+{
+	name: "Cannon",
+	//modelName: "itemCannon",
+	description: "Powerful weapon with kickback.",
+	shootInterval: 2,
+	projectileSpeed: 250,
+	projectileExpire: 3,
+	kickback: 30e6,
+	projectileClass: CannonShot,
+
+	step: function(timestamp, dt)
+	{
+		if (this._kickbackAccel) {
+			this.ship.v.addMul_(this._kickbackAccel, dt);
+			this._kickbackAccel.mul_(1 - 5.0 * dt);
+		}
+	},
+
+	shoot: function(timestamp)
+	{
+		var p = this.ship.relativePos(this.relativePos);
+		var targetDir = this.ship.getModuleTargetPos(this).sub(p);
+		this._kickbackAccel = targetDir.setlen(-this.kickback / this.ship.m);
+	}
 }),
 
 
