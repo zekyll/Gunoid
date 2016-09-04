@@ -151,8 +151,8 @@ var InventoryScreen = inherit(Widget,
 			this.player = player;
 			this.item = player.modules[this.idx];
 		};
-		this.addChild("equippedModuleGrid", new ItemSlotGrid(new Rect(70, 110, 190, 150),
-				1, 3, this.itemInfo, slotUpdate, slotPut));
+		this.addChild("equippedModuleGrid", new ItemSlotGrid(new Rect(50, 110, 210, 150),
+				1, 4, this.itemInfo, slotUpdate, slotPut));
 	},
 
 	update: function(player)
