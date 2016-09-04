@@ -16,6 +16,8 @@ Star: extend(Ship, traits.StraightLineMovement,
 	acceleration: 7,
 	dragCoefficient: 0.001,
 	color: colors.enemyGreen,
+	level: 0,
+	difficulty: -2,
 
 	render: function()
 	{
@@ -38,6 +40,8 @@ StarYellow: extend(Ship, traits.StraightLineMovement,
 	acceleration: 2,
 	dragCoefficient: 0.001,
 	color: colors.enemyYellow,
+	level: 13,
+	difficulty: 4,
 
 	render: function()
 	{
@@ -56,6 +60,7 @@ StarOrange: extend(Ship, traits.StraightLineMovement,
 	dragCoefficient: 0.001,
 	childCount: 12,
 	color: colors.enemyOrange,
+	level: 22,
 
 	die: function(t)
 	{
@@ -90,6 +95,7 @@ Kamikaze: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	explosionDamage: 30,
 	explosionForce: 4e6,
 	color: colors.enemyGreen,
+	level: 1,
 
 	render: function()
 	{
@@ -121,6 +127,7 @@ KamikazeYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	explosionDamage: 30,
 	explosionForce: 4e6,
 	color: colors.enemyYellow,
+	level: 10,
 
 	render: function()
 	{
@@ -149,6 +156,7 @@ KamikazeOrange: extend(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInCl
 	explosionDamage: 80,
 	explosionForce: 30e6,
 	color: colors.enemyOrange,
+	level: 25,
 
 	step: function(t, dt)
 	{
@@ -182,6 +190,7 @@ FencerYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 		this.laserTargetDir = V.random(1000);
 	},
 
+	level: 17,
 	range: 400,
 	hp: 400,
 	m: 30e3,
@@ -286,6 +295,7 @@ DestroyerYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 	dragCoefficient: 0.1,
 	turnSpeed: 0.3,
 	color: colors.enemyYellow,
+	level: 5,
 
 	render: function()
 	{
@@ -307,6 +317,7 @@ DestroyerOrange: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 		this.turretDir = V.random(100);
 	},
 
+	level: 25,
 	hp: 1400,
 	m: 70e3,
 	radius: 16,
@@ -345,6 +356,7 @@ GunnerGreen: extend(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInClose
 		this.fixedTargetPos = undefined;
 	},
 
+	level: 8,
 	hp: 100,
 	m: 3e3,
 	radius: 4,
@@ -410,6 +422,8 @@ CarrierYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget, t
 		this.frontTurretDir = V.random(1);
 	},
 
+	level: 20,
+	difficulty: 6,
 	hp: 5000,
 	m: 500e3,
 	radius: 35,

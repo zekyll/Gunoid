@@ -288,9 +288,14 @@ DropLoot:
 
 	_getRandomBonuses: function(moduleClass)
 	{
+		var lootLevel = this.level + (this.difficulty || 0);
+		var bonusCount = Math.round(2 + lootLevel * 0.1);
+		var negativeBonusChance = 0.6 - lootLevel * 0.02;
+		var bonusScaleFactor = 0.2 + lootLevel * 0.05;
+
 		var bonuses = {};
 		var attrNames = moduleClass.prototype.getAttributeNames();
-		for (var i = 0; i < Math.min(2, attrNames.length); ++i) {
+		for (var i = 0; i < Math.min(bonusCount, attrNames.length); ++i) {
 			var attrIdx = Math.floor(Math.random() * attrNames.length);
 
 			// Don't allow same bonus twice.
@@ -300,9 +305,8 @@ DropLoot:
 			}
 
 			var attr = attributes[attrNames[attrIdx]];
-			var bonusSize = attr.maxBonus * (Math.random() + Math.random()) * 0.5;
-			if (Math.random() < 0.25)
-				bonusSize *= -0.5;
+			var bonusSize = Math.random() < negativeBonusChance ? -0.5 : bonusScaleFactor;
+			bonusSize *= attr.maxBonus * (Math.random() + Math.random()) * 0.5;
 			bonuses[attrNames[attrIdx]] = bonusSize;
 		}
 		return bonuses;
