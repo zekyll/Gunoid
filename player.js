@@ -3,7 +3,7 @@
 
 "use strict";
 
-var Player = extend(Ship,
+var Player = extend(Ship, traits.DamageReduction,
 {
 	init: function()
 	{

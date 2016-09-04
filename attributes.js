@@ -11,6 +11,13 @@ var attributes =
 		maxBonus: 0.5
 	},
 
+	"Damage reduction": {
+		property: "damageReduction",
+		unit: "%",
+		maxBonus: 1,
+		displayValue: function(value) { return value * 100; }
+	},
+
 	"Kickback": {
 		property: "kickback",
 		positiveBonusType: 1, // Negative

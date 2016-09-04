@@ -299,4 +299,17 @@ Expire:
 },
 
 
+// Percentage reduction of taken damage.
+// Input: damageReduction, damageTaken
+// Output: damageTaken
+DamageReduction:
+{
+	damageReduction: 0,
+
+	takeDamage: function(timestamp, damage)
+	{
+		this.damageTaken -= this.damageTaken * Math.min(this.damageReduction, 0.90);
+	},
+},
+
 };

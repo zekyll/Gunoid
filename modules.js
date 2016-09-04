@@ -96,4 +96,24 @@ RepairModule: extend(Module,
 }),
 
 
+// Reduces all incoming damage.
+ArmorHardener: extend(Module,
+{
+	name: "Armor Hardener",
+	modelName: "itemArmorHardener",
+	description: "Reduces amount of damage taken.",
+	damageReduction: 0.2,
+
+	equip: function()
+	{
+		this.ship.damageReduction += this.damageReduction;
+	},
+
+	unequip: function()
+	{
+		this.ship.damageReduction -= this.damageReduction;
+	}
+}),
+
+
 };
