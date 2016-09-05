@@ -248,8 +248,14 @@ var MainMenu = inherit(Widget,
 
 		var self = this;
 
+		// Title.
+		this.addChild("titleText", new Text(new Rect(10, 15, 220, 50), "Gunoid"));
+		this.titleText.horizontalTextAlign = 0.5;
+		this.titleText.font = fonts.big;
+		this.titleText.textColor = colors.flameYellow;
+
 		// New game.
-		this.addChild("newGameBtn", new Button(new Rect(30, 30, 200, 70), "New Game"));
+		this.addChild("newGameBtn", new Button(new Rect(30, 80, 200, 120), "New Game"));
 		this.newGameBtn.font = fonts.medium;
 		this.newGameBtn.onMouseClick = function() {
 			game.startGame();
@@ -257,14 +263,14 @@ var MainMenu = inherit(Widget,
 		};
 
 		// Continue.
-		this.addChild("continueBtn", new Button(new Rect(30, 80, 200, 120), "Continue"));
+		this.addChild("continueBtn", new Button(new Rect(30, 130, 200, 170), "Continue"));
 		this.continueBtn.font = fonts.medium;
 		this.continueBtn.onMouseClick = function() {
 			game.paused = !game.paused;
 			self.visible = false;
 		};
 
-		this.addChild("instructionsTextLeft", new Text(new Rect(10, 150, 120, 300),
+		this.addChild("instructionsTextLeft", new Text(new Rect(10, 200, 120, 350),
 			"[W,A,S,D]"
 			+ "\n[Cursor]"
 			+ "\n[Mouse1]"
@@ -275,16 +281,22 @@ var MainMenu = inherit(Widget,
 			+ "\n[F3]"
 			));
 		this.instructionsTextLeft.horizontalTextAlign = 0.5;
-		this.addChild("instructionsTextRight", new Text(new Rect(120, 150, 280, 300),
+		this.addChild("instructionsTextRight", new Text(new Rect(120, 200, 280, 350),
 			"Move ship"
 			+ "\nAim"
 			+ "\nUse module"
 			+ "\nInventory"
 			+ "\nPause"
 			+ "\nMenu"
-			+ "\nRestart "
-			+ "\nFPS Display "
+			+ "\nRestart"
+			+ "\nShow FPS"
 			));
+
+		// Url.
+		this.addChild("urlText", new Text(new Rect(10, 380, 220, 400),
+			"github.com/Zekyll/Gunoid"
+			));
+		this.urlText.horizontalTextAlign = 0.5;
 	},
 });
 
@@ -364,7 +376,7 @@ var Gui = inherit(Widget,
 		this.addChild("stats", new Text(new Rect(5, 5, 300, 300)));
 
 		// Main menu.
-		this.addChild("mainMenu", new MainMenu(new Rect(50, 100, 280, 500)));
+		this.addChild("mainMenu", new MainMenu(new Rect(50, 100, 280, 530)));
 
 		// HP bar.
 		this.addChild("hpBar", new HpBar(new Rect(20, 580, 220, 600)));
@@ -380,7 +392,7 @@ var Gui = inherit(Widget,
 		this.addChild("moduleBar", new ModuleBar(new Rect(250, 570, 400, 600)));
 
 		// Inventory screen.
-		this.addChild("inventoryScreen", new InventoryScreen(new Rect(300, 100, 900, 500)));
+		this.addChild("inventoryScreen", new InventoryScreen(new Rect(300, 100, 900, 530)));
 		this.inventoryScreen.visible = false;
 
 		// Wave number.

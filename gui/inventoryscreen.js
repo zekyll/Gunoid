@@ -130,7 +130,7 @@ var InventoryScreen = inherit(Widget,
 		Widget.call(this, area);
 
 		// Item description/stats.
-		this.addChild("itemInfo", new Text(new Rect(250, 250, 580, 380), 4, 8));
+		this.addChild("itemInfo", new Text(new Rect(250, 250, 580, 410), 4, 8));
 		this.itemInfo.borderColor = colors.guiBorder;
 		this.itemInfo.textColor = [colors.guiText, colors.gray, colors.attribute,
 				colors.attributeValue, colors.positiveBonus, colors.negativeBonus, colors.neutralBonus];
@@ -163,6 +163,10 @@ var InventoryScreen = inherit(Widget,
 		};
 		this.addChild("equippedModuleGrid", new ItemSlotGrid(new Rect(50, 110, 210, 150),
 				1, 4, this.itemInfo, slotUpdate, slotPut));
+
+		// Help text.
+		this.addChild("helpText", new Text(new Rect(20, 250, 220, 350),
+				"Shift+click to delete an item. Ctrl+click to switch between manual and automatic fire."));
 	},
 
 	update: function(player)

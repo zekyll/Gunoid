@@ -207,6 +207,7 @@ var game =
 			"Inventory": 9, // Tab
 			"Demo": 79, // O
 			"Shift": 16,
+			"Control": 17,
 		});
 
 		input.registerKeyPressHandler("New game", function() {
