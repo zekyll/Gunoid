@@ -71,7 +71,8 @@ var attributes =
 		decimals: 2,
 		maxBonus: 0.5,
 		displayValue: function(value) { return 1 / value; },
-		applyBonus: function(value, bonus) { return value / (1 + bonus); }
+		applyBonus: function(value, bonus) { return value / (1 + bonus); },
+		filter: function(o) { return o.projectileClass; }
 	},
 
 	"Repair speed": {
@@ -106,6 +107,23 @@ var attributes =
 		decimals: 1,
 		positiveBonusType: 1, // Negative
 		maxBonus: 0.4
+	},
+
+	"Turret cooldown": {
+		property: "activationPeriod",
+		simpleName: "Cooldown",
+		unit: "s",
+		decimals: 1,
+		positiveBonusType: 1, // Negative
+		maxBonus: 0.5,
+		filter: function(o) { return o.turretClass; }
+	},
+
+	"Turret hit points": {
+		property: "hp",
+		simpleName: "Hit points",
+		category: "turret",
+		maxBonus: 0.5,
 	},
 };
 

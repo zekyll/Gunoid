@@ -383,3 +383,32 @@ var InvisibleBarrier = extend(Entity, traits.Movement,
 	{
 	}
 });
+
+
+// Stationary turret with a blaster weapon.
+var Turret = extend(Ship, traits.TargetClosestEnemy, traits.HasAttributes,
+{
+	init: function()
+	{
+		this.recalculateAttributes();
+		this.equipModule(weapons.Blaster({
+			bonuses: this.totalBonuses,
+			model: models.turretMedium,
+			modelColor: colors.gray,
+			projectileExpire: 10
+		}), 0);
+	},
+
+	hp: 80,
+	m: 5e3,
+	radius: 4.5,
+	collisionDamage: 3,
+	dragCoefficient: 0.1,
+	color: colors.player,
+	attributeCategory: "turret",
+
+	render: function()
+	{
+		models.turretPlatform.render(this.color, this.p, V.UP);
+	},
+});

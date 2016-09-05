@@ -208,7 +208,26 @@ BombLauncher: extend(Module, moduleTraits.ActiveModule,
 		game.addEntity(Bomb({ p: p, v: new V(0, 0),
 				expire: t + 0, faction: this.ship.faction, bonuses: this.totalBonuses}));
 	}
-})
+}),
+
+
+BlasterTurret: extend(Module, moduleTraits.ActiveModule,
+{
+	name: "Blaster Turret",
+	modelName: "itemTurret",
+	description: "Places an autonomous turret that fires at enemies.",
+	activationPeriod: 15,
+	turretClass: Turret,
+	manualActivationKey: "Activate module",
+	proxyAttributeCategory: "turret",
+
+	activate: function(t)
+	{
+		var p = this.ship.relativePos(this.relativePos);
+		game.addEntity(this.turretClass({ p: p, v: new V(0, 0),
+				faction: this.ship.faction, bonuses: this.totalBonuses}));
+	}
+}),
 
 
 };
