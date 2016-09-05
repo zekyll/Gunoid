@@ -293,8 +293,8 @@ var MainMenu = inherit(Widget,
 			));
 
 		// Url.
-		this.addChild("urlText", new Text(new Rect(10, 380, 220, 400),
-			"github.com/Zekyll/Gunoid"
+		this.addChild("urlText", new Text(new Rect(10, 370, 220, 400),
+			"github.com/Zekyll/Gunoid\nv0.1"
 			));
 		this.urlText.horizontalTextAlign = 0.5;
 	},

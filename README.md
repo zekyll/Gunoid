@@ -1,6 +1,10 @@
 # Gunoid
 
-Gunoid is a 2D space shooter game written in JavaScript and WebGL. The game is still in quite early development, so there's not much content yet. Be sure to check it out later.
+Gunoid is a 2D space shooter game written in JavaScript and WebGL. Try the game here (requires Chrome or Firefox):
+
+https://zekyll.github.io/Gunoid/
+
+The game is still in quite early development, so there's not much content yet. Be sure to check it out later.
 
 The goal of the project is to create a game with fun gameplay, unique enemies and items, and interesting physics interactions. Gunoid uses vector wireframe graphics for most game content to enable smooth animation and to make it easy to add new content.
 
