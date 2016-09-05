@@ -22,7 +22,7 @@ var Loot = extend(Entity, traits.Expire,
 
 	canCollide: function(other)
 	{
-		return other.faction === this.faction && other instanceof Ship;
+		return other.faction === this.faction && other.pickupItem;
 	},
 
 	collide: function(t, dt, other)
