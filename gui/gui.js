@@ -376,11 +376,14 @@ var Gui = inherit(Widget,
 		this.shieldBar.backgroundColor = colors.transparent;
 		this.shieldBar.borderColor = colors.shield;
 
+		// Module bar.
+		this.addChild("moduleBar", new ModuleBar(new Rect(250, 570, 400, 600)));
+
 		// Inventory screen.
 		this.addChild("inventoryScreen", new InventoryScreen(new Rect(300, 100, 900, 500)));
 		this.inventoryScreen.visible = false;
 
-		// Wave
+		// Wave number.
 		this.addChild("waveNumberText", new WaveNumberText(new Rect(300, 5, 700, 100)));
 	},
 

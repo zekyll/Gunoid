@@ -44,4 +44,9 @@ var colors =
 	positiveBonus: new Float32Array([0, 1, 0, 1]),
 	negativeBonus: new Float32Array([1, 0, 0, 1]),
 	neutralBonus: new Float32Array([1, 1, 0, 1]),
+
+	// Modules
+	moduleActive: new Float32Array([0.6, 0.8, 1, 1]),
+	moduleReady: new Float32Array([0.4, 1, 0.4, 1]),
+	moduleNotReady: new Float32Array([0.7, 0.7, 0.7, 1]),
 };

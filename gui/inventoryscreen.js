@@ -79,6 +79,10 @@ var ItemSlot = inherit(Widget,
 		if (input.keyDown("Shift")) {
 			this.put(null);
 		}
+
+		if (input.keyDown("Control") && this.item) {
+			this.item.manualActivationKey = this.item.manualActivationKey ? null : "Activate module";
+		}
 	},
 });
 
@@ -91,7 +95,6 @@ var ItemSlotGrid = inherit(Widget,
 		Widget.call(this, area);
 
 		this.slots = [];
-		var self = this;
 		this.slotSize = new V(area.width() / columns, area.height() / rows);
 
 		for (var i = 0; i < rows; ++i) {

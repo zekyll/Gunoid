@@ -506,10 +506,12 @@ var game =
 	{
 		this.gui.hpBar.visible = !!this.player;
 		this.gui.shieldBar.visible = !!this.player && !!this.player.shield;
+		this.gui.moduleBar.visible = !!this.player;
 		if (this.player) {
 			this.gui.hpBar.update(this.player.hp, 100);
 			if (this.player.shield)
 				this.gui.shieldBar.update(this.player.shield.hp, this.player.shield.maxHp);
+			this.gui.moduleBar.update(this.player);
 		}
 
 		if (this.gui.inventoryScreen.visible && this.player)

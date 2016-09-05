@@ -66,7 +66,7 @@ var attributes =
 	},
 
 	"Rate of fire": {
-		property: "shootInterval",
+		property: "activationPeriod",
 		unit: "/ s",
 		decimals: 2,
 		maxBonus: 0.5,
