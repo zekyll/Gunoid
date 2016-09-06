@@ -143,6 +143,14 @@ V.prototype =
 		return new V(-this.y, this.x);
 	},
 
+	rot90left_: function()
+	{
+		var x = this.x;
+		this.x = -this.y;
+		this.y = x;
+		return this;
+	},
+
 	rot90right: function()
 	{
 		return new V(this.y, -this.x);
@@ -179,8 +187,11 @@ V.prototype =
 	}
 };
 
-// Unit vector constant.
+// Unit vector constants.
 V.UP = new V(0, 1);
+V.LEFT = new V(-1, 0);
+V.DOWN = new V(0, -1);
+V.RIGHT = new V(1, 0);
 
 // Returns a random vector of given length.
 V.random = function(len)

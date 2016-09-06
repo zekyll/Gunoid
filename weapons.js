@@ -66,7 +66,7 @@ Cannon: extend(Module, moduleTraits.ActiveModule, moduleTraits.ProjectileWeapon,
 		}
 	},
 
-	shoot: function(t)
+	activate: function(t)
 	{
 		var p = this.ship.relativePos(this.relativePos);
 		var targetDir = this.ship.getModuleTargetPos(this).sub(p);

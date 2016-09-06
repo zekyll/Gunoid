@@ -122,8 +122,8 @@ var Spawner = inherit(Object,
 	{
 		var p = game.randomPosition();
 		var dest = game.randomPosition().mul(0.9);
-		var dir = dest.sub(p).setLen((0.5 +  Math.random()));
-		return {p: p, dir: dir, faction: 2, lootProbabilityMultiplier: 1};
+		var vdir = dest.sub(p).setLen((0.5 +  Math.random()));
+		return {p: p, vdir: vdir, faction: 2, lootProbabilityMultiplier: 1};
 	},
 
 	asteroidSpawnParams: function()
@@ -178,6 +178,15 @@ var Spawner = inherit(Object,
 			[2, 1, 1, 3, enemies.DestroyerYellow, this.standardSpawnParams, {remaining: 0}],
 			[2, 1, 5, 1, enemies.Star, this.standardSpawnParams, {remaining: 2}],
 			[0, 0, 1, 5, Asteroid, this.asteroidSpawnParams, {time: 1}]
+		);
+
+		this.addWave(
+			[2, 1, 1, 3, enemies.DodgerGreen, this.standardSpawnParams, {remaining: 0}]
+		);
+
+		this.addWave(
+			[2, 2, 6, 1, enemies.DestroyerGreen, this.standardSpawnParams, {remaining: 0}],
+			[2, 4, 3, 2, enemies.DodgerGreen, this.standardSpawnParams, {remaining: 0}]
 		);
 
 		this.addWave(

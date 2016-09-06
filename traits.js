@@ -1,5 +1,5 @@
 
-/* global game, Ship, Explosion, LootModule, RepairKit, modules, weapons, attributes */
+/* global game, Ship, Explosion, LootModule, RepairKit, modules, weapons, attributes, V */
 
 "use strict";
 
@@ -112,9 +112,9 @@ Movement:
 		this.a = new V(0, 0);
 		if (!this.v) {
 			// Get initial speed from direction + maxspeed if possible.
-			if (this.dir && this.acceleration) {
-				this.v = this.dir.mul_(this._maxSpeed());
-				this.dir = undefined;
+			if (this.vdir && this.acceleration) {
+				this.v = this.vdir.mul_(this._maxSpeed());
+				this.vdir = undefined;
 			} else {
 				this.v = new V(0, 0);
 			}

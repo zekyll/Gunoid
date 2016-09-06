@@ -67,7 +67,7 @@ StarOrange: extend(Ship, traits.StraightLineMovement,
 		for (var i = 0; i < this.childCount; ++i) {
 			game.addEntity(enemies.Star({
 				p: this.p.clone(),
-				dir: V.random(1).mul_(0.7 + 0.3 * Math.random()),
+				vdir: V.random(1).mul_(0.7 + 0.3 * Math.random()),
 				faction: this.faction
 			}));
 		}
@@ -172,6 +172,62 @@ KamikazeOrange: extend(Ship, traits.TargetClosestEnemy, traits.StopAndAttackInCl
 		else
 			var radius = 1;
 		models.solidCircle8.render(colors.red, this.relativePosXY(0, -1.9), V.UP, radius);
+	},
+}),
+
+
+// Orbits the target and dodges nearby projectiles. Has no attack.
+DodgerGreen: extend(Ship, traits.TargetClosestEnemy,
+{
+	init: function()
+	{
+		this.dir = V.random(1);
+	},
+
+	hp: 100,
+	m: 3e3,
+	radius: 4,
+	acceleration: 2000,
+	dragCoefficient: 0.025,
+	color: colors.enemyGreen,
+	level: 4,
+
+	step: function(t, dt)
+	{
+		var self = this;
+		var closestProjectile = game.findClosestEntity(this.p, function(e) {
+			return e instanceof Projectile && e.faction !== self.faction;
+		});
+		var projPos = closestProjectile ? closestProjectile.p : new V(0, 1e3);
+		var projv = closestProjectile ? closestProjectile.v : new V(0, 1);
+		var projRelPos = this.p.sub(projPos);
+
+		// Accelerate away from the projectile's path. The closer the projectile is, the higher
+		// the acceleration.
+		var accelDir = this.targetPos.sub(this.p).setLenSafe_(1).add_(this.v.setLenSafe(1));
+		var c = 10;
+		var q = (100 / (100 + projRelPos.lenSqr()));
+		accelDir.add_(projRelPos.setLenSafe(c * q));
+		accelDir.add_(projv.rot90left().mul(projv.cross(projRelPos)).setLenSafe(c * q));
+		var accel = this.acceleration * (1 + q * c) / (1 + c);
+		this.a.set_(accelDir).setLenSafe_(accel);
+
+		this.dir.rot_(4 * dt);
+	},
+
+	render: function()
+	{
+		models.enemyDodgerGreen.render(colors.enemyGreen, this.p, this.dir);
+
+		var dir = this.dir.clone();
+		if (dir.dot(this.a) > 0)
+			models.flame.render(colors.flameYellow, this.relativePosXY(0, -4), dir);
+		if (dir.rot90left_().dot(this.a) > 0)
+			models.flame.render(colors.flameYellow, this.relativePosXY(4, 0), dir);
+		if (dir.rot90left_().dot(this.a) > 0)
+			models.flame.render(colors.flameYellow, this.relativePosXY(0, 4), dir);
+		if (dir.rot90left_().dot(this.a) > 0)
+			models.flame.render(colors.flameYellow, this.relativePosXY(-4, 0), dir);
 	},
 }),
 
@@ -493,7 +549,7 @@ CarrierYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget, t
 			for (var i = -1; i <= 1; i += 2) {
 				game.addEntity(enemies.Kamikaze({
 					p: this.relativePosXY(20 * i, 30),
-					dir: this.dir.clone(),
+					vdir: this.dir.clone(),
 					faction: this.faction
 				}));
 			}
