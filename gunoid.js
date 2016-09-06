@@ -97,6 +97,7 @@ var game =
 		this.time = null;
 		this.paused = false;
 		this.speed = 1.0;
+		this.gui.inventoryScreen.visible = false;
 	},
 
 	startGame: function()
@@ -104,6 +105,7 @@ var game =
 		this._initEmptyWorld();
 		this.player = this.addEntity(Player({p: new V(0, 0), v: new V(0, 0)}));
 		this.spawner = new Spawner();
+		this.gui.mainMenu.visible = false;
 	},
 
 	startBenchmark: function()
@@ -121,6 +123,8 @@ var game =
 		}
 
 		this.spawner = { finished: function() { return false; }, step: function() { } };
+		this.gui.inventoryScreen.visible = false;
+		this.gui.mainMenu.visible = false;
 	},
 
 	// Starts a demo that battles random AI ships against each other.
@@ -212,7 +216,6 @@ var game =
 
 		input.registerKeyPressHandler("New game", function() {
 			self.startGame();
-			self.gui.mainMenu.visible = false;
 		});
 		input.registerKeyPressHandler("Pause", function() {
 			if (!self.gui.mainMenu.visible && !self.gui.inventoryScreen.visible)
@@ -226,11 +229,13 @@ var game =
 		});
 		input.registerKeyPressHandler("Main Menu", function() {
 			self.gui.mainMenu.visible = !self.gui.mainMenu.visible;
-			self.paused = self.gui.mainMenu.visible || self.gui.inventoryScreen.visible;
+			self.paused = self.player && (self.gui.mainMenu.visible || self.gui.inventoryScreen.visible);
 		});
 		input.registerKeyPressHandler("Inventory", function() {
-			self.gui.inventoryScreen.visible = !self.gui.inventoryScreen.visible;
-			self.paused = self.gui.mainMenu.visible || self.gui.inventoryScreen.visible;
+			if (game.player) {
+				self.gui.inventoryScreen.visible = !self.gui.inventoryScreen.visible;
+				self.paused = self.player && (self.gui.mainMenu.visible || self.gui.inventoryScreen.visible);
+			}
 		});
 		input.registerKeyPressHandler("Demo", function() {
 			self.startDemo();
