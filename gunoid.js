@@ -116,7 +116,7 @@ var game =
 
 		this.addEntity(InvisibleBarrier({p: new V(0, 0), innerRadius: 130, radius: 250}));
 		for (var i = 0; i < 500; ++i) {
-			var prm = {p: this.randomPosition().mul(0.6), dir: V.random(1)};
+			var prm = {p: this.randomPosition().mul(0.6), vdir: V.random(1)};
 			if (this._benchmarkType === 2)
 				prm.canCollide = function() { return true; };
 			this.addEntity(enemies.Star(prm));
@@ -185,8 +185,8 @@ var game =
 				var spawnType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
 				var p = game.randomPosition();
 				var dest = game.randomPosition();
-				var dir = dest.sub(p).setLen((0.5 +  Math.random()));
-				var newSpawn = game.addEntity(spawnType({p: p, dir: dir, faction: faction}));
+				var vdir = dest.sub(p).setLen((0.5 +  Math.random()));
+				var newSpawn = game.addEntity(spawnType({p: p, vdir: vdir, faction: faction}));
 				newSpawn.hp = Math.sqrt(newSpawn.hp) * 10; // Nerf bigger ships.
 			},
 		};
