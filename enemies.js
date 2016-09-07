@@ -524,7 +524,8 @@ CarrierYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget, t
 					v = new V(0, 1);
 				v.setLen_(this.bulletSpeed);
 				var expire = this.p.dist(this.targetPos) / this.bulletSpeed;
-				game.addEntity(Grenade({p: turretp, v: v,
+				game.addEntity(Grenade({p: turretp, v: v, explosionDamage: 30, activationDelay: 1.0,
+						explosionRadius: 40, explosionSpeed: 20,
 						expire: t + expire, faction: this.faction}));
 			}
 
@@ -535,7 +536,8 @@ CarrierYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget, t
 				v = new V(0, 1);
 			v.setLen_(this.bulletSpeed);
 			var expire = turretp.dist(this.frontTurretTargetP) / this.bulletSpeed;
-			game.addEntity(Grenade({p: turretp, v: v,
+			game.addEntity(Grenade({p: turretp, v: v, explosionDamage: 30, activationDelay: 1.0,
+					explosionRadius: 40, explosionSpeed: 20,
 					expire: t + expire, faction: this.faction}));
 			this.frontTurretTargetP = game.randomPosition();
 

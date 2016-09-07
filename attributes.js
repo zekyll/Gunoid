@@ -5,6 +5,15 @@
 
 var attributes =
 {
+	"Activation delay": {
+		property: "activationDelay",
+		category: "projectile",
+		unit: "s",
+		decimals: 1,
+		positiveBonusType: 1, // Negative
+		maxBonus: 0.5
+	},
+
 	"Damage per second": {
 		property: "damageOverTime",
 		unit: "hp/s",

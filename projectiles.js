@@ -132,11 +132,11 @@ var Grenade = extend(Projectile, traits.ExplodeOnCollision, traits.ExplodeOnDeat
 
 	growSpeed: 4,
 	radius: 2,
-	explosionDamage: 30,
-	activationDelay: 1.0,
+	explosionDamage: 170,
+	activationDelay: 0.4,
 	m: 10,
-	explosionRadius: 40,
-	explosionSpeed: 20,
+	explosionRadius: 70,
+	explosionSpeed: 50,
 	explosionForce: 6e6,
 
 	step: function(t, dt)

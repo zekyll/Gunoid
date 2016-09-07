@@ -191,6 +191,32 @@ MissileLauncher: extend(Module, moduleTraits.ActiveModule, moduleTraits.Projecti
 }),
 
 
+// Launches a grenade to target position; explodes after delay.
+GrenadeLauncher: extend(Module, moduleTraits.ActiveModule,
+{
+	name: "Grenade Launcher",
+	modelName: "itemGrenadeLauncher",
+	description: "Launches exploding grenades to target location.",
+	activationPeriod: 3,
+	projectileSpeed: 140,
+	projectileClass: Grenade,
+	manualActivationKey: "Activate module",
+	proxyAttributeCategory: "projectile",
+
+	activate: function(t)
+	{
+		var targetPos = this.ship.getModuleTargetPos(this);
+		var p = this.ship.relativePos(this.relativePos);
+		var v = targetPos.sub_(p);
+		var expire = v.len() / this.projectileSpeed;
+		v.setLen_(this.projectileSpeed);
+		console.log(targetPos, p, v);
+		game.addEntity(Grenade({ p: p, v: v,
+				expire: t + expire, faction: this.ship.faction, bonuses: this.totalBonuses}));
+	}
+}),
+
+
 // Drops a bomb with a huge radius that explodes after a fixed delay. Manually activated.
 BombLauncher: extend(Module, moduleTraits.ActiveModule,
 {
