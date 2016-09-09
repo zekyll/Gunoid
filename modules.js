@@ -117,4 +117,24 @@ ArmorHardener: extend(Module,
 }),
 
 
+// Increases ship's energy output.
+PowerPlant: extend(Module,
+{
+	name: "Power Plant",
+	modelName: "itemPowerPlant",
+	description: "Increases ship's energy output.",
+	powerOutput: 7,
+
+	equip: function()
+	{
+		this.ship.powerOutput += this.powerOutput;
+	},
+
+	unequip: function()
+	{
+		this.ship.powerOutput -= this.powerOutput;
+	}
+}),
+
+
 };

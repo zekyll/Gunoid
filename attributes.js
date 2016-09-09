@@ -35,6 +35,13 @@ var attributes =
 		maxBonus: 0.5
 	},
 
+	"Energy output": {
+		property: "powerOutput",
+		unit: "MW",
+		decimals: 1,
+		maxBonus: 0.7
+	},
+
 	"Kickback": {
 		property: "kickback",
 		positiveBonusType: 1, // Negative
