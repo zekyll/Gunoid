@@ -1,5 +1,5 @@
 
-/* global models, fonts, colors, game */
+/* global models, fonts, colors, game, V */
 
 "use strict";
 
@@ -387,6 +387,12 @@ var Gui = inherit(Widget,
 		this.shieldBar.hpBarColor[3] *= 3;
 		this.shieldBar.backgroundColor = colors.transparent;
 		this.shieldBar.borderColor = colors.shield;
+
+		// Energy bar.
+		this.addChild("energyBar", new HpBar(new Rect(790, 580, 980, 600)));
+		this.energyBar.hpBarColor = colors.energy;
+		this.energyBar.backgroundColor = colors.transparent;
+		this.energyBar.borderColor = colors.shield;
 
 		// Module bar.
 		this.addChild("moduleBar", new ModuleBar(new Rect(250, 570, 400, 600)));

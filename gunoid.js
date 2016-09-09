@@ -511,12 +511,14 @@ var game =
 	_renderGui: function(t, dt)
 	{
 		this.gui.hpBar.visible = !!this.player;
+		this.gui.energyBar.visible = !!this.player;
 		this.gui.shieldBar.visible = !!this.player && !!this.player.shield;
 		this.gui.moduleBar.visible = !!this.player;
 		if (this.player) {
 			this.gui.hpBar.update(this.player.hp, 100);
 			if (this.player.shield)
 				this.gui.shieldBar.update(this.player.shield.hp, this.player.shield.maxHp);
+			this.gui.energyBar.update(this.player.energy, this.player.maxEnergy);
 			this.gui.moduleBar.update(this.player);
 		}
 

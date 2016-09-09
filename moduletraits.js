@@ -21,8 +21,12 @@ ActiveModule:
 	step: function(t, dt)
 	{
 		if ((!this.activationPeriod || t > this.lastActivationTime + this.activationPeriod) && this.isActive(t)) {
-			this.activate(t, dt);
-			this.lastActivationTime = t;
+			var cost = this.activationCost * (this.activationPeriod ? 1 : dt);
+			if (cost <= this.ship.energy) {
+				this.ship.energy -= cost;
+				this.activate(t, dt);
+				this.lastActivationTime = t;
+			}
 		}
 	},
 

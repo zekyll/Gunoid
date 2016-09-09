@@ -9,12 +9,15 @@ var Player = extend(Ship, traits.DamageReduction,
 	{
 		this.targetPos = new V(0, 1);
 		this.modules = new Array(4);
+		this.energy = this.maxEnergy;
 		this.inventory = new Array(40);
 		this.pickupItem(new weapons.Blaster());
 	},
 
 	hp: 100,
 	maxHp: 100,
+	maxEnergy: 500,
+	powerOutput: 20,
 	m: 10e3,
 	radius: 7,
 	faction: 1,

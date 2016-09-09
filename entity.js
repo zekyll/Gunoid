@@ -48,6 +48,9 @@ var Ship = extend(Entity, traits.Movement, traits.Drag, traits.Debris, traits.Co
 	lootProbabilityMultiplier: 0,
 	dragCoefficient: 0,
 	collisionDamage: 10,
+	energy: 1e99,
+	maxEnergy: 1e99,
+	powerOutput: 1e99,
 
 	step: function(t, dt)
 	{
@@ -55,6 +58,7 @@ var Ship = extend(Entity, traits.Movement, traits.Drag, traits.Debris, traits.Co
 			if (this.modules[i])
 				this.modules[i].step(t, dt);
 		}
+		this.energy = Math.min(this.energy + this.powerOutput * dt, this.maxEnergy);
 	},
 
 	canCollide: function(other)

@@ -27,6 +27,14 @@ var attributes =
 		displayValue: function(value) { return value * 100; }
 	},
 
+	"Energy cost": {
+		property: "activationCost",
+		unit: "MJ",
+		decimals: 1,
+		positiveBonusType: 1, // Negative
+		maxBonus: 0.5
+	},
+
 	"Kickback": {
 		property: "kickback",
 		positiveBonusType: 1, // Negative
