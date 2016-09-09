@@ -149,9 +149,9 @@ var InventoryScreen = inherit(Widget,
 				slotUpdate, slotPut));
 
 		// Ship image.
-		this.addChild("shipImage", new Img(new Rect(20, 20, 230, 230), models.ship));
+		this.addChild("shipImage", new Img(new Rect(15, 15, 235, 235), models.ship));
 		this.shipImage.modelScaling = 1 / 15;
-		this.shipImage.modelColor = colors.green;
+		this.shipImage.modelColor = new Float32Array([0, 0.5, 0, 1]);
 
 		// Equipped modules.
 		slotPut = function(item) {
@@ -161,8 +161,8 @@ var InventoryScreen = inherit(Widget,
 			this.player = player;
 			this.item = player.modules[this.idx];
 		};
-		this.addChild("equippedModuleGrid", new ItemSlotGrid(new Rect(50, 110, 210, 150),
-				1, 4, this.itemInfo, slotUpdate, slotPut));
+		this.addChild("equippedModuleGrid", new ItemSlotGrid(new Rect(45, 85, 205, 165),
+				2, 4, this.itemInfo, slotUpdate, slotPut));
 
 		// Help text.
 		this.addChild("helpText", new Text(new Rect(20, 250, 220, 350),

@@ -8,8 +8,8 @@ var Player = extend(Ship, traits.DamageReduction,
 	init: function()
 	{
 		this.targetPos = new V(0, 1);
-		this.modules = new Array(4);
 		this.energy = this.maxEnergy;
+		this.modules = new Array(8);
 		this.inventory = new Array(40);
 		this.pickupItem(new weapons.Blaster());
 	},
