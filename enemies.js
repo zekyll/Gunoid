@@ -339,8 +339,6 @@ DestroyerYellow: extend(Ship, traits.TargetClosestEnemy, traits.FlyTowardTarget,
 			modelColor: colors.enemyYellow2,
 			projectileExpire: 10
 		}), 0);
-
-		this.lastShootTime = -1e99;
 	},
 
 	hp: 600,

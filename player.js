@@ -11,7 +11,7 @@ var Player = extend(Ship, traits.DamageReduction,
 		this.energy = this.maxEnergy;
 		this.modules = new Array(8);
 		this.inventory = new Array(40);
-		this.pickupItem(new weapons.Blaster());
+		this.pickupItem(weapons.Blaster());
 	},
 
 	hp: 100,
